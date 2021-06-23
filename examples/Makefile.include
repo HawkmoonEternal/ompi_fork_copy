@@ -36,6 +36,7 @@ EXTRA_DIST += \
         examples/README.md \
         examples/Makefile \
         examples/hello_c.c \
+        examples/pmix_test_c.c \
         examples/hello_mpifh.f \
         examples/hello_usempi.f90 \
         examples/hello_usempif08.f90 \

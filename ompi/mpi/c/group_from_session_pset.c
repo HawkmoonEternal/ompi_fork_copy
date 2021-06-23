@@ -32,11 +32,13 @@ int MPI_Group_from_session_pset (MPI_Session session, const char *pset_name, MPI
 
     if ( MPI_PARAM_CHECK ) {
         if (NULL == session || NULL == pset_name || NULL == newgroup) {
+            printf("NULL");
             return OMPI_ERRHANDLER_INVOKE(session, MPI_ERR_ARG, FUNC_NAME);
         }
     }
 
     rc = ompi_group_from_pset (session, pset_name, newgroup);
+    printf("error before: %d", rc);
     /* if an error occured raise it on the null session */
     OMPI_ERRHANDLER_RETURN (rc, session, rc, FUNC_NAME);
 }
