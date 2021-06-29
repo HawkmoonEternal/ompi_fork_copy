@@ -152,6 +152,7 @@ int ompi_comm_set_nb (ompi_communicator_t **ncomm, ompi_communicator_t *oldcomm,
                       ompi_errhandler_t *errh, ompi_group_t *local_group, ompi_group_t *remote_group,
                       uint32_t flags, ompi_request_t **req)
 {
+    printf("ompi_comm_nb\n");
     bool copy_topocomponent = !!(flags & OMPI_COMM_SET_FLAG_COPY_TOPOLOGY);
     bool dup_comm = !(flags & OMPI_COMM_SET_FLAG_LOCAL_COMM_NODUP);
     ompi_communicator_t *newcomm = NULL;
@@ -182,6 +183,7 @@ int ompi_comm_set_nb (ompi_communicator_t **ncomm, ompi_communicator_t *oldcomm,
         ret = ompi_group_incl(oldcomm->c_local_group, local_size,
                               local_ranks, &newcomm->c_local_group);
         if (OPAL_UNLIKELY(OMPI_SUCCESS != ret)) {
+            printf("1");
             return ret;
         }
     } else {
@@ -190,15 +192,16 @@ int ompi_comm_set_nb (ompi_communicator_t **ncomm, ompi_communicator_t *oldcomm,
     }
     newcomm->c_my_rank = newcomm->c_local_group->grp_my_rank;
     newcomm->c_assertions = 0;
-
+    printf("line 195\n");
     /* Set remote group and duplicate the local comm, if applicable */
     if ( NULL != remote_group ) {
         ompi_communicator_t *old_localcomm;
-
+        printf("line 197\n");
         if (&ompi_mpi_group_null.group == remote_group) {
             ret = ompi_group_incl(oldcomm->c_remote_group, remote_size,
                                   remote_ranks, &newcomm->c_remote_group);
             if (OPAL_UNLIKELY(OMPI_SUCCESS != ret)) {
+                printf("2");
                 return ret;
             }
         } else {
@@ -239,14 +242,14 @@ int ompi_comm_set_nb (ompi_communicator_t **ncomm, ompi_communicator_t *oldcomm,
             }
         }
     }
-
+    printf("line 245\n");
     /* Check how many different jobids are represented in this communicator.
        Necessary for the disconnect of dynamic communicators. */
 
     if ( 0 < local_size && (OMPI_COMM_IS_INTRA(newcomm) || 0 <remote_size) ) {
         ompi_dpm_mark_dyncomm (newcomm);
     }
-
+    printf("line 252\n");
     /* Set error handler */
     newcomm->error_handler = errh;
     OBJ_RETAIN ( newcomm->error_handler );
@@ -259,10 +262,11 @@ int ompi_comm_set_nb (ompi_communicator_t **ncomm, ompi_communicator_t *oldcomm,
          */
         if (OMPI_SUCCESS != (ret = ompi_comm_copy_topo(oldcomm, newcomm))) {
             ompi_comm_free(&newcomm);
+            printf("3");
             return ret;
         }
     }
-
+    printf("line 269\n");
     /* Copy attributes and call according copy functions, if required */
     if (NULL != oldcomm && NULL != oldcomm->c_keyhash) {
         if (NULL != attr) {
@@ -271,11 +275,12 @@ int ompi_comm_set_nb (ompi_communicator_t **ncomm, ompi_communicator_t *oldcomm,
                                                            newcomm, attr,
                                                            newcomm->c_keyhash))) {
                 ompi_comm_free(&newcomm);
+                printf("4");
                 return ret;
             }
         }
     }
-
+    printf("line 283\n");
     *ncomm = newcomm;
     return (OMPI_SUCCESS);
 }
@@ -1305,14 +1310,14 @@ int ompi_comm_create_from_group (ompi_group_t *group, const char *tag, opal_info
     if (OPAL_UNLIKELY(OMPI_SUCCESS != rc)) {
         return rc;
     }
-
+    printf("set_simple: ok\n");
     /* Determine context id. It is identical to f_2_c_handle */
     rc = ompi_comm_nextcid (newcomp, NULL, NULL, (void *) tag, NULL, false,
                             OMPI_COMM_CID_GROUP_NEW);
     if ( OMPI_SUCCESS != rc ) {
         return rc;
     }
-
+    printf("next cid: ok\n");
     /* Set name for debugging purposes */
     snprintf(newcomp->c_name, MPI_MAX_OBJECT_NAME, "MPI COMM %s FROM GROUP",
 	     ompi_comm_print_cid (newcomp));
@@ -1347,7 +1352,7 @@ int ompi_comm_create_from_group (ompi_group_t *group, const char *tag, opal_info
     if ( OMPI_SUCCESS != rc ) {
         return rc;
     }
-
+    printf("activate: ok\n");
     *newcomm = newcomp;
     return MPI_SUCCESS;
 }

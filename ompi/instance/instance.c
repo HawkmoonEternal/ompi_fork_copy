@@ -112,6 +112,14 @@ opal_hash_table_t ompi_mpi_f90_complex_hashtable = {{0}};
 
 static size_t  ompi_mpi_instance_num_pmix_psets;
 static char  **ompi_mpi_instance_pmix_psets;
+
+typedef struct{
+    char *rc_tag;
+    char *rc_type;
+    char *rc_pset;
+    char *rc_port;
+} ompi_instance_res_change;
+static ompi_instance_res_change ompi_mpi_instance_res_change;
 /*
  * Per MPI-2:9.5.3, MPI_REGISTER_DATAREP is a memory leak.  There is
  * no way to *de*register datareps once they've been registered.  So
@@ -919,6 +927,99 @@ static void ompi_instance_get_num_psets_complete (pmix_status_t status,
     }
     OPAL_PMIX_WAKEUP_THREAD(lock);
 }
+/*
+static void ompi_instance_get_psets_members_complete (pmix_status_t status, 
+		                                            pmix_info_t *info,
+		                                            size_t ninfo,
+                                                    void *cbdata, 
+                                                    pmix_release_cbfunc_t release_fn,
+                                                    void *release_cbdata)
+{
+    size_t n;
+    pmix_status_t rc;
+    size_t sz;
+    size_t num_pmix_psets = 0;
+    char *pset_names = NULL;
+
+    opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
+
+    for (n=0; n < ninfo; n++) {
+        if (0 == strcmp(info[n].key,PMIX_QUERY_NUM_PSETS)) {
+            PMIX_VALUE_UNLOAD(rc,
+                              &info[n].value,
+                              (void **)&num_pmix_psets,
+                              &sz);
+            if (num_pmix_psets != ompi_mpi_instance_num_pmix_psets) {
+                opal_argv_free (ompi_mpi_instance_pmix_psets);
+                ompi_mpi_instance_pmix_psets = NULL;
+            }
+            ompi_mpi_instance_num_pmix_psets = num_pmix_psets;
+        } else if (0 == strcmp (info[n].key, PMIX_QUERY_PSET_NAMES)) {
+            if (ompi_mpi_instance_pmix_psets) {
+                opal_argv_free (ompi_mpi_instance_pmix_psets);
+            }
+            PMIX_VALUE_UNLOAD(rc,
+                              &info[n].value,
+                              (void **)&pset_names,
+                              &sz);
+            ompi_mpi_instance_pmix_psets = opal_argv_split (pset_names, ',');
+            ompi_mpi_instance_num_pmix_psets = opal_argv_count (ompi_mpi_instance_pmix_psets);
+            free(pset_names);
+        }
+    }
+
+    if (NULL != release_fn) {
+        release_fn(release_cbdata);
+    }
+    OPAL_PMIX_WAKEUP_THREAD(lock);
+}
+*/
+
+
+static void ompi_instance_get_res_change_complete (pmix_status_t status, 
+		                                            pmix_info_t *info,
+		                                            size_t ninfo,
+                                                    void *cbdata, 
+                                                    pmix_release_cbfunc_t release_fn,
+                                                    void *release_cbdata)
+{
+    size_t n;
+    pmix_status_t rc;
+    size_t sz;
+
+    opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
+    printf("Got %d results\n", ninfo);
+    for (n=0; n < ninfo; n++) {
+        printf("Info %d: %s\n", n, info[n].key);
+        if (0 == strcmp(info[n].key,"PMIX_RC_TAG")) {
+            PMIX_VALUE_UNLOAD(rc,
+                              &info[n].value,
+                              (void **)&ompi_mpi_instance_res_change.rc_tag,
+                              &sz);
+            printf("PMIX_RC_TAG UNLOADED: %s\n", ompi_mpi_instance_res_change.rc_tag);
+        } else if (0 == strcmp (info[n].key, "PMIX_RC_TYPE")) {
+            PMIX_VALUE_UNLOAD(rc,
+                              &info[n].value,
+                              (void **)&ompi_mpi_instance_res_change.rc_type,
+                              &sz);
+        } else if (0 == strcmp(info[n].key,"PMIX_RC_PSET")) {
+            PMIX_VALUE_UNLOAD(rc,
+                              &info[n].value,
+                              (void **)&ompi_mpi_instance_res_change.rc_pset,
+                              &sz);
+        }else if (0 == strcmp(info[n].key,"PMIX_RC_PORT")) {
+            PMIX_VALUE_UNLOAD(rc,
+                              &info[n].value,
+                              (void **)&ompi_mpi_instance_res_change.rc_port,
+                              &sz);
+        }  
+    }
+
+    if (NULL != release_fn) {
+        release_fn(release_cbdata);
+    }
+    OPAL_PMIX_WAKEUP_THREAD(lock);
+}
 
 static void ompi_instance_refresh_pmix_psets (const char *key)
 {
@@ -989,13 +1090,139 @@ int ompi_instance_get_nth_pset (ompi_instance_t *instance, int n, int *len, char
     return OMPI_SUCCESS;
 }
 
+/*
+static int ompi_instance_pset_add (ompi_instance *instance, char *pset1, char *pset2, pset_result, (opal_info_t **) hints){
+    
+    int n;
+    char * key_members = "PMIX_PSET_MEMBERSHIP";
+    char * key_size = "PMIX_PSET_SIZE"
+    pmix_query_t *queries;
+    PMIX_QUERY_CREATE(queries, 2);
+    pmix_query_t query_pset1;
+    pmix_query_t query_pset2;
+
+    pmix_info_t *results;
+    size_t nresults;
+
+
+    opal_pmix_lock_t lock;
+    
+    bool refresh = true;
+    char *pset_qualifier="PMIX_PSET_NAME";
+
+    opal_mutex_lock (&instance_lock);
+    
+    PMIX_QUERY_CONSTRUCT(&query_pset1);
+    PMIX_ARGV_APPEND(rc, query_pset1.keys, key_size);
+    PMIX_ARGV_APPEND(rc, query_pset1.keys, key_members);
+    PMIX_INFO_CREATE(query_pset1.qualifiers, 2);
+    query_pset1.nqual = 2;
+    PMIX_INFO_LOAD(&query_pset1.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
+    PMIX_INFO_LOAD(&query_pset1.qualifiers[1], pset1, pset_qualifier, PMIX_STRING);
+
+    PMIX_QUERY_CONSTRUCT(&query_pset2);
+    PMIX_ARGV_APPEND(rc, query_pset2.keys, key_size);
+    PMIX_ARGV_APPEND(rc, query_pset2.keys, key_members);
+    PMIX_INFO_CREATE(query_pset2.qualifiers, 2);
+    query_pset2.nqual = 2;
+    PMIX_INFO_LOAD(&query_pset2.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
+    PMIX_INFO_LOAD(&query_pset2.qualifiers[1], pset2, pset_qualifier, PMIX_STRING);
+    
+    if (PMIX_SUCCESS != (rc = PMIx_Query_info(queries, 2, results, &nresults) {
+       opal_mutex_unlock (&instance_lock);
+       return rc;
+    }
+
+    size_t pset1_size;
+    pmix_poc_t *pset1_procs;
+    pmix_info_t pset2_size;
+    pmix_poc_t *pset2_procs;
+
+    for(n=0; n< nresults, n++){
+        pmix_info_t info_size=results[n][1];
+        pmix_info_t info_procsresults[n][2];
+
+        info = 
+    }
+
+    //OPAL_PMIX_WAIT_THREAD(&lock);
+    //OPAL_PMIX_DESTRUCT_LOCK(&lock);
+
+    opal_mutex_unlock (&instance_lock);
+    
+
+}
+*/
+
+int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_used){
+    int ret = OPAL_SUCCESS;
+    pmix_status_t rc;
+    pmix_query_t query;
+    opal_pmix_lock_t lock;
+    bool refresh = true;
+    ompi_info_t *info = ompi_info_allocate ();
+    *info_used=MPI_INFO_NULL;
+
+    opal_mutex_lock (&instance_lock);
+    
+    //check for local data first?
+
+    //if not found 
+    PMIX_QUERY_CONSTRUCT(&query);
+    PMIX_ARGV_APPEND(rc, query.keys, "PMIX_RC_TAG");
+    PMIX_ARGV_APPEND(rc, query.keys, "PMIX_RC_TYPE");
+    PMIX_ARGV_APPEND(rc, query.keys, "PMIX_RC_PSET");
+    PMIX_ARGV_APPEND(rc, query.keys, "PMIX_RC_PORT");
+    PMIX_INFO_CREATE(query.qualifiers, 1);
+    query.nqual = 1;
+    
+    PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
+
+    OPAL_PMIX_CONSTRUCT_LOCK(&lock);
+
+    /*
+     * TODO: need to handle this better
+     */
+    printf("sending query\n");
+    if (PMIX_SUCCESS != (rc = PMIx_Query_info_nb(&query, 1, 
+                                                 ompi_instance_get_res_change_complete,
+                                                 (void*)&lock))) {
+       printf("PMIx_Query_info_nb returned %d\n", rc);                                              
+       opal_mutex_unlock (&instance_lock);
+    }
+    printf("OPAL_PMIX_WAIT_THREAD\n");
+    OPAL_PMIX_WAIT_THREAD(&lock);
+    printf("OPAL_PMIX_DESTRUCT_LOCK\n");
+    OPAL_PMIX_DESTRUCT_LOCK(&lock);
+
+
+    ret += NULL == ompi_mpi_instance_res_change.rc_tag  ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_TAG", ompi_mpi_instance_res_change.rc_tag);
+    printf("tag: %d, %s\n", ret, ompi_mpi_instance_res_change.rc_tag);
+    ret += NULL == ompi_mpi_instance_res_change.rc_type ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_TYPE", ompi_mpi_instance_res_change.rc_type);
+    printf("type: %d, %s\n", ret, ompi_mpi_instance_res_change.rc_type);
+    ret += NULL == ompi_mpi_instance_res_change.rc_pset ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_PSET", ompi_mpi_instance_res_change.rc_pset);
+    printf("pset: %d, %s\n", ret, ompi_mpi_instance_res_change.rc_pset);
+    ret += NULL == ompi_mpi_instance_res_change.rc_port ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_PORT", ompi_mpi_instance_res_change.rc_port);
+    printf("port: %d, %s\n", ret, ompi_mpi_instance_res_change.rc_port);
+    if (OPAL_UNLIKELY(OPAL_SUCCESS != ret)) {
+        ompi_info_free (&info);
+        printf("values incomplete: %d\n", ret);
+        return ret;
+    }
+
+    *info_used = &info->super;
+
+    opal_mutex_unlock (&instance_lock);
+    return OPAL_SUCCESS;
+}
+
 static int ompi_instance_group_world (ompi_instance_t *instance, ompi_group_t **group_out)
 {
     ompi_group_t *group;
     size_t size;
 
     size = ompi_process_info.num_procs;
-
+    printf("ompi_process_info.num_procs: %d", size);
     group = ompi_group_allocate (size);
     if (OPAL_UNLIKELY(NULL == group)) {
         return OMPI_ERR_OUT_OF_RESOURCE;
