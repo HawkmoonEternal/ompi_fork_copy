@@ -46,15 +46,25 @@
 #include "../opal/mca/pmix/pmix-internal.h"
 
 int MPI_Session_get_res_change(MPI_Session session, MPI_Info *info_used){
+    int rc;
+    //PARAM CHECK
+    rc=ompi_instance_get_res_change(session, (opal_info_t**)info_used);
+
+    //ERROR HANDLING
+    
+    //ERROR HANDLING
+    //OMPI_ERRHANDLER_RETURN (rc, session, rc, FUNC_NAME);
+    return rc;
+}
+
+int MPI_Session_pset_create_op(MPI_Session session, char *pset1, char *pset2, char *pset_result){
 
 
 
     int rc;
     //PARAM CHECK
 
-    
-    
-    rc=ompi_instance_get_res_change(session, (opal_info_t**)info_used);
+    rc=ompi_instance_pset_create_op(session, pset1, pset2, pset_result);
 
     //ERROR HANDLING
     
@@ -105,6 +115,12 @@ int main(int argc, char* argv[])
     MPI_Info_get(info, "MPI_INFO_KEY_RC_TAG", valuelen, pset, &flag);
     pset[valuelen]='\0';
     if(flag)printf("Found a Resource Change with pset %s\n", pset);
+
+    char *pset_result=malloc(6);
+    strcpy(pset_result, "test42");
+    MPI_Session_pset_create_op(session_handle, "test1", "test2", pset_result);
+    printf("MPI_Session_pset_create success with new pset: %s\n", pset_result);
+    free(pset_result);
    /*
     * get a communicator
     
@@ -128,7 +144,11 @@ int main(int argc, char* argv[])
     //MPI_Get_library_version(version, &len);
     //printf("Hello, world, I am rank %d\n", rank);
 
-    sleep(60);
+    sleep(3);
+    rc = MPI_Session_get_num_psets (session_handle, MPI_INFO_NULL, &npset_names);
+
+    printf("num psets: %d\n", npset_names);
+
     MPI_Session_finalize(&session_handle);
     
     return 0;

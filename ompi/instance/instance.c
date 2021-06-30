@@ -891,10 +891,10 @@ static void ompi_instance_get_num_psets_complete (pmix_status_t status,
 {
     size_t n;
     pmix_status_t rc;
-    size_t sz;
-    size_t num_pmix_psets = 0;
+    pmix_data_type_t sz;
+    uint32_t num_pmix_psets = 0;
     char *pset_names = NULL;
-
+    uint32_t my_num;
     opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
 
     for (n=0; n < ninfo; n++) {
@@ -907,7 +907,10 @@ static void ompi_instance_get_num_psets_complete (pmix_status_t status,
                 opal_argv_free (ompi_mpi_instance_pmix_psets);
                 ompi_mpi_instance_pmix_psets = NULL;
             }
-            ompi_mpi_instance_num_pmix_psets = num_pmix_psets;
+            printf("num_pmix_psets: %d\n", num_pmix_psets);
+            my_num=info[n].value.data.uint32;
+            printf("MY num_pmix_psets: %d\n", my_num);
+            ompi_mpi_instance_num_pmix_psets = my_num;
         } else if (0 == strcmp (info[n].key, PMIX_QUERY_PSET_NAMES)) {
             if (ompi_mpi_instance_pmix_psets) {
                 opal_argv_free (ompi_mpi_instance_pmix_psets);
@@ -1211,6 +1214,51 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_u
     }
 
     *info_used = &info->super;
+
+    opal_mutex_unlock (&instance_lock);
+    return OPAL_SUCCESS;
+}
+
+int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pset_result){
+    pmix_status_t pmix_status=PMIX_SUCCESS;
+    pmix_status_t rc;
+    pmix_info_t *info;
+    pmix_info_t *results;
+    opal_pmix_lock_t lock;
+    size_t sz, n, ninfo, nresults;
+
+
+    opal_mutex_lock (&instance_lock);
+    
+    ninfo=3;
+    PMIX_INFO_CREATE(info, ninfo);
+    PMIX_INFO_LOAD(&(info[0]), PMIX_PSETOP_P1, pset1, PMIX_STRING);
+    PMIX_INFO_LOAD(&(info[1]), PMIX_PSETOP_P2, pset2, PMIX_STRING);
+    PMIX_INFO_LOAD(&(info[2]), PMIX_PSETOP_PREF_NAME, pset_result, PMIX_STRING);
+
+    OPAL_PMIX_CONSTRUCT_LOCK(&lock);
+
+    /*
+     * TODO: need to handle this better
+     */
+    printf("sending pset op request\n");
+    if (PMIX_SUCCESS != (pmix_status = PMIx_Pset_Op_request( PMIX_PSETOP_UNION,
+                                            info, ninfo, 
+                                            &results, &nresults))) {
+       printf("PMIx_Pset_OP_nb returned %d\n", pmix_status);
+       if(PMIX_ERR_NOT_FOUND == pmix_status) printf("This is a PMIX_ERR_NOT_FOUND\n");                                              
+       opal_mutex_unlock (&instance_lock);
+    }
+
+    for(n=0; n<nresults; n++){
+        if(0==strcmp(results[n].key, PMIX_PSETOP_PRESULT)){
+            printf("found psetop_presult in results\n");
+            pset_result=realloc(pset_result,strlen(results[n].value.data.string)+1);
+            strcpy(pset_result,results[n].value.data.string);
+            printf("result is %s\n", pset_result);
+            PMIX_VALUE_UNLOAD(pmix_status, &(results[n].value), (void**)&pset_result, &sz);
+        }
+    }
 
     opal_mutex_unlock (&instance_lock);
     return OPAL_SUCCESS;
