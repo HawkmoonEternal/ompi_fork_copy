@@ -104,7 +104,6 @@ void ompi_proc_destruct(ompi_proc_t* proc)
  */
 static int ompi_proc_allocate (ompi_jobid_t jobid, ompi_vpid_t vpid, ompi_proc_t **procp) {
     ompi_proc_t *proc = OBJ_NEW(ompi_proc_t);
-
     opal_list_append(&ompi_proc_list, (opal_list_item_t*)proc);
 
     OMPI_CAST_RTE_NAME(&proc->super.proc_name)->jobid = jobid;
@@ -112,6 +111,8 @@ static int ompi_proc_allocate (ompi_jobid_t jobid, ompi_vpid_t vpid, ompi_proc_t
 
     opal_hash_table_set_value_ptr (&ompi_proc_hash, &proc->super.proc_name, sizeof (proc->super.proc_name),
                                    proc);
+    
+    
 
     /* by default we consider process to be remote */
     proc->super.proc_flags = OPAL_PROC_NON_LOCAL;
@@ -176,7 +177,6 @@ opal_proc_t *ompi_proc_lookup (const opal_process_name_t proc_name)
 {
     ompi_proc_t *proc = NULL;
     int ret;
-
     /* try to lookup the value in the hash table */
     ret = opal_hash_table_get_value_ptr (&ompi_proc_hash, &proc_name, sizeof (proc_name), (void **) &proc);
 

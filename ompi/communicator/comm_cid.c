@@ -275,7 +275,7 @@ static int ompi_comm_ext_cid_new_block (ompi_communicator_t *newcomm, ompi_commu
     char *tag = NULL;
     size_t proc_count, cid_base = 0UL;
     int rc, leader_rank;
-
+    
     rc = ompi_group_to_proc_name_array (newcomm->c_local_group, &name_array, &proc_count);
     if (OPAL_UNLIKELY(OMPI_SUCCESS != rc)) {
         return rc;
@@ -303,8 +303,8 @@ static int ompi_comm_ext_cid_new_block (ompi_communicator_t *newcomm, ompi_commu
     value->key = strdup (PMIX_GROUP_ASSIGN_CONTEXT_ID);
     value->data.flag = true;
     opal_list_append (&info, &value->super);
-
     rc = opal_pmix_group_construct (tag, name_array, proc_count, &info, &results);
+
     free (name_array);
     OPAL_LIST_DESTRUCT(&info);
     if (OPAL_SUCCESS != rc) {
@@ -324,9 +324,7 @@ static int ompi_comm_ext_cid_new_block (ompi_communicator_t *newcomm, ompi_commu
     }
 
     OPAL_LIST_DESTRUCT(&results);
-
     ompi_comm_extended_cid_block_initialize (new_block, cid_base, 0, 0);
-
     return OMPI_SUCCESS;
 }
 
@@ -396,7 +394,6 @@ int ompi_comm_nextcid_nb (ompi_communicator_t *newcomm, ompi_communicator_t *com
     }
 
     /* old CID algorighm */
-
     /* need to add support for MPI_Comm_create_from_group for these configurations */
     assert (NULL != comm);
 

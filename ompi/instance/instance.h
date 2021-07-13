@@ -164,6 +164,7 @@ OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance, opal_i
 OMPI_DECLSPEC uint32_t ompi_instance_get_vpid();
 OMPI_DECLSPEC pmix_proc_t ompi_intance_get_pmixid();
 OMPI_DECLSPEC bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
+OMPI_DECLSPEC void ompi_instance_clear_rc_cache();
 
 
 /**

@@ -53,27 +53,36 @@ int MPI_Comm_create_from_group (MPI_Group group, const char *tag, MPI_Info info,
         OMPI_ERR_INIT_FINALIZE(FUNC_NAME);
 
         if (NULL == tag) {
+            printf("NULL: tag\n");
             return ompi_errhandler_invoke (errhandler, MPI_COMM_SELF, errhandler->eh_mpi_object_type,
                                            MPI_ERR_TAG, FUNC_NAME);
         }
 
         if (NULL == group) {
+            printf("NULL: group\n");
             return ompi_errhandler_invoke (errhandler, MPI_COMM_SELF, errhandler->eh_mpi_object_type,
                                            MPI_ERR_GROUP, FUNC_NAME);
         }
 
         if (NULL == info || ompi_info_is_freed(info)) {
+            printf("NULL: info\n");
+
             return ompi_errhandler_invoke (errhandler, MPI_COMM_SELF, errhandler->eh_mpi_object_type,
                                            MPI_ERR_INFO, FUNC_NAME);
         }
 
         if (NULL == newcomm) {
+            printf("NULL: comm\n");
+
             return ompi_errhandler_invoke (errhandler, MPI_COMM_SELF, errhandler->eh_mpi_object_type,
                                            MPI_ERR_ARG, FUNC_NAME);
         }
     }
 
     if (MPI_GROUP_NULL == group || MPI_UNDEFINED == ompi_group_rank (group)) {
+        if(MPI_GROUP_NULL == group)printf("Group NULL\n");
+        if(MPI_UNDEFINED == ompi_group_rank (group))printf("Rank UNDEFINED\n");
+        
         *newcomm = MPI_COMM_NULL;
         return MPI_SUCCESS;
     }

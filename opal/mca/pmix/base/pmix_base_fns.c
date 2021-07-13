@@ -960,7 +960,6 @@ pmix_status_t opal_pmix_group_construct (const char *tag,
     for (i = 0 ; i < nprocs ; ++i) {
         OPAL_PMIX_CONVERT_NAME(&pprocs[i],&procs[i]);
     }
-
     if (NULL != info) {
         i = 0;
         sz = opal_list_get_size(info);
@@ -971,10 +970,8 @@ pmix_status_t opal_pmix_group_construct (const char *tag,
             ++i;
         }
     }
-
     rc = PMIx_Group_construct(tag, pprocs, nprocs, pinfo, sz, &results, &nresults);
     PMIX_INFO_FREE(pinfo, sz);
-
     if (PMIX_SUCCESS == rc) {
         if (info_out) {
             for (i = 0 ; i < nresults ; ++i) {

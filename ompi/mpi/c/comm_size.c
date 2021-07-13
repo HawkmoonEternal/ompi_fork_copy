@@ -49,7 +49,7 @@ int MPI_Comm_size(MPI_Comm comm, int *size)
 
     if ( MPI_PARAM_CHECK ) {
         OMPI_ERR_INIT_FINALIZE(FUNC_NAME);
-
+        printf("comm invalid \n");
         if ( ompi_comm_invalid (comm)) {
             return OMPI_ERRHANDLER_NOHANDLE_INVOKE(
                                           MPI_ERR_COMM, FUNC_NAME);

@@ -38,7 +38,6 @@ int MPI_Group_from_session_pset (MPI_Session session, const char *pset_name, MPI
     }
 
     rc = ompi_group_from_pset (session, pset_name, newgroup);
-    printf("error before: %d", rc);
     /* if an error occured raise it on the null session */
     OMPI_ERRHANDLER_RETURN (rc, session, rc, FUNC_NAME);
 }

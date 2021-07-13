@@ -120,6 +120,10 @@ typedef struct{
     char *rc_port;
 } ompi_instance_res_change;
 static ompi_instance_res_change ompi_mpi_instance_res_change;
+
+void ompi_instance_clear_rc_cache(){
+    ompi_mpi_instance_res_change.rc_pset=ompi_mpi_instance_res_change.rc_type=ompi_mpi_instance_res_change.rc_port=ompi_mpi_instance_res_change.rc_tag=NULL;
+}
 /*
  * Per MPI-2:9.5.3, MPI_REGISTER_DATAREP is a memory leak.  There is
  * no way to *de*register datareps once they've been registered.  So
@@ -989,30 +993,31 @@ static void ompi_instance_get_res_change_complete (pmix_status_t status,
     size_t n;
     pmix_status_t rc;
     size_t sz;
-
     opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
-    for (n=0; n < ninfo; n++) {
-        if (0 == strcmp(info[n].key,"PMIX_RC_TAG")) {
-            PMIX_VALUE_UNLOAD(rc,
-                              &info[n].value,
-                              (void **)&ompi_mpi_instance_res_change.rc_tag,
-                              &sz);
-        } else if (0 == strcmp (info[n].key, "PMIX_RC_TYPE")) {
-            PMIX_VALUE_UNLOAD(rc,
-                              &info[n].value,
-                              (void **)&ompi_mpi_instance_res_change.rc_type,
-                              &sz);
-        } else if (0 == strcmp(info[n].key,"PMIX_RC_PSET")) {
-            PMIX_VALUE_UNLOAD(rc,
-                              &info[n].value,
-                              (void **)&ompi_mpi_instance_res_change.rc_pset,
-                              &sz);
-        }else if (0 == strcmp(info[n].key,"PMIX_RC_PORT")) {
-            PMIX_VALUE_UNLOAD(rc,
-                              &info[n].value,
-                              (void **)&ompi_mpi_instance_res_change.rc_port,
-                              &sz);
-        }  
+    if(status==PMIX_SUCCESS){
+        for (n=0; n < ninfo; n++) {
+            if (0 == strcmp(info[n].key,"PMIX_RC_TAG")) {
+                PMIX_VALUE_UNLOAD(rc,
+                                  &info[n].value,
+                                  (void **)&ompi_mpi_instance_res_change.rc_tag,
+                                  &sz);
+            } else if (0 == strcmp (info[n].key, "PMIX_RC_TYPE")) {
+                PMIX_VALUE_UNLOAD(rc,
+                                  &info[n].value,
+                                  (void **)&ompi_mpi_instance_res_change.rc_type,
+                                  &sz);
+            } else if (0 == strcmp(info[n].key,"PMIX_RC_PSET")) {
+                PMIX_VALUE_UNLOAD(rc,
+                                  &info[n].value,
+                                  (void **)&ompi_mpi_instance_res_change.rc_pset,
+                                  &sz);
+            }else if (0 == strcmp(info[n].key,"PMIX_RC_PORT")) {
+                PMIX_VALUE_UNLOAD(rc,
+                                  &info[n].value,
+                                  (void **)&ompi_mpi_instance_res_change.rc_port,
+                                  &sz);
+            }  
+        }
     }
 
     if (NULL != release_fn) {
@@ -1196,6 +1201,8 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_u
     ret += NULL == ompi_mpi_instance_res_change.rc_type ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_TYPE", ompi_mpi_instance_res_change.rc_type);
     ret += NULL == ompi_mpi_instance_res_change.rc_pset ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_PSET", ompi_mpi_instance_res_change.rc_pset);
     ret += NULL == ompi_mpi_instance_res_change.rc_port ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_PORT", ompi_mpi_instance_res_change.rc_port);
+    
+    
     if (OPAL_UNLIKELY(OPAL_SUCCESS != ret)) {
         ompi_info_free (&info);
         printf("values incomplete: %d\n", ret);
@@ -1247,7 +1254,7 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
         
         PMIX_PDATA_CONSTRUCT(&lookup_data);
         (void)snprintf(lookup_data.key, PMIX_MAX_KEYLEN, "%s:confirm", delta_pset);
-        //printf("lookup for confirmation key %s\n", lookup_data.key);
+        printf("lookup for confirmation key %s\n", lookup_data.key);
         rc=PMIx_Lookup(&lookup_data,1, &lookup_info, 1);
         if(rc==PMIX_ERR_NOT_FOUND){
             PMIX_PDATA_DESTRUCT(&lookup_data);
@@ -1273,17 +1280,15 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
             PMIX_INFO_CONSTRUCT(&publish_data);
             (void)snprintf(publish_data.key, PMIX_MAX_KEYLEN, "%s:accept", delta_pset);
             PMIX_VALUE_LOAD(&publish_data.value, new_pset, PMIX_STRING);
-            //(void)snprintf(pdata.value.data.string, PMIX_MAX_KEYLEN, "%s", new_pset);
             rc=PMIx_Publish(&publish_data, 1);
-            //printf("published %s -> %s with status: %d",publish_data.key, publish_data.value.data.string, rc);
             PMIX_PDATA_DESTRUCT(&publish_data);
             return rc;
-
         }
 
     }else if(rc_type==PMIX_RC_SUB){
         
         /* TODO: PMIx Notify RM */
+        PMIx_Notify_event(PMIX_RC_FINALIZED, NULL, PMIX_RANGE_NAMESPACE, NULL, 0, NULL, NULL);
         return PMIX_SUCCESS;
     }
 
@@ -1324,7 +1329,7 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
         PMIX_VALUE_LOAD(&publish_data.value, OMPI_CONFIRM_VAL, PMIX_STRING);
         /* publish the confimation */
         rc=PMIx_Publish(&publish_data, 1);
-        //printf("published %s -> %s with status: %d",publish_data.key, publish_data.value.data.string, rc);
+        printf("published %s -> %s with status: %d",publish_data.key, publish_data.value.data.string, rc);
 
         PMIX_INFO_DESTRUCT(&publish_data);
     }
@@ -1343,6 +1348,20 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
         if (++counter >=10)break;
 
     }while(rc!=PMIX_SUCCESS);
+
+    //Notify the host: resource change complete 
+    if(is_pset_leader(delta_pset_members, delta_pset_nmembers,opal_process_info.myprocid)){
+        pmix_info_t event_info;
+        PMIX_INFO_CONSTRUCT(&event_info);
+        (void)snprintf(event_info.key, PMIX_MAX_KEYLEN, "%s", PMIX_EVENT_NON_DEFAULT);
+        bool non_default=true;
+        PMIX_VALUE_LOAD(&event_info.value, &non_default, PMIX_BOOL);
+        PMIx_Notify_event(PMIX_RC_FINALIZED, NULL, PMIX_RANGE_NAMESPACE, &event_info, 1, NULL, NULL);
+        PMIX_INFO_DESTRUCT(&event_info);
+    }
+
+    ompi_instance_clear_rc_cache();
+
     if(rc==PMIX_ERR_NOT_FOUND){
         PMIX_PDATA_DESTRUCT(&lookup_data);
         /* TODO: convert this to a MPI_ERROR */
@@ -1362,8 +1381,6 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
     strcpy(new_pset, lookup_data.value.data.string);
     PMIX_PDATA_DESTRUCT(&lookup_data);
     return OPAL_SUCCESS;
-    
-
 
 
 }
@@ -1528,9 +1545,50 @@ pmix_proc_t ompi_intance_get_pmixid(){
     return opal_process_info.myprocid;
 }
 
-
-
 static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char *pset_name, ompi_group_t **group_out)
+{
+    pmix_status_t rc;
+    pmix_proc_t p;
+    ompi_group_t *group;
+    pmix_value_t *pval = NULL;
+    char *stmp = NULL;
+    size_t size = 0;
+    pmix_proc_t *pset_members;
+    size_t pset_nmembers;
+    rc=ompi_instance_get_pset_membership(instance, pset_name, &pset_members, &pset_nmembers);
+
+    /* make the group large enough to hold world */
+    group = ompi_group_allocate (pset_nmembers);
+    if (OPAL_UNLIKELY(NULL == group)) {
+        return OMPI_ERR_OUT_OF_RESOURCE;
+    }
+
+
+    for (size_t i = 0 ; i < pset_nmembers ; ++i) {
+        opal_process_name_t name;
+        size_t rc;
+        OPAL_PMIX_CONVERT_PROCT(rc, &name,&pset_members[i]);
+        /* look for existing ompi_proc_t that matches this name */
+        group->grp_proc_pointers[size] = (ompi_proc_t *) ompi_proc_lookup (name);
+        if (NULL == group->grp_proc_pointers[size]) {
+            printf("set NULL group member\n");
+            /* set sentinel value */
+            group->grp_proc_pointers[size] = (ompi_proc_t *) ompi_proc_name_to_sentinel (name);
+        } else {
+            OBJ_RETAIN (group->grp_proc_pointers[size]);
+        }
+        ++size;
+    }
+    ompi_set_group_rank (group, ompi_proc_local());
+
+    group->grp_instance = instance;
+
+    *group_out = group;
+    free(pset_members);
+    return OMPI_SUCCESS;
+}
+
+static int ompi_instance_group_pmix_pset_original (ompi_instance_t *instance, const char *pset_name, ompi_group_t **group_out)
 {
     pmix_status_t rc;
     pmix_proc_t p;
@@ -1601,6 +1659,7 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
     return OMPI_SUCCESS;
 }
 
+
 static int ompi_instance_get_pmix_pset_size (ompi_instance_t *instance, const char *pset_name, size_t *size_out)
 {
     pmix_status_t rc;
@@ -1608,6 +1667,7 @@ static int ompi_instance_get_pmix_pset_size (ompi_instance_t *instance, const ch
     pmix_value_t *pval = NULL;
     size_t size = 0;
     char *stmp = NULL;
+
 
     for (size_t i = 0 ; i < ompi_process_info.num_procs ; ++i) {
         opal_process_name_t name = {.vpid = i, .jobid = OMPI_PROC_MY_NAME->jobid};
