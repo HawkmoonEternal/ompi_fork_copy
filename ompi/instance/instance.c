@@ -1115,8 +1115,14 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
     PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
     PMIX_INFO_LOAD(&query.qualifiers[1], "PMIX_PSET_NAME", pset_name, PMIX_STRING);
     if (PMIX_SUCCESS != (rc = PMIx_Query_info(&query, 1, &info, &ninfo))) {
-       printf("PMIx_Query_info failed with error %d\n", rc);                                              
+        if(ninfo==0){
+            return PMIX_ERR_NOT_FOUND;
+        }
+        return rc;                                            
     }
+    
+
+    
     for(n=0; n<ninfo; n++){
         if(0==strcmp(info[n].key, key)){
             
@@ -1127,7 +1133,7 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
         }
     }
     PMIX_INFO_FREE(info, ninfo);
-
+    
     return PMIX_SUCCESS;
 
 }
@@ -1205,7 +1211,6 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_u
     
     if (OPAL_UNLIKELY(OPAL_SUCCESS != ret)) {
         ompi_info_free (&info);
-        printf("values incomplete: %d\n", ret);
         return ret;
     }
 
@@ -1254,7 +1259,7 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
         
         PMIX_PDATA_CONSTRUCT(&lookup_data);
         (void)snprintf(lookup_data.key, PMIX_MAX_KEYLEN, "%s:confirm", delta_pset);
-        printf("lookup for confirmation key %s\n", lookup_data.key);
+        //printf("lookup for confirmation key %s\n", lookup_data.key);
         rc=PMIx_Lookup(&lookup_data,1, &lookup_info, 1);
         if(rc==PMIX_ERR_NOT_FOUND){
             PMIX_PDATA_DESTRUCT(&lookup_data);
@@ -1304,11 +1309,18 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
     size_t delta_pset_nmembers;
     pmix_proc_t *delta_pset_members;
     char key[PMIX_MAX_KEYLEN];
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 10000;
 
     /* define those in OMPI etc. */
     char *OMPI_CONFIRM_VAL="rc_confirmed";
     /* get the members of the delta_pset. These will participate in the fence operation */
-    rc= ompi_instance_get_pset_membership (instance, delta_pset, &delta_pset_members, &delta_pset_nmembers);
+    do{
+        rc= ompi_instance_get_pset_membership (instance, delta_pset, &delta_pset_members, &delta_pset_nmembers);
+        if(rc!=PMIX_SUCCESS)nanosleep(&ts, NULL);
+
+    }while(rc!=PMIX_SUCCESS);
     /* Fence */
     rc=PMIx_Fence(delta_pset_members, delta_pset_nmembers, NULL, 0);
     //if(PMIX_SUCCESS == rc)printf("Fence was successful\n");
@@ -1329,7 +1341,7 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
         PMIX_VALUE_LOAD(&publish_data.value, OMPI_CONFIRM_VAL, PMIX_STRING);
         /* publish the confimation */
         rc=PMIx_Publish(&publish_data, 1);
-        printf("published %s -> %s with status: %d",publish_data.key, publish_data.value.data.string, rc);
+        //printf("published %s -> %s with status: %d",publish_data.key, publish_data.value.data.string, rc);
 
         PMIX_INFO_DESTRUCT(&publish_data);
     }
@@ -1339,13 +1351,16 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
     (void)snprintf(lookup_data.key, PMIX_MAX_KEYLEN, "%s:accept", delta_pset);
     rc=PMIX_ERR_NOT_FOUND;
     int counter=0;
+
     do{
         rc=PMIx_Lookup(&lookup_data,1, &lookup_info, 1);
         /*if(PMIX_ERR_NOT_FOUND==rc){
             printf("RC not yet accepted. Will sleep now\n");
         }*/
-        if(rc!=PMIX_SUCCESS)sleep(3);
-        if (++counter >=10)break;
+        if(rc!=PMIX_SUCCESS){
+            nanosleep(&ts, NULL);
+        }
+        
 
     }while(rc!=PMIX_SUCCESS);
 
@@ -1555,7 +1570,26 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
     size_t size = 0;
     pmix_proc_t *pset_members;
     size_t pset_nmembers;
-    rc=ompi_instance_get_pset_membership(instance, pset_name, &pset_members, &pset_nmembers);
+    int timeout_counter=0;
+    int timeout=1000000000;
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 100000;
+
+    //TODO: Let user decide via MPI INFO if we should retry when pset is not define yet
+    do{
+        rc=ompi_instance_get_pset_membership(instance, pset_name, &pset_members, &pset_nmembers);
+        if(rc!=PMIX_SUCCESS){
+            nanosleep(&ts, NULL);
+        }
+
+    }while(rc!=PMIX_SUCCESS);
+    if(PMIX_SUCCESS != rc){
+        if(PMIX_ERR_NOT_FOUND == rc){
+            return MPI_ERR_ARG;
+        }
+        return MPI_ERR_INTERN;
+    }   
 
     /* make the group large enough to hold world */
     group = ompi_group_allocate (pset_nmembers);
@@ -1571,7 +1605,6 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
         /* look for existing ompi_proc_t that matches this name */
         group->grp_proc_pointers[size] = (ompi_proc_t *) ompi_proc_lookup (name);
         if (NULL == group->grp_proc_pointers[size]) {
-            printf("set NULL group member\n");
             /* set sentinel value */
             group->grp_proc_pointers[size] = (ompi_proc_t *) ompi_proc_name_to_sentinel (name);
         } else {

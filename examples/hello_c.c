@@ -100,6 +100,7 @@ int init(MPI_Session *session_handle, MPI_Comm *comm, char *main_pset_name){
     MPI_Group wgroup = MPI_GROUP_NULL;
     
     rc= MPI_Group_from_session_pset (session_handle, main_pset_name, &wgroup);
+     
     size_t size;
     MPI_Group_size(wgroup, &size);
     /* get a communicator */
@@ -125,6 +126,10 @@ int init(MPI_Session *session_handle, MPI_Comm *comm, char *main_pset_name){
 
 int fetch_resource_change(MPI_Session *session_handle, char delta_pset[], ompi_rc_op_type_t *rc_type, int *incl_flag, int *flag){
     MPI_Info info=MPI_INFO_NULL;
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 10000;
+
     int rc=MPI_Session_get_res_change(session_handle, &info);
     if(rc!=OPAL_SUCCESS){
         *incl_flag=0;
@@ -143,7 +148,12 @@ int fetch_resource_change(MPI_Session *session_handle, char delta_pset[], ompi_r
         MPI_Info_get(info, "MPI_INFO_KEY_RC_TYPE", valuelen, rc_type->type, flag);
         pmix_proc_t *members;
         size_t nmembers;
-        ompi_instance_get_pset_membership ((ompi_instance_t *)session_handle, delta_pset, &members, &nmembers);
+        do{
+            rc=ompi_instance_get_pset_membership ((ompi_instance_t *)session_handle, delta_pset, &members, &nmembers);
+            if(rc==PMIX_ERR_NOT_FOUND){
+                nanosleep(&ts, NULL);
+            }
+        }while(rc==PMIX_ERR_NOT_FOUND);
         *incl_flag = is_pset_member(members, nmembers, ompi_intance_get_pmixid()) ? 1 : 0;
         free(members);
     }
@@ -156,13 +166,16 @@ int fetch_resource_change(MPI_Session *session_handle, char delta_pset[], ompi_r
 pmix_status_t resource_change_step(MPI_Session *session_handle, MPI_Comm *lib_comm, char *pset_name, char *delta_pset, char *pset_result, bool accept_active){
     pmix_status_t rc;
     ompi_rc_op_type_t rc_type;
+    int new_rc_available, incl_flag;
     int my_rank;
+
+
     MPI_Comm_rank(*lib_comm, &my_rank);
     
     
     if(!accept_active){
         /*****************fetch resource change****************************/
-        int new_rc_available, incl_flag;
+        
         fetch_resource_change(session_handle, delta_pset, &rc_type, &incl_flag, &new_rc_available);
         //printf("RANK %d, new_rc_available: %d\n", my_rank, new_rc_available);
         if(!new_rc_available)return PMIX_ERR_NOT_FOUND;
@@ -187,13 +200,15 @@ pmix_status_t resource_change_step(MPI_Session *session_handle, MPI_Comm *lib_co
                 MPI_Session_pset_create_op(session_handle, MPI_PSETOP_DIFFERENCE, pset_name, delta_pset, pset_result);
                 
             } 
-        }
+        }        
         MPI_Bcast(pset_result, PMIX_MAX_KEYLEN, MPI_BYTE, 0, *lib_comm);
+
     }
     
     /***************** end of handle resource change *******************/
 
     /*********************** accept resource change *************************/
+
     if(my_rank==0){
         MPI_Info *info;
         rc=MPI_Session_accept_res_change(session_handle, info, delta_pset, pset_result);
@@ -205,9 +220,15 @@ pmix_status_t resource_change_step(MPI_Session *session_handle, MPI_Comm *lib_co
     }
     else if(PMIX_ERR_NOT_FOUND == rc)return MPI_ERR_PENDING;
     /****************** end of accept resource change *************************/
-    
+
+    //if we were included in a resource substraction we need to finalize now
+    if(rc_type.type==MPI_RC_SUB && incl_flag){
+        MPI_Session_finalize(session_handle);
+    }
+
+    //construct a new communicator from the new pset
     if(PMIX_SUCCESS==rc){
-        sleep(3);
+        printf("    RANK %d: creating communicator for pset %s\n", my_work_rank, pset_name);
         rc=init(session_handle, lib_comm, pset_name);
     }
 
@@ -234,7 +255,7 @@ void rebalance_step(){
     int chunk_size=PROBLEM_SIZE/num_procs;
     start_index = chunk_size*my_work_rank;
     end_index   = (my_work_rank==num_procs-1)   ? PROBLEM_SIZE  : (my_work_rank+1)*chunk_size;
-    printf("    RANK %d/%d: rebalancing:  range[%d,%d]\n", my_work_rank,num_procs,start_index, end_index);
+    printf("    RANK %d/%d: rebalancing:  range[%d,%d]\n", my_work_rank,num_procs-1,start_index, end_index);
 }
 
 int main(int argc, char* argv[])
@@ -250,11 +271,9 @@ int main(int argc, char* argv[])
     ompi_rc_op_type_t rc_type;
     pmix_status_t rc=PMIX_ERR_NOT_FOUND;
     bool accept_active=false;
-    printf("Hello World without rank\n");
     strcpy(pset_name, "test1");
     MPI_Session_init(MPI_INFO_NULL, MPI_ERRORS_RETURN, &session_handle);
     rank=ompi_instance_get_vpid();
-    printf("    RANK %d: Hello World!\n", rank);
     
     /* check if there is a resource change */
     fetch_resource_change(&session_handle, delta_pset, &rc_type,  &incl_flag, &flag);
@@ -262,46 +281,54 @@ int main(int argc, char* argv[])
     /* if we are included in the delta_pset we are a dynamically added process, so we need to confrim the resource change */
     if(flag && incl_flag){
         char new_pset[PMIX_MAX_KEYLEN];
-        printf("    RANK %d: I was added dynamically. Need to confirm \n", rank);
-        sleep(5);
+        printf("    DELTA PSET RANK %d: I was added dynamically. Need to confirm \n", rank);
         rc=MPI_Session_confirm_res_change(session_handle, &info, delta_pset, &pset_name);
         if(PMIX_SUCCESS == rc){
-            printf("    RANK %d: Confirmation succeeded. Communication will happen via pset: %s\n", rank, pset_name);
+            printf("    DELTA PSET RANK %d: Confirmation succeeded. Communication will happen via pset: %s\n", rank, pset_name);
+        }else{
+            printf("    DELTA PSET RANK %d: Confirmation failed. ERROR: %d\n", rank, rc);
         }
         init(&session_handle, &lib_comm, pset_name);
         
-        int array[3];
-        MPI_Bcast(&array, 3, MPI_INT, 0, lib_comm);
-        printf("    RANK %d: received values %d, %d, %d from root\n", rank, array[0], array[1], array[2]);
+        
+        MPI_Bcast(&counter, 1, MPI_INT, 0, lib_comm);
+        printf("    RANK %d: received counter value %d from root in new communicator\n", my_work_rank, counter);
 
     }else{
         /* initialize communication */
         init(&session_handle, &lib_comm, pset_name);
+        rc=MPI_SUCCESS;
     }
     
     /********************** START OF MAIN LOOP *******************************/
-    while(counter++ < 25){
-        rebalance_step(&lib_comm);
+    while(counter++< 25){
+        if(my_work_rank==0)printf("\n START OF ITERATION: %d\n", counter);
+        /* Rebalance */
+        if(rc == MPI_SUCCESS){
+            rebalance_step(&lib_comm);
+        }
 
+        /* Work */
         MPI_Barrier(lib_comm);
         clock_t start=clock();
         work_step();
         MPI_Barrier(lib_comm);
         int msec=(clock()-start)*1000/CLOCKS_PER_SEC;
-        if(my_work_rank==0)printf("work_step needed %d sec, %d msec\n", msec/1000, msec%1000);
+        if(my_work_rank==0)printf("--> work_step needed %d sec, %d msec\n", msec/1000, msec%1000);
 
-
+        /* Resource Change */
+        start=clock();
         rc=resource_change_step(&session_handle, &lib_comm, pset_name, delta_pset, pset_result, accept_active);
+        msec=(clock()-start)*1000/CLOCKS_PER_SEC;
+        if(my_work_rank==0)printf("--> resource_change_step needed %d sec, %d msec\n", msec/1000, msec%1000);
         if(rc==MPI_ERR_PENDING){
             accept_active=true;
-            printf("    RANK %d: Resource change pending. Communication will happen via pset: %s\n", rank, pset_name);
+            printf("    RANK %d: Resource change pending. Communication will still happen via pset: %s\n", my_work_rank, pset_name);
         }
         else if (rc==MPI_SUCCESS) {
             accept_active=false;
-            printf("    RANK %d: Resource change succeeded. Communication will happen via pset: %s\n", rank, pset_name);
-            
-            int array[3]={1,2,3};
-            MPI_Bcast(&array, 3, MPI_INT, 0, lib_comm);
+            printf("    RANK %d: Resource change succeeded. Communication will now happen via pset: %s\n", my_work_rank, pset_name);
+            MPI_Bcast(&counter, 1, MPI_INT, 0, lib_comm);
         }
 
     }
