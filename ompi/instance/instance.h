@@ -23,6 +23,16 @@
 #include "ompi/info/info.h"
 #include "ompi/proc/proc.h"
 
+/* translate PMIx psetop types */
+typedef uint8_t ompi_psetop_type_t;
+#define MPI_PSETOP_UNION PMIX_PSETOP_UNION
+#define MPI_PSETOP_DIFFERENCE PMIX_PSETOP_DIFFERENCE
+#define MPI_PSETOP_INTERSECTION PMIX_PSETOP_INTERSECTION
+
+typedef struct ompi_rc_op_type_t { char type[4];} ompi_rc_op_type_t;
+#define MPI_RC_ADD "ADD"
+#define MPI_RC_SUB "SUB"
+
 struct ompi_group_t;
 
 struct ompi_instance_t {
@@ -148,6 +158,20 @@ OMPI_DECLSPEC int ompi_group_from_pset (ompi_instance_t *instance, const char *p
 OMPI_DECLSPEC int ompi_instance_get_num_psets (ompi_instance_t *instance, int *npset_names);
 OMPI_DECLSPEC int ompi_instance_get_nth_pset (ompi_instance_t *instance, int n, int *len, char *pset_name);
 OMPI_DECLSPEC int ompi_instance_get_pset_info (ompi_instance_t *instance, const char *pset_name, opal_info_t **info_used);
+OMPI_DECLSPEC int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_name, pmix_proc_t **members, size_t *nmembers);
+OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pset_result, ompi_psetop_type_t op);
+
+
+OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_used);
+OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset);
+OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
+
+
+pmix_proc_t ompi_intance_get_pmixid();
+bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
+bool is_pset_leader(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
+void ompi_instance_clear_rc_cache();
+
 
 /**
  * @brief current number of active instances

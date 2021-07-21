@@ -45,6 +45,7 @@ FCFLAGS += -g
 
 EXAMPLES = \
 	 hello_c \
+	 dynres_c \
 	 hello_mpifh \
 	 hello_usempi \
 	 hello_usempif08 \
@@ -72,7 +73,7 @@ EXAMPLES = \
 # others if we have the appropriate Open MPI / OpenSHMEM language
 # bindings.
 
-all: hello_c ring_c connectivity_c spc_example
+all: hello_c dynres_c ring_c connectivity_c spc_example
 	@ if which ompi_info >/dev/null 2>&1 ; then \
 	    $(MAKE) mpi; \
 	fi
@@ -122,6 +123,8 @@ clean:
 # Don't rely on default rules for the Fortran and Java examples
 
 hello_c: hello_c.c
+	$(MPICC) $(CFLAGS) $(LDFLAGS) $? $(LDLIBS) -o $@
+dynres_c: dynres_c.c
 	$(MPICC) $(CFLAGS) $(LDFLAGS) $? $(LDLIBS) -o $@
 ring_c: ring_c.c
 	$(MPICC) $(CFLAGS) $(LDFLAGS) $? $(LDLIBS) -o $@
