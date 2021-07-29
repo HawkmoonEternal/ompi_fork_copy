@@ -23,6 +23,8 @@
 #include "ompi/info/info.h"
 #include "ompi/proc/proc.h"
 
+#define MPI_ALL_ASYNC 1
+
 /* translate PMIx psetop types */
 typedef uint8_t ompi_psetop_type_t;
 #define MPI_PSETOP_UNION PMIX_PSETOP_UNION
@@ -161,8 +163,9 @@ OMPI_DECLSPEC int ompi_instance_get_pset_info (ompi_instance_t *instance, const 
 OMPI_DECLSPEC int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_name, pmix_proc_t **members, size_t *nmembers);
 OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pset_result, ompi_psetop_type_t op);
 
+OMPI_DECLSPEC int ompi_instance_pset_fence(ompi_instance_t *instance, char *pset_name);
 
-OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_used);
+OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_used, bool return_info);
 OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset);
 OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
 

@@ -127,6 +127,7 @@ bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc
 
     size_t n;
     for(n=0; n<nmembers; n++){
+        printf("Pset_member %d: [%s:%d]\n", n,pset_members[n].nspace,pset_members[n].rank);
         if(0==strcmp(proc.nspace,pset_members[n].nspace) && pset_members[n].rank==proc.rank)return true;
     }
     return false;
@@ -507,7 +508,33 @@ static int ompi_mpi_instance_init_common (void)
         OMPI_TIMING_NEXT("pmix-barrier-2");
     }
 #endif
+#define MPI_MALLEABLE 1
+pmix_proc_t *fence_procs=NULL;
+size_t fence_nprocs=0;
+#if MPI_MALLEABLE
+    pmix_proc_t me = ompi_intance_get_pmixid();
+    printf("proc [%s:%d]: getting res change\n", me.nspace,me.rank);
+    ompi_instance_get_res_change(ompi_mpi_instance_default,NULL, false);
+    if(ompi_mpi_instance_res_change.rc_pset!=NULL){
+        printf("proc [%s:%d]: found res change\n", me.nspace,me.rank);
+        struct timespec ts;
+        ts.tv_sec = 0;
+        ts.tv_nsec = 10000;
+        pmix_proc_t *pset_procs;
+        size_t pset_nprocs;
+        
+        do{
+            ompi_instance_get_pset_membership(ompi_mpi_instance_default,ompi_mpi_instance_res_change.rc_pset, &pset_procs, &pset_nprocs);
+            if(rc!=PMIX_SUCCESS)nanosleep(&ts, NULL);
 
+        }while(rc!=PMIX_SUCCESS);
+        if(is_pset_member(pset_procs, pset_nprocs, ompi_intance_get_pmixid())){
+            printf("proc [%s:%d]: member of res change\n", me.nspace,me.rank);
+            fence_procs=pset_procs;
+            fence_nprocs=pset_nprocs;
+        }
+    }
+#endif
    if (!ompi_singleton) {
         if (opal_pmix_base_async_modex) {
             /* if we are doing an async modex, but we are collecting all
@@ -520,11 +547,12 @@ static int ompi_mpi_instance_init_common (void)
             if (opal_pmix_collect_all_data) {
                 /* execute the fence_nb in the background to collect
                  * the data */
+                
                 background_fence = true;
                 active = true;
                 OPAL_POST_OBJECT(&active);
                 PMIX_INFO_LOAD(&info[0], PMIX_COLLECT_DATA, &opal_pmix_collect_all_data, PMIX_BOOL);
-                if( PMIX_SUCCESS != (rc = PMIx_Fence_nb(NULL, 0, NULL, 0,
+                if( PMIX_SUCCESS != (rc = PMIx_Fence_nb(fence_procs, fence_nprocs, NULL, 0,
                                                         fence_release,
                                                         (void*)&active))) {
                     ret = opal_pmix_convert_status(rc);
@@ -539,7 +567,7 @@ static int ompi_mpi_instance_init_common (void)
             active = true;
             OPAL_POST_OBJECT(&active);
             PMIX_INFO_LOAD(&info[0], PMIX_COLLECT_DATA, &opal_pmix_collect_all_data, PMIX_BOOL);
-            rc = PMIx_Fence_nb(NULL, 0, info, 1, fence_release, (void*)&active);
+            rc = PMIx_Fence_nb(fence_procs, fence_nprocs, info, 1, fence_release, (void*)&active);
             if( PMIX_SUCCESS != rc) {
                 ret = opal_pmix_convert_status(rc);
                 return ompi_instance_print_error ("PMIx_Fence() failed", ret);
@@ -548,7 +576,13 @@ static int ompi_mpi_instance_init_common (void)
             OMPI_LAZY_WAIT_FOR_COMPLETION(active);
         }
     }
-
+    if(NULL!=fence_procs){
+        printf("modex range: pset\n");
+        free(fence_procs);
+    }else{
+        printf("modex range: namespace\n");
+    }
+    printf("first barrier passed\n");
     OMPI_TIMING_NEXT("modex");
 
     /* select buffered send allocator component to be used */
@@ -670,8 +704,8 @@ static int ompi_mpi_instance_init_common (void)
 
     /* Next timing measurement */
     OMPI_TIMING_NEXT("modex-barrier");
-
-    if (!ompi_singleton) {
+    printf("second barrier\n");
+    if (!ompi_singleton && !MPI_ALL_ASYNC) {
         /* if we executed the above fence in the background, then
          * we have to wait here for it to complete. However, there
          * is no reason to do two barriers! */
@@ -693,7 +727,7 @@ static int ompi_mpi_instance_init_common (void)
             OMPI_LAZY_WAIT_FOR_COMPLETION(active);
         }
     }
-
+    printf("second barrier passed\n");
     /* check for timing request - get stop time and report elapsed
        time if so, then start the clock again */
     OMPI_TIMING_NEXT("barrier");
@@ -911,6 +945,112 @@ int ompi_mpi_instance_finalize (ompi_instance_t **instance)
     return ret;
 }
 
+int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, ompi_rc_op_type_t rc_type, char *pset_name){
+    int ret, i;
+    pmix_status_t rc;
+
+    size_t nprocs;
+    pmix_proc_t *procs;
+    opal_process_name_t wildcard_rank;
+    ompi_process_name_t ompi_proc_name;
+    ompi_proc_t **ompi_procs;
+
+    bool sub = 0==strcmp(rc_type.type,MPI_RC_SUB);
+    printf(sub ? "sub\n" : "add\n");
+
+    ompi_instance_get_pset_membership(instance, pset_name, &procs, &nprocs);
+
+    /* procs are removed */
+    if(sub){
+        printf("refresh sub\n");
+        /* first we remove all endpoints as the local ranks could have changed */
+        ompi_proc_t *proc;
+        wildcard_rank.jobid = OMPI_PROC_MY_NAME->jobid;
+        wildcard_rank.vpid = OMPI_NAME_WILDCARD->vpid;
+        /* retrieve the local peers */
+        char *val = NULL;
+        OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCAL_PEERS,
+                              &wildcard_rank, &val, PMIX_STRING);
+        if (OPAL_SUCCESS == ret && NULL != val) {
+            printf("have local peers\n");
+            char **peers = opal_argv_split(val, ',');
+            printf("peers length %d\n",opal_argv_len(peers));
+            free(val);
+            /* remove endpoint information for all local peers */
+            for (i=0; NULL != peers[i]; i++) {
+                printf("%s\n", peers[i]);
+                ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
+                printf("%d vs %d\n", local_rank, OMPI_PROC_MY_NAME->vpid );
+                if (OMPI_PROC_MY_NAME->vpid == local_rank) {
+                    printf("continue\n");
+                    continue;
+                }
+                printf("not continue\n");
+                printf("deleting pml for rank %d\n", local_rank);
+                ompi_proc_name.jobid=OMPI_PROC_MY_NAME->jobid;
+                ompi_proc_name.vpid=local_rank;
+                bool is_new;
+                proc=ompi_proc_find_and_add(&ompi_proc_name,&is_new);
+                if(NULL!=proc)printf("proc found\n");
+                //ret = ompi_proc_allocate (OMPI_PROC_MY_NAME->jobid, local_rank, &proc);
+                
+                MCA_PML_CALL(del_procs(&proc,1)); 
+            }
+            printf("endof for loop\n");
+            MCA_PML_CALL(del_procs(&ompi_proc_local_proc,1));
+            
+            opal_argv_free(peers);
+        }
+        
+        /* now we destrcut all ompi_proc's that are removed by the resource res change */
+        for(i=0; i<nprocs; i++){
+            opal_process_name_t name;
+            size_t rc;
+            OPAL_PMIX_CONVERT_PROCT(rc, &name,&procs[i]);
+            /* look for existing ompi_proc_t that matches this name */
+            proc = (ompi_proc_t *) ompi_proc_lookup (name);
+            if( NULL != proc){
+                ompi_proc_destruct(proc);
+            }
+        }
+    }
+
+    /* now we need to update the job info */
+    PMIx_Get_job_data();
+    printf("job size before: %d\n", opal_process_info.num_procs);
+    opal_mutex_lock (&instance_lock);
+    ompi_rte_refresh_job_size();
+    printf("job size after: %d\n", opal_process_info.num_procs);
+    ompi_rte_refresh_peers(sub);
+    
+
+    /* now we (re-)add the local procs i.e. local peers */
+    ompi_proc_complete_init();
+
+    /* if we have a resource addition we need to add all remaining (remote) procs */
+    if(!sub){
+        // add remote
+        for (int i = 0 ; i < nprocs ; ++i ) {
+            opal_process_name_t proc_name;
+            OPAL_PMIX_CONVERT_PROCT(rc, &proc_name, &procs[i]);
+            (void) ompi_proc_for_name (proc_name);
+        }
+        ompi_proc_list_sort();
+    }
+
+    /* we need to add the endpoint information for the local procs. TODO: call add procs only for local ones */    
+    if (NULL == (ompi_procs = ompi_proc_get_allocated (&nprocs))) {
+        printf("ompi_proc_get_allocated () failed\n");
+    }
+    ret = MCA_PML_CALL(add_procs(ompi_procs, nprocs));
+    printf("refresh add_procs for %d procs returned: %d\n", nprocs, ret);
+    free(procs);
+
+    opal_mutex_unlock (&instance_lock);
+
+    return rc;
+}
+
 static void ompi_instance_get_res_change_complete (pmix_status_t status, 
 		                                            pmix_info_t *info,
 		                                            size_t ninfo,
@@ -954,14 +1094,14 @@ static void ompi_instance_get_res_change_complete (pmix_status_t status,
     OPAL_PMIX_WAKEUP_THREAD(lock);
 }
 
-int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_used){
+int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_used, bool return_info){
     int ret = OPAL_SUCCESS;
     pmix_status_t rc;
     pmix_query_t query;
     opal_pmix_lock_t lock;
     bool refresh = true;
     ompi_info_t *info = ompi_info_allocate ();
-    *info_used=MPI_INFO_NULL;
+    
 
     opal_mutex_lock (&instance_lock);
     
@@ -992,20 +1132,21 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_u
     OPAL_PMIX_WAIT_THREAD(&lock);
     OPAL_PMIX_DESTRUCT_LOCK(&lock);
 
+    if(return_info){
+        *info_used=MPI_INFO_NULL;
+        ret += NULL == ompi_mpi_instance_res_change.rc_tag  ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_TAG", ompi_mpi_instance_res_change.rc_tag);
+        ret += NULL == ompi_mpi_instance_res_change.rc_type ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_TYPE", ompi_mpi_instance_res_change.rc_type);
+        ret += NULL == ompi_mpi_instance_res_change.rc_pset ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_PSET", ompi_mpi_instance_res_change.rc_pset);
+        ret += NULL == ompi_mpi_instance_res_change.rc_port ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_PORT", ompi_mpi_instance_res_change.rc_port);
 
-    ret += NULL == ompi_mpi_instance_res_change.rc_tag  ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_TAG", ompi_mpi_instance_res_change.rc_tag);
-    ret += NULL == ompi_mpi_instance_res_change.rc_type ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_TYPE", ompi_mpi_instance_res_change.rc_type);
-    ret += NULL == ompi_mpi_instance_res_change.rc_pset ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_PSET", ompi_mpi_instance_res_change.rc_pset);
-    ret += NULL == ompi_mpi_instance_res_change.rc_port ? 1 : opal_info_set (&info->super, "MPI_INFO_KEY_RC_PORT", ompi_mpi_instance_res_change.rc_port);
-    
-    
-    if (OPAL_UNLIKELY(OPAL_SUCCESS != ret)) {
-        ompi_info_free (&info);
-        return ret;
+
+        if (OPAL_UNLIKELY(OPAL_SUCCESS != ret)) {
+            ompi_info_free (&info);
+            return ret;
+        }
+
+        *info_used = &info->super;
     }
-
-    *info_used = &info->super;
-
     opal_mutex_unlock (&instance_lock);
     return OPAL_SUCCESS;
 }
@@ -1335,6 +1476,32 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
 
 }
 
+int ompi_instance_pset_fence(ompi_instance_t *instance, char *pset_name){
+
+    pmix_status_t rc;
+    int ret;
+    volatile bool active;
+    pmix_info_t info;
+    pmix_proc_t *procs;
+    size_t nprocs;
+    ompi_instance_get_pset_membership(instance, pset_name, &procs, &nprocs);
+    /* get a communicator */
+    printf("fence\n");
+    bool flag = true;
+    active = true;
+    OPAL_POST_OBJECT(&active);
+    PMIX_INFO_LOAD(&info, PMIX_COLLECT_DATA, &flag, PMIX_BOOL);
+    if (PMIX_SUCCESS != (rc = PMIx_Fence_nb(NULL, 0, &info, 1,
+                                            fence_release, (void*)&active))) {
+        ret = opal_pmix_convert_status(rc);
+        return ompi_instance_print_error ("PMIx_Fence_nb() failed", ret);
+    }
+    OMPI_LAZY_WAIT_FOR_COMPLETION(active);
+    
+    free(procs);
+    return OMPI_SUCCESS;
+}
+
 int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pset_result, ompi_psetop_type_t op){
     pmix_status_t pmix_status=PMIX_SUCCESS;
     pmix_status_t rc;
@@ -1535,13 +1702,20 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
         } else {
             OBJ_RETAIN (group->grp_proc_pointers[size]);
         }
+        
         ++size;
     }
+    //opal_proc_t **procs;
+    //size_t nprocs;
+    //procs = ompi_proc_get_allocated (&nprocs);
+    //int ret;
+    //ret = MCA_PML_CALL(add_procs(procs, nprocs));
     ompi_set_group_rank (group, ompi_proc_local());
 
     group->grp_instance = instance;
 
     *group_out = group;
+    //free(procs);
     free(pset_members);
     return OMPI_SUCCESS;
 }
@@ -1574,6 +1748,7 @@ static int ompi_instance_get_pmix_pset_size (ompi_instance_t *instance, const ch
 
         ++size;
     }
+
 
     *size_out = size;
 

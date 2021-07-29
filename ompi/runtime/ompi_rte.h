@@ -257,6 +257,8 @@ OMPI_DECLSPEC void ompi_rte_abort_peers(opal_process_name_t *procs,
 
 /* Init and finalize operations */
 OMPI_DECLSPEC int ompi_rte_init(int *argc, char ***argv);
+OMPI_DECLSPEC int ompi_rte_refresh_job_size(void);
+OMPI_DECLSPEC int ompi_rte_refresh_peers(bool self);
 OMPI_DECLSPEC int ompi_rte_finalize(void);
 OMPI_DECLSPEC void ompi_rte_wait_for_debugger(void);
 OMPI_DECLSPEC extern bool ompi_singleton;

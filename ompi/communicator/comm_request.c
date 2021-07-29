@@ -171,6 +171,7 @@ static int ompi_comm_request_progress (void)
 void ompi_comm_request_start (ompi_comm_request_t *request)
 {
     opal_mutex_lock (&ompi_comm_request_mutex);
+    printf("have mutex\n");
     opal_list_append (&ompi_comm_requests_active, (opal_list_item_t *) request);
 
     /* check if we need to start the communicator request progress function */
@@ -183,6 +184,7 @@ void ompi_comm_request_start (ompi_comm_request_t *request)
     request->super.req_status.MPI_ERROR = OMPI_SUCCESS;
 
     opal_mutex_unlock (&ompi_comm_request_mutex);
+    printf("released mutex\n");
 }
 
 static int ompi_comm_request_cancel (struct ompi_request_t *ompi_req, int complete)
