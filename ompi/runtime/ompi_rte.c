@@ -601,24 +601,20 @@ int ompi_rte_init(int *pargc, char ***pargv)
         opal_process_info.nodename = ev1;  // ev1 is an allocated string
         ev1 = NULL;  // protect the string
     }
-    printf("local rank\n");
     /* get our local rank from PMIx */
     OPAL_MODEX_RECV_VALUE(rc, PMIX_LOCAL_RANK,
                                    &opal_process_info.my_name, &u16ptr, PMIX_UINT16);
-    printf("[%s:%d]     receive loacl rank status %d\n", opal_process_info.myprocid.nspace, opal_process_info.myprocid.rank, rc);
     if (PMIX_SUCCESS != rc) {
         if (ompi_singleton) {
             /* just assume 0 */
             u16 = 0;
         } else {
-            printf("local rank not found");
             ret = opal_pmix_convert_status(rc);
             error = "local rank";
             goto error;
         }
     }
     opal_process_info.my_local_rank = u16;
-    printf("local rank: %d\n", u16);
 
     /* get our node rank from PMIx */
     OPAL_MODEX_RECV_VALUE_OPTIONAL(rc, PMIX_NODE_RANK,
@@ -855,7 +851,6 @@ int ompi_rte_init(int *pargc, char ***pargv)
         pname.jobid = opal_process_info.my_name.jobid;
         for (i=0; NULL != peers[i]; i++) {
             pname.vpid = strtoul(peers[i], NULL, 10);
-            printf("peer: %d\n", pname.vpid);
             if (pname.vpid == opal_process_info.my_name.vpid) {
                 /* we are fully local to ourselves */
                 u16 = OPAL_PROC_ALL_LOCAL;
@@ -1086,7 +1081,6 @@ int ompi_rte_refresh_peers(bool self){
         pname.jobid = opal_process_info.my_name.jobid;
         for (i=0; NULL != peers[i]; i++) {
             pname.vpid = strtoul(peers[i], NULL, 10);
-            printf("fresh peer no. %d: %d\n", i, pname.vpid);
             if (pname.vpid == opal_process_info.my_name.vpid) {
                 /* we are fully local to ourselves */
                 u16 = OPAL_PROC_ALL_LOCAL;

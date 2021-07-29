@@ -189,7 +189,6 @@ static int init_sm_endpoint(struct mca_btl_base_endpoint_t **ep_out, struct opal
         BTL_VERBOSE(("could not read the local rank for peer. rc=%d", rc));
         return rc;
     }
-    printf("init_sm_endpoint for local rank %d\n", peer_local_rank);
     mca_btl_base_endpoint_t *ep = component->endpoints + peer_local_rank;
     *ep_out = ep;
 
@@ -315,7 +314,6 @@ static int sm_add_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
 
     /* initializion */
     int n=get_nprocs();
-    printf("num processors: %d\n", n);
     /* get pointer to my proc structure */
     if (NULL == (my_proc = opal_proc_local_get())) {
         return OPAL_ERR_OUT_OF_RESOURCE;
@@ -329,37 +327,16 @@ static int sm_add_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
     if (!sm_btl->btl_inited) {
         //rc = sm_btl_first_time_init(sm_btl, 1 + MCA_BTL_SM_NUM_LOCAL_PEERS);
         rc = sm_btl_first_time_init(sm_btl, 1 + 2*n);
-        printf("BTL LOCAL PEERS init: %d\n", 1 + MCA_BTL_SM_NUM_LOCAL_PEERS);
         if (rc != OPAL_SUCCESS) {
             return rc;
         }
-    }/*
-    else{
-        mca_btl_base_endpoint_t * tmp=NULL;
-        mca_btl_base_endpoint_t ** tmp_ptrs=NULL;
-        printf("BTL LOCAL PEERS now: %d\n", 1 + MCA_BTL_SM_NUM_LOCAL_PEERS);
-        tmp=(mca_btl_base_endpoint_t *)realloc(mca_btl_sm_component.endpoints, (1 + MCA_BTL_SM_NUM_LOCAL_PEERS)*sizeof(struct mca_btl_base_endpoint_t));
-        printf("realloc passed\n");
-        tmp_ptrs = realloc(mca_btl_sm_component.fbox_in_endpoints,(1 + MCA_BTL_SM_NUM_LOCAL_PEERS) * sizeof(void *));
-        if(NULL!=tmp){
-            printf("realloc success\n");
-            mca_btl_sm_component.endpoints=tmp;
-
-        }else{
-            printf("realloc NULL\n");
-        }
-        if(NULL!=tmp_ptrs){
-            printf("fbox realloc success\n");
-            mca_btl_sm_component.fbox_in_endpoints=tmp_ptrs;
-        }
-    }*/
+    }
 
     for (int32_t proc = 0; proc < (int32_t) nprocs; ++proc) {
         /* check to see if this proc can be reached via shmem (i.e.,
            if they're on my local host and in my job) */
         if (procs[proc]->proc_name.jobid != my_proc->proc_name.jobid
             || !OPAL_PROC_ON_LOCAL_NODE(procs[proc]->proc_flags)) {
-            printf("continue for proc %d\n", procs[proc]->proc_name.vpid);
             peers[proc] = NULL;
             continue;
         }
@@ -395,7 +372,6 @@ static int sm_add_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
 static int sm_del_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
                         struct opal_proc_t **procs, struct mca_btl_base_endpoint_t **peers)
 {
-    printf("sm_del_procs\n");
     for (size_t i = 0; i < nprocs; ++i) {
         if (peers[i]) {
             fini_sm_endpoint(peers[i]);

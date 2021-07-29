@@ -127,7 +127,6 @@ bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc
 
     size_t n;
     for(n=0; n<nmembers; n++){
-        printf("Pset_member %d: [%s:%d]\n", n,pset_members[n].nspace,pset_members[n].rank);
         if(0==strcmp(proc.nspace,pset_members[n].nspace) && pset_members[n].rank==proc.rank)return true;
     }
     return false;
@@ -513,10 +512,8 @@ pmix_proc_t *fence_procs=NULL;
 size_t fence_nprocs=0;
 #if MPI_MALLEABLE
     pmix_proc_t me = ompi_intance_get_pmixid();
-    printf("proc [%s:%d]: getting res change\n", me.nspace,me.rank);
     ompi_instance_get_res_change(ompi_mpi_instance_default,NULL, false);
     if(ompi_mpi_instance_res_change.rc_pset!=NULL){
-        printf("proc [%s:%d]: found res change\n", me.nspace,me.rank);
         struct timespec ts;
         ts.tv_sec = 0;
         ts.tv_nsec = 10000;
@@ -529,7 +526,6 @@ size_t fence_nprocs=0;
 
         }while(rc!=PMIX_SUCCESS);
         if(is_pset_member(pset_procs, pset_nprocs, ompi_intance_get_pmixid())){
-            printf("proc [%s:%d]: member of res change\n", me.nspace,me.rank);
             fence_procs=pset_procs;
             fence_nprocs=pset_nprocs;
         }
@@ -577,12 +573,8 @@ size_t fence_nprocs=0;
         }
     }
     if(NULL!=fence_procs){
-        printf("modex range: pset\n");
         free(fence_procs);
-    }else{
-        printf("modex range: namespace\n");
     }
-    printf("first barrier passed\n");
     OMPI_TIMING_NEXT("modex");
 
     /* select buffered send allocator component to be used */
@@ -704,7 +696,6 @@ size_t fence_nprocs=0;
 
     /* Next timing measurement */
     OMPI_TIMING_NEXT("modex-barrier");
-    printf("second barrier\n");
     if (!ompi_singleton && !MPI_ALL_ASYNC) {
         /* if we executed the above fence in the background, then
          * we have to wait here for it to complete. However, there
@@ -727,7 +718,6 @@ size_t fence_nprocs=0;
             OMPI_LAZY_WAIT_FOR_COMPLETION(active);
         }
     }
-    printf("second barrier passed\n");
     /* check for timing request - get stop time and report elapsed
        time if so, then start the clock again */
     OMPI_TIMING_NEXT("barrier");
@@ -956,14 +946,12 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, omp
     ompi_proc_t **ompi_procs;
 
     bool sub = 0==strcmp(rc_type.type,MPI_RC_SUB);
-    printf(sub ? "sub\n" : "add\n");
 
     ompi_instance_get_pset_membership(instance, pset_name, &procs, &nprocs);
 
     /* procs are removed */
     if(sub){
-        printf("refresh sub\n");
-        /* first we remove all endpoints as the local ranks could have changed */
+        /* first we remove all endpoints as the local ranks could have changed. TDOD: only do it if they really changed */
         ompi_proc_t *proc;
         wildcard_rank.jobid = OMPI_PROC_MY_NAME->jobid;
         wildcard_rank.vpid = OMPI_NAME_WILDCARD->vpid;
@@ -972,37 +960,28 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, omp
         OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCAL_PEERS,
                               &wildcard_rank, &val, PMIX_STRING);
         if (OPAL_SUCCESS == ret && NULL != val) {
-            printf("have local peers\n");
             char **peers = opal_argv_split(val, ',');
-            printf("peers length %d\n",opal_argv_len(peers));
             free(val);
             /* remove endpoint information for all local peers */
             for (i=0; NULL != peers[i]; i++) {
-                printf("%s\n", peers[i]);
                 ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
-                printf("%d vs %d\n", local_rank, OMPI_PROC_MY_NAME->vpid );
                 if (OMPI_PROC_MY_NAME->vpid == local_rank) {
-                    printf("continue\n");
                     continue;
                 }
-                printf("not continue\n");
-                printf("deleting pml for rank %d\n", local_rank);
                 ompi_proc_name.jobid=OMPI_PROC_MY_NAME->jobid;
                 ompi_proc_name.vpid=local_rank;
                 bool is_new;
                 proc=ompi_proc_find_and_add(&ompi_proc_name,&is_new);
-                if(NULL!=proc)printf("proc found\n");
-                //ret = ompi_proc_allocate (OMPI_PROC_MY_NAME->jobid, local_rank, &proc);
                 
                 MCA_PML_CALL(del_procs(&proc,1)); 
             }
-            printf("endof for loop\n");
+            /* also delete endpoint information for ourself */
             MCA_PML_CALL(del_procs(&ompi_proc_local_proc,1));
             
             opal_argv_free(peers);
         }
         
-        /* now we destrcut all ompi_proc's that are removed by the resource res change */
+        /* now we destrcut all ompi_proc's that are removed by the resource res change. This will never include ourself */
         for(i=0; i<nprocs; i++){
             opal_process_name_t name;
             size_t rc;
@@ -1016,18 +995,28 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, omp
     }
 
     /* now we need to update the job info */
+    /* update job info on PMIx Client */
     PMIx_Get_job_data();
-    printf("job size before: %d\n", opal_process_info.num_procs);
+
     opal_mutex_lock (&instance_lock);
+
+    /* update opal job size and peer information */
     ompi_rte_refresh_job_size();
-    printf("job size after: %d\n", opal_process_info.num_procs);
     ompi_rte_refresh_peers(sub);
     
 
-    /* now we (re-)add the local procs i.e. local peers */
+    /* 
+    *  Now we (re-)add the local procs i.e. local peers 
+    *  NOTE:    If non continous namespaces are used ompi_proc_complete_init() will only init local procs. 
+    *           The rest will be added on demand at the latest at create_group_from_pset
+    */
     ompi_proc_complete_init();
 
-    /* if we have a resource addition we need to add all remaining (remote) procs */
+    /* 
+    *  If we have a resource addition we need to add all remaining (remote) procs
+    *  We do it here so we do not need to add them during communication setup
+    */
+
     if(!sub){
         // add remote
         for (int i = 0 ; i < nprocs ; ++i ) {
@@ -1038,12 +1027,14 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, omp
         ompi_proc_list_sort();
     }
 
-    /* we need to add the endpoint information for the local procs. TODO: call add procs only for local ones */    
+    /* 
+    *  We need to add the updated endpoint information for the local procs. 
+    *  TODO: call add procs only for local ones 
+    */    
     if (NULL == (ompi_procs = ompi_proc_get_allocated (&nprocs))) {
         printf("ompi_proc_get_allocated () failed\n");
     }
     ret = MCA_PML_CALL(add_procs(ompi_procs, nprocs));
-    printf("refresh add_procs for %d procs returned: %d\n", nprocs, ret);
     free(procs);
 
     opal_mutex_unlock (&instance_lock);

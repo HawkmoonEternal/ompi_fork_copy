@@ -342,7 +342,6 @@ static int ompi_comm_ext_cid_new_block (ompi_communicator_t *newcomm, ompi_commu
     for (size_t i = 0 ; i < proc_count; ++i) {
         OPAL_PMIX_CONVERT_NAME(&procs[i],&name_array[i]);
     }
-    printf("group construct\n");
     rc = PMIx_Group_construct(tag, procs, proc_count, &pinfo, 1, &results, &nresults);
     PMIX_INFO_DESTRUCT(&pinfo);
 
@@ -353,9 +352,7 @@ static int ompi_comm_ext_cid_new_block (ompi_communicator_t *newcomm, ompi_commu
 
     PMIX_PROC_FREE(procs, proc_count);
     free (name_array);
-    printf("group destruct\n");
    rc = PMIx_Group_destruct (tag, NULL, 0);
-    printf("group destruct finished\n");
     ompi_comm_extended_cid_block_initialize (new_block, cid_base, 0, 0);
 
     return OMPI_SUCCESS;
@@ -791,7 +788,6 @@ int ompi_comm_activate_nb (ompi_communicator_t **newcomm, ompi_communicator_t *c
     ompi_comm_request_t *request;
     ompi_request_t *subreq;
     int ret = 0;
-    printf("activate_nb\n");
     /* the caller should not pass NULL for comm (it may be the same as *newcomm) */
     assert (NULL != comm);
     context = mca_comm_cid_context_alloc (*newcomm, comm, bridgecomm, arg0, arg1, "activate",
@@ -799,7 +795,6 @@ int ompi_comm_activate_nb (ompi_communicator_t **newcomm, ompi_communicator_t *c
     if (NULL == context) {
         return OMPI_ERR_OUT_OF_RESOURCE;
     }
-    printf("context_alloc\n");
     /* keep track of the pointer so it can be set to MPI_COMM_NULL on failure */
     context->newcommp = newcomm;
 
@@ -808,7 +803,6 @@ int ompi_comm_activate_nb (ompi_communicator_t **newcomm, ompi_communicator_t *c
         OBJ_RELEASE(context);
         return OMPI_ERR_OUT_OF_RESOURCE;
     }
-     printf("request_get\n");
     request->context = &context->super;
 
     if (MPI_UNDEFINED != (*newcomm)->c_local_group->grp_my_rank) {
@@ -817,25 +811,20 @@ int ompi_comm_activate_nb (ompi_communicator_t **newcomm, ompi_communicator_t *c
             OBJ_RELEASE(*newcomm);
             OBJ_RELEASE(context);
             *newcomm = MPI_COMM_NULL;
-            printf("mca_add_comm no success %d\n",ret);
             return ret;
         }
-        printf("append\n");
         OMPI_COMM_SET_PML_ADDED(*newcomm);
     }
     /* Step 1: the barrier, after which it is allowed to
      * send messages over the new communicator
      */
-    printf("allreduce");
     ret = context->allreduce_fn (&context->ok, &context->ok, 1, MPI_MIN, context,
                                  &subreq);
     if (OMPI_SUCCESS != ret) {
         ompi_comm_request_return (request);
         return ret;
     }
-    printf("schedule");
     ompi_comm_request_schedule_append (request, ompi_comm_activate_nb_complete, &subreq, 1);
-    printf("request start");
     ompi_comm_request_start (request);
 
     *req = &request->super;
@@ -854,10 +843,8 @@ int ompi_comm_activate (ompi_communicator_t **newcomm, ompi_communicator_t *comm
     if (OMPI_SUCCESS != rc) {
         return rc;
     }
-    printf("before wait request complete\n");
     if (&ompi_request_empty != req) {
         ompi_request_wait_completion (req);
-        printf("wait completed\n");
         rc = req->req_status.MPI_ERROR;
         ompi_comm_request_return ((ompi_comm_request_t *) req);
     }
@@ -866,7 +853,6 @@ int ompi_comm_activate (ompi_communicator_t **newcomm, ompi_communicator_t *comm
 
 static int ompi_comm_activate_nb_complete (ompi_comm_request_t *request)
 {
-    printf("request complete nb\n");
     ompi_comm_cid_context_t *context = (ompi_comm_cid_context_t *) request->context;
     return ompi_comm_activate_complete (context->newcommp, context->comm);
 }

@@ -341,7 +341,6 @@ int ompi_proc_complete_init(void)
              * to provide this information at startup */
             OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCALITY, &proc->super.proc_name, &u16ptr, PMIX_UINT16);
             if (OPAL_SUCCESS == ret) {
-                printf("received locality\n");
                 proc->super.proc_flags = u16;
             }
         }

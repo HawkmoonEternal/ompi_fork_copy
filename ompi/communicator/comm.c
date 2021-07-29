@@ -1313,12 +1313,10 @@ int ompi_comm_create_from_group (ompi_group_t *group, const char *tag, opal_info
     int rc;
 
     *newcomm = MPI_COMM_NULL;
-    printf("set_simple\n");
     rc = ompi_comm_set_simple (&newcomp, errhandler, group);
     if (OPAL_UNLIKELY(OMPI_SUCCESS != rc)) {
         return rc;
     }
-    printf("next_cid\n");
     /* Determine context id. It is identical to f_2_c_handle */
     rc = ompi_comm_nextcid (newcomp, NULL, NULL, (void *) tag, NULL, false,
                             OMPI_COMM_CID_GROUP_NEW);
@@ -1334,7 +1332,6 @@ int ompi_comm_create_from_group (ompi_group_t *group, const char *tag, opal_info
     if (NULL == newcomp->super.s_info) {
         return OMPI_ERR_OUT_OF_RESOURCE;
     }
-    printf("activate\n");
     /* activate communicator and init coll-module. use the group allreduce implementation as
      * no collective module has yet been selected. the tag does not matter as any tag will
      * be unique on the new communicator. */

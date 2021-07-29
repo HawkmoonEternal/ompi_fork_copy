@@ -612,7 +612,6 @@ static int mca_bml_r2_add_procs( size_t nprocs,
 static int mca_bml_r2_del_procs(size_t nprocs,
                                 struct ompi_proc_t** procs)
 {
-    printf("btl nprocs %d\n", nprocs);
     for (size_t p = 0 ; p < nprocs ; ++p) {
         ompi_proc_t *proc = procs[p];
         mca_bml_base_endpoint_t *bml_endpoint =

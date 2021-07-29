@@ -102,15 +102,11 @@ int init(MPI_Session *session_handle, MPI_Comm *comm, char *main_pset_name){
     int rc;
     MPI_Group wgroup = MPI_GROUP_NULL;
     //ompi_instance_pset_fence(session_handle, main_pset_name);
-    printf("group\n");
     rc= MPI_Group_from_session_pset (session_handle, main_pset_name, &wgroup);
-    printf("group size\n");
     size_t size;
     MPI_Group_size(wgroup, &size);
-    printf("group size is %d\n", size);
 
     //ompi_instance_pset_fence(session_handle, main_pset_name);
-    printf("comm\n");
     rc = MPI_Comm_create_from_group(wgroup, "mpi.forum.example",
                                     MPI_INFO_NULL,
                                     MPI_ERRORS_RETURN,
@@ -246,7 +242,6 @@ pmix_status_t resource_change_step(MPI_Session *session_handle, MPI_Comm *lib_co
     if(MPI_COMM_NULL!= lib_comm)MPI_Comm_free(lib_comm);
 
     if(0==strcmp(rc_type.type,MPI_RC_SUB)){
-        printf("SUB\m");
         
         /* if we were included in the resource substraction we need to finalize now */
         if(incl_flag){
@@ -308,7 +303,6 @@ int main(int argc, char* argv[])
     /* check if there is a resource change right at the beginning */
     
     int ret=fetch_resource_change(&session_handle, delta_pset, &rc_type,  &incl_flag, &flag);
-    printf("fetch: %d, %d, %d\n", ret, flag, incl_flag);
     /* if we are included in the delta_pset we are a dynamically added process, so we need to confirm the resource change */
     if(flag && incl_flag){
         char new_pset[PMIX_MAX_KEYLEN];
@@ -326,7 +320,6 @@ int main(int argc, char* argv[])
         printf("    RANK %d: received counter value %d from root in new communicator\n", my_work_rank, counter);
 
     }else{
-        printf("Init\n");
         /* initialize communication */
         init(&session_handle, &lib_comm, pset_name);
         rc=MPI_SUCCESS;
@@ -366,9 +359,7 @@ int main(int argc, char* argv[])
                 if(MPI_INFO_NULL != info){
                         MPI_Info_free(&info);
                 }
-                //sleep(10);
                 MPI_Session_finalize(session_handle);
-                printf("return 0\n");
 
                 return 0;
             }
