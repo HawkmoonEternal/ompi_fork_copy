@@ -25,15 +25,83 @@
 
 #define MPI_ALL_ASYNC 1
 
-/* translate PMIx psetop types */
+
+
+/* Psets*/
 typedef uint8_t ompi_psetop_type_t;
 #define MPI_PSETOP_UNION PMIX_PSETOP_UNION
 #define MPI_PSETOP_DIFFERENCE PMIX_PSETOP_DIFFERENCE
 #define MPI_PSETOP_INTERSECTION PMIX_PSETOP_INTERSECTION
 
-typedef struct ompi_rc_op_type_t { char type[4];} ompi_rc_op_type_t;
-#define MPI_RC_ADD "ADD"
-#define MPI_RC_SUB "SUB"
+struct ompi_pset_t{
+    opal_list_item_t super;
+    char name[PMIX_MAX_KEYLEN];
+    size_t size;
+    bool malleable;
+    bool active;
+    opal_process_name_t *members;
+};
+typedef struct ompi_pset_t ompi_mpi_instance_pset_t;
+
+static void pset_destructor(ompi_mpi_instance_pset_t *pset){
+    free(pset->members);
+}
+
+ompi_mpi_instance_pset_t * get_pset_by_name(char *name);
+
+static void pset_define_handler(size_t evhdlr_registration_id, pmix_status_t status,
+                       const pmix_proc_t *source, pmix_info_t info[], size_t ninfo,
+                       pmix_info_t results[], size_t nresults,
+                       pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata);
+
+static void pset_delete_handler(size_t evhdlr_registration_id, pmix_status_t status,
+                       const pmix_proc_t *source, pmix_info_t info[], size_t ninfo,
+                       pmix_info_t results[], size_t nresults,
+                       pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata);
+
+OBJ_CLASS_DECLARATION(ompi_mpi_instance_pset_t);
+
+
+
+/* resource changes */
+
+typedef uint8_t ompi_rc_op_type_t;
+#define MPI_RC_NULL PMIX_RES_CHANGE_EXTERNAL
+#define MPI_RC_ADD  PMIX_RES_CHANGE_ADD
+#define MPI_RC_SUB  PMIX_RES_CHANGE_SUB
+
+typedef enum{
+    RC_INVALID,
+    RC_ANNOUNCED,
+    RC_CONFIRMATION_PENDING,
+    RC_FINALIZED 
+} ompi_rc_status_t;
+
+
+struct ompi_resource_change_t{
+    opal_list_item_t super;
+    ompi_mpi_instance_pset_t *delta_pset;
+    ompi_mpi_instance_pset_t *bound_pset;
+    ompi_rc_op_type_t type;
+    ompi_rc_status_t status;
+};
+
+typedef struct ompi_resource_change_t ompi_mpi_instance_resource_change_t;
+
+static void ompi_resource_change_constructor(ompi_mpi_instance_resource_change_t *rc){
+    rc->delta_pset=rc->bound_pset=NULL;
+    rc->type=MPI_RC_NULL;
+    rc->status=RC_INVALID;
+};
+
+static void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
+                       const pmix_proc_t *source, pmix_info_t info[], size_t ninfo,
+                       pmix_info_t results[], size_t nresults,
+                       pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata);
+
+OBJ_CLASS_DECLARATION(ompi_mpi_instance_pset_t);
+
+
 
 struct ompi_group_t;
 
@@ -160,20 +228,23 @@ OMPI_DECLSPEC int ompi_group_from_pset (ompi_instance_t *instance, const char *p
 OMPI_DECLSPEC int ompi_instance_get_num_psets (ompi_instance_t *instance, int *npset_names);
 OMPI_DECLSPEC int ompi_instance_get_nth_pset (ompi_instance_t *instance, int n, int *len, char *pset_name);
 OMPI_DECLSPEC int ompi_instance_get_pset_info (ompi_instance_t *instance, const char *pset_name, opal_info_t **info_used);
-OMPI_DECLSPEC int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_name, pmix_proc_t **members, size_t *nmembers);
+OMPI_DECLSPEC int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_name, opal_process_name_t **members, size_t *nmembers);
 OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pset_result, ompi_psetop_type_t op);
 
 OMPI_DECLSPEC int ompi_instance_pset_fence(ompi_instance_t *instance, char *pset_name);
 
-OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance, opal_info_t **info_used, bool return_info);
+OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char *delta_pset, bool *incl, opal_info_t **info_used, bool return_info);
 OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset);
 OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
 
 
 pmix_proc_t ompi_intance_get_pmixid();
+int opal_pmix_proc_array_conv(opal_process_name_t *opal_procs, pmix_proc_t **pmix_procs, size_t nprocs);
+int pmix_opal_proc_array_conv(pmix_proc_t *pmix_procs,opal_process_name_t **opal_procs, size_t nprocs);
 bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
 bool is_pset_leader(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
-void ompi_instance_clear_rc_cache();
+void ompi_instance_clear_rc_cache(char *delta_pset);
+static void ompi_instance_refresh_pmix_psets (const char *key);
 
 
 /**
