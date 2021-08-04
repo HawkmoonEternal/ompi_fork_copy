@@ -830,6 +830,7 @@ size_t fence_nprocs=0;
                 active = true;
                 OPAL_POST_OBJECT(&active);
                 PMIX_INFO_LOAD(&info[0], PMIX_COLLECT_DATA, &opal_pmix_collect_all_data, PMIX_BOOL);
+                printf("fence\n");
                 if( PMIX_SUCCESS != (rc = PMIx_Fence_nb(fence_procs, fence_nprocs, NULL, 0,
                                                         fence_release,
                                                         (void*)&active))) {
