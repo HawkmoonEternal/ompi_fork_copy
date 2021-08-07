@@ -233,7 +233,7 @@ OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const 
 
 OMPI_DECLSPEC int ompi_instance_pset_fence(ompi_instance_t *instance, char *pset_name);
 
-OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char *delta_pset, bool *incl, opal_info_t **info_used, bool return_info);
+OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char *delta_pset, bool *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool return_info);
 OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset);
 OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
 
@@ -244,6 +244,7 @@ int pmix_opal_proc_array_conv(pmix_proc_t *pmix_procs,opal_process_name_t **opal
 bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
 bool is_pset_leader(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
 void ompi_instance_clear_rc_cache(char *delta_pset);
+int ompi_instance_get_rc_type(char *delta_pset, ompi_rc_op_type_t *rc_type);
 static void ompi_instance_refresh_pmix_psets (const char *key);
 
 
