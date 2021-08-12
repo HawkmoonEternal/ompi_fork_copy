@@ -317,7 +317,7 @@ int ompi_proc_complete_init(void)
     wildcard_rank.jobid = OMPI_PROC_MY_NAME->jobid;
     wildcard_rank.vpid = OMPI_NAME_WILDCARD->vpid;
     /* retrieve the local peers */
-    OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCAL_PEERS,
+    OPAL_MODEX_RECV_VALUE_OPTIONAL(ret, PMIX_LOCAL_PEERS,
                           &wildcard_rank, &val, PMIX_STRING);
     if (OPAL_SUCCESS == ret && NULL != val) {
         char **peers = opal_argv_split(val, ',');
@@ -339,7 +339,7 @@ int ompi_proc_complete_init(void)
             }
             /* get the locality information - all RTEs are required
              * to provide this information at startup */
-            OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCALITY, &proc->super.proc_name, &u16ptr, PMIX_UINT16);
+            OPAL_MODEX_RECV_VALUE_OPTIONAL(ret, PMIX_LOCALITY, &proc->super.proc_name, &u16ptr, PMIX_UINT16);
             if (OPAL_SUCCESS == ret) {
                 proc->super.proc_flags = u16;
             }

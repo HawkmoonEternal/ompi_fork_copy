@@ -446,6 +446,8 @@ struct ompi_status_public_t {
 };
 typedef struct ompi_status_public_t ompi_status_public_t;
 
+
+
 /*
  * MPI_F08_status
  */
@@ -1308,6 +1310,23 @@ OMPI_DECLSPEC extern struct ompi_predefined_datatype_t ompi_mpi_ub;
 #define MPI_INFO_KEY_SESSION_PSET_SIZE  "size"
 
 /*
+ * MPI_Res_Change
+ 
+typedef int ompi_rc_op_type_t;
+typedef ompi_rc_op_type_t MPI_RC_TYPE;
+#define MPI_RC_NULL PMIX_RES_CHANGE_EXTERNAL
+#define MPI_RC_ADD  PMIX_RES_CHANGE_ADD
+#define MPI_RC_SUB  PMIX_RES_CHANGE_SUB
+
+typedef enum{
+    RC_INVALID,
+    RC_ANNOUNCED,
+    RC_CONFIRMATION_PENDING,
+    RC_FINALIZED 
+} ompi_rc_status_t;
+typedef ompi_rc_status_t MPI_RC_STATUS;
+*/
+/*
  * MPI API
  */
 
@@ -1617,6 +1636,7 @@ OMPI_DECLSPEC  int MPI_Group_excl(MPI_Group group, int n, const int ranks[],
 OMPI_DECLSPEC  MPI_Group MPI_Group_f2c(MPI_Fint group);
 OMPI_DECLSPEC  int MPI_Group_free(MPI_Group *group);
 OMPI_DECLSPEC  int MPI_Group_from_session_pset (MPI_Session session, const char *pset_name, MPI_Group *newgroup);
+//OMPI_DECLSPEC  int MPI_Session_get_res_change(MPI_Session session, char *pset_name, MPI_RC_TYPE *type, char *delta_pset, int *incl, ompi_rc_status_t *status, MPI_Info *info_used);
 OMPI_DECLSPEC  int MPI_Group_incl(MPI_Group group, int n, const int ranks[],
                                   MPI_Group *newgroup);
 OMPI_DECLSPEC  int MPI_Group_intersection(MPI_Group group1, MPI_Group group2,
@@ -2311,6 +2331,7 @@ OMPI_DECLSPEC  int PMPI_Group_excl(MPI_Group group, int n, const int ranks[],
 OMPI_DECLSPEC  MPI_Group PMPI_Group_f2c(MPI_Fint group);
 OMPI_DECLSPEC  int PMPI_Group_free(MPI_Group *group);
 OMPI_DECLSPEC  int PMPI_Group_from_session_pset (MPI_Session session, const char *pset_name, MPI_Group *newgroup);
+//OMPI_DECLSPEC  int MPI_Session_get_res_change(MPI_Session session, char *pset_name, MPI_RC_TYPE *type, char *delta_pset, int *incl, ompi_rc_status_t *status, MPI_Info *info_used);
 OMPI_DECLSPEC  int PMPI_Group_incl(MPI_Group group, int n, const int ranks[],
                                    MPI_Group *newgroup);
 OMPI_DECLSPEC  int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2,

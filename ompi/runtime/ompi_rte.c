@@ -602,7 +602,7 @@ int ompi_rte_init(int *pargc, char ***pargv)
         ev1 = NULL;  // protect the string
     }
     /* get our local rank from PMIx */
-    OPAL_MODEX_RECV_VALUE(rc, PMIX_LOCAL_RANK,
+    OPAL_MODEX_RECV_VALUE_OPTIONAL(rc, PMIX_LOCAL_RANK,
                                    &opal_process_info.my_name, &u16ptr, PMIX_UINT16);
     if (PMIX_SUCCESS != rc) {
         if (ompi_singleton) {
@@ -825,7 +825,7 @@ int ompi_rte_init(int *pargc, char ***pargv)
 
     /* retrieve the local peers - defaults to local node */
     val = NULL;
-    OPAL_MODEX_RECV_VALUE(rc, PMIX_LOCAL_PEERS,
+    OPAL_MODEX_RECV_VALUE_OPTIONAL(rc, PMIX_LOCAL_PEERS,
                           &pname, &val, PMIX_STRING);
     if (PMIX_SUCCESS == rc && NULL != val) {
         peers = opal_argv_split(val, ',');
@@ -956,8 +956,21 @@ int ompi_rte_refresh_job_size(){
     u32ptr = &u32;
     u16ptr = &u16;
     
+    
     opal_process_name_t pname;
-
+    /*
+    size_t sz;
+    pmix_proc_t proc_name;
+    strcpy(proc_name.nspace,opal_process_info.myprocid.nspace);
+    proc_name.rank=PMIX_RANK_WILDCARD;
+    bool refresh=true;
+    pmix_info_t info;
+    pmix_value_t *value;
+    PMIX_INFO_CONSTRUCT(&info);
+    PMIX_INFO_LOAD(&info, PMIX_GET_REFRESH_CACHE, &refresh, PMIX_BOOL);
+    rc = PMIx_Get(&proc_name, PMIX_JOB_SIZE, &info, 1, &value);
+    u32=value->data.uint32;
+    */
     /* get job size */
     pname.jobid = opal_process_info.my_name.jobid;
     pname.vpid = OPAL_VPID_WILDCARD;

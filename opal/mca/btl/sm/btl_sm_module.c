@@ -326,7 +326,7 @@ static int sm_add_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
 
     if (!sm_btl->btl_inited) {
         //rc = sm_btl_first_time_init(sm_btl, 1 + MCA_BTL_SM_NUM_LOCAL_PEERS);
-        rc = sm_btl_first_time_init(sm_btl, 1 + 10*n);
+        rc = sm_btl_first_time_init(sm_btl, 1 + 64*n);
         if (rc != OPAL_SUCCESS) {
             return rc;
         }
