@@ -257,11 +257,18 @@ int main(int argc, char* argv[])
     pmix_status_t rc=PMIX_ERR_NOT_FOUND;
 
     strcpy(pset_name, "test1");
-
+    printf("init\n");
     /* initialize the session */
     int init_ret=MPI_Session_init(MPI_INFO_NULL, MPI_ERRORS_RETURN, &session_handle);
     rank=ompi_proc_local_proc->super.proc_name.vpid; 
     //MPI_Session_get_num_psets(session_handle, info, &npsets);
+    strcpy(pset_result,pset_name);
+    strcat(pset_result, pset_name);
+    if(ompi_proc_local_proc->super.proc_name.vpid==0){
+        printf("pset_op\n");
+        MPI_Session_pset_create_op(session_handle, MPI_PSETOP_UNION, pset_name, pset_name, pset_result);
+    }
+    printf("sleep\n");
     
 
     /* check if there is a resource change right at the beginning */
