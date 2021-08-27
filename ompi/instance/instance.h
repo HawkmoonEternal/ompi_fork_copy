@@ -66,7 +66,7 @@ OBJ_CLASS_DECLARATION(ompi_mpi_instance_pset_t);
 /* resource changes */
 
 typedef uint8_t ompi_rc_op_type_t;
-#define MPI_RC_NULL PMIX_RES_CHANGE_EXTERNAL
+#define MPI_RC_NULL PMIX_RES_CHANGE_NULL
 #define MPI_RC_ADD  PMIX_RES_CHANGE_ADD
 #define MPI_RC_SUB  PMIX_RES_CHANGE_SUB
 

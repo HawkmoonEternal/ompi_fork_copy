@@ -86,28 +86,25 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
 
     MPI_Comm_rank(comm, &my_rank);
 
-    if(my_rank==root){
+    if(my_rank == root){
         ompi_instance_get_rc_type(delta_pset,  &rc_type);
-        rc=ompi_instance_accept_res_change(session, (opal_info_t**)info, delta_pset, result_pset);
+        rc = ompi_instance_accept_res_change(session, (opal_info_t**)info, delta_pset, result_pset);
     }
     MPI_Bcast(&rc, 1, MPI_INT, 0, comm);
-
-    if(PMIX_SUCCESS==rc){
+    if(MPI_SUCCESS == rc){
         if(my_rank==root){
             strcpy(d_pset, delta_pset);
-            
         }
         MPI_Bcast(d_pset, PMIX_MAX_KEYLEN, MPI_CHAR, root, comm);
         MPI_Bcast(&rc_type, 1, MPI_UINT8_T, root, comm);
         /* If we want to continue running we need to refresh the instance */ 
-        if(MPI_SUCCESS != (rc=ompi_mpi_instance_refresh (session, info, d_pset, rc_type))){
+        if(MPI_SUCCESS != (rc = ompi_mpi_instance_refresh (session, info, d_pset, rc_type))){
             printf("rank %d: instance_refresh status %d\n", my_rank,rc);
             return rc;
         }
-
         ompi_instance_clear_rc_cache(delta_pset);
     }
-    else if(PMIX_ERR_NOT_FOUND == rc)return MPI_ERR_PENDING;
+    else if(OPAL_ERR_NOT_FOUND == rc)return MPI_ERR_PENDING;
 
     return rc;
 }
@@ -138,7 +135,7 @@ int init(MPI_Session *session_handle, MPI_Comm *comm, char *main_pset_name){
 
     /* create a group from pset */
     rc= MPI_Group_from_session_pset (session_handle, main_pset_name, &wgroup);
-
+    MPI_Group_size(wgroup, &num_procs);
     /* create a communicator from group */
     start=clock();
     if(MPI_SUCCESS != (rc = MPI_Comm_create_from_group(wgroup, "mpi.forum.example", MPI_INFO_NULL, MPI_ERRORS_RETURN, comm))){
@@ -170,17 +167,21 @@ pmix_status_t resource_change_step(MPI_Session *session_handle, MPI_Comm *lib_co
     int my_rank;
     MPI_Info info = MPI_INFO_NULL;
     ompi_rc_status_t status;
+    char dummy_pset_name[] = "test1";
 
     MPI_Comm_rank(*lib_comm, &my_rank);
 
     /*****************fetch resource change****************************/
     if(my_rank==0){
-        rc=MPI_Session_get_res_change(session_handle, pset_name,  &rc_type, delta_pset, &incl_flag, &status, &info);
+        rc = MPI_Session_get_res_change(session_handle, dummy_pset_name,  &rc_type, delta_pset, &incl_flag, &status, &info);
+        if(rc_type == MPI_RC_NULL || (status != RC_ANNOUNCED && status != RC_CONFIRMATION_PENDING)){
+            rc = OPAL_ERR_NOT_FOUND;
+        }
     }
     /*****************end of fetch resource change**********************/    
     
     /******************handle resource change***************************/
-    if(my_rank == 0 && rc_type!=MPI_RC_NULL && status==RC_ANNOUNCED){       
+    if(my_rank == 0 && rc_type != MPI_RC_NULL && status == RC_ANNOUNCED){       
         if(rc_type ==  MPI_RC_ADD){
             strcpy(pset_result,pset_name);
             strcat(pset_result, delta_pset);
@@ -202,14 +203,14 @@ pmix_status_t resource_change_step(MPI_Session *session_handle, MPI_Comm *lib_co
 
 
     /*********************** accept resource change *************************/
-    rc=MPI_Session_accept_res_change(session_handle, &info, delta_pset, pset_result, 0, *lib_comm);
+    rc = MPI_Session_accept_res_change(session_handle, &info, delta_pset, pset_result, 0, *lib_comm);
     /*********************** end of accept resource change *************************/
 
     /* if successful create new communicator, else need to break (here indicated by MPI_COMM_NULL)*/
     if(PMIX_SUCCESS==rc){
         MPI_Comm_free(lib_comm);
         strcpy(pset_name, pset_result);
-        rc=init(session_handle, lib_comm, pset_name);
+        rc = init(session_handle, lib_comm, pset_name);
     }else if(OPAL_ERR_BAD_PARAM == rc){
         MPI_Comm_free(lib_comm);
         return MPI_SUCCESS;
@@ -243,10 +244,11 @@ void rebalance_step(){
 
 int main(int argc, char* argv[])
 {
-    int  size, len, incl_flag, flag, npsets, counter=0;
+    int  size, len, flag, npsets, counter=0;
     char pset_name[PMIX_MAX_KEYLEN];
     char delta_pset[PMIX_MAX_KEYLEN];
     char pset_result[PMIX_MAX_KEYLEN]={0};
+    bool incl_flag = false;
     
     MPI_Session session_handle;
     MPI_Info info=MPI_INFO_NULL;
@@ -257,25 +259,25 @@ int main(int argc, char* argv[])
     pmix_status_t rc=PMIX_ERR_NOT_FOUND;
 
     strcpy(pset_name, "test1");
-    printf("init\n");
+    printf("MPI_Session_init\n");
     /* initialize the session */
     int init_ret=MPI_Session_init(MPI_INFO_NULL, MPI_ERRORS_RETURN, &session_handle);
     rank=ompi_proc_local_proc->super.proc_name.vpid; 
     //MPI_Session_get_num_psets(session_handle, info, &npsets);
     strcpy(pset_result,pset_name);
     strcat(pset_result, pset_name);
+    /*
     if(ompi_proc_local_proc->super.proc_name.vpid==0){
         printf("pset_op\n");
         MPI_Session_pset_create_op(session_handle, MPI_PSETOP_UNION, pset_name, pset_name, pset_result);
     }
-    printf("sleep\n");
+    */;
     
 
     /* check if there is a resource change right at the beginning */
     MPI_Session_get_res_change(session_handle, pset_name,  &rc_type, delta_pset, &incl_flag, &rc_status, &info);
-
     /* if we are included in the delta_pset we are a dynamically added process, so we need to confirm the resource change */
-    if(rc_type!= MPI_RC_NULL && incl_flag){
+    if(rc_type != MPI_RC_NULL && rc_status == RC_ANNOUNCED && incl_flag){
         printf("    DELTA PSET RANK %d: I was added dynamically. Need to confirm \n", rank);
         rc=MPI_Session_confirm_res_change(session_handle, &info, delta_pset, &pset_name);
         if(PMIX_SUCCESS == rc){
@@ -320,7 +322,7 @@ int main(int argc, char* argv[])
         /* Data redistribution */
         if(rc==MPI_ERR_PENDING){
             printf("    RANK %d: Resource change pending. Communication will still happen via pset: %s\n", my_work_rank, pset_name);
-        }else if (rc==MPI_SUCCESS) {
+        }else if (rc == MPI_SUCCESS) {
             /* terminate substracted processes */
             if(lib_comm==MPI_COMM_NULL){
                 printf("    Old RANK %d: Resource change succeeded. I am not needed anymore. Goodbye!\n", my_work_rank);
