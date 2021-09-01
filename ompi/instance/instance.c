@@ -285,7 +285,7 @@ ompi_mpi_instance_pset_t * get_res_change_for_bound_name(char *name){
     ompi_mpi_instance_resource_change_t *rc_out=NULL;
     OPAL_LIST_FOREACH(rc_out, &ompi_mpi_instance_resource_changes, ompi_mpi_instance_resource_change_t){
         if(NULL != rc_out->bound_pset && 0 == strcmp(name,rc_out->bound_pset->name)){
-            opal_mutex_unlock (&tracking_structures_lock);#
+            opal_mutex_unlock (&tracking_structures_lock);
             return rc_out;
         }
     }

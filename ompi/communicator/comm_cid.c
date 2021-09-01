@@ -341,7 +341,7 @@ static int ompi_comm_ext_cid_new_block (ompi_communicator_t *newcomm, ompi_commu
     PMIX_PROC_CREATE(procs, proc_count);
     for (size_t i = 0 ; i < proc_count; ++i) {
         OPAL_PMIX_CONVERT_NAME(&procs[i],&name_array[i]);
-    }#
+    }
     rc = PMIx_Group_construct(tag, procs, proc_count, &pinfo, 1, &results, &nresults);
     PMIX_INFO_DESTRUCT(&pinfo);
 

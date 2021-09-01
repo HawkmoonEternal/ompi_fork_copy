@@ -99,7 +99,6 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
         MPI_Bcast(&rc_type, 1, MPI_UINT8_T, root, comm);
         /* If we want to continue running we need to refresh the instance */ 
         if(MPI_SUCCESS != (rc = ompi_mpi_instance_refresh (session, info, d_pset, rc_type))){
-            printf("rank %d: instance_refresh status %d\n", my_rank,rc);
             return rc;
         }
         ompi_instance_clear_rc_cache(delta_pset);
@@ -259,7 +258,7 @@ int main(int argc, char* argv[])
     pmix_status_t rc=PMIX_ERR_NOT_FOUND;
 
     strcpy(pset_name, "test1");
-    printf("MPI_Session_init\n");
+    //printf("MPI_Session_init\n");
     /* initialize the session */
     int init_ret=MPI_Session_init(MPI_INFO_NULL, MPI_ERRORS_RETURN, &session_handle);
     rank=ompi_proc_local_proc->super.proc_name.vpid; 
