@@ -1,0 +1,3067 @@
+
+============================================================================
+== Configuring Open MPI
+============================================================================
+
+*** Prerequisites
+checking for perl... perl
+
+*** Startup tests
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking target system type... x86_64-pc-linux-gnu
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+checking how to run the C preprocessor... gcc -E
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking minix/config.h usability... no
+checking minix/config.h presence... no
+checking for minix/config.h... no
+checking whether it is safe to define __EXTENSIONS__... yes
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a thread-safe mkdir -p... /usr/bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking for style of include used by make... GNU
+checking whether make supports nested variables... yes
+checking whether UID '999' is supported by ustar format... yes
+checking whether GID '997' is supported by ustar format... yes
+checking how to create a ustar tar archive... gnutar
+checking dependency style of gcc... gcc3
+checking whether make supports nested variables... (cached) yes
+checking directory of source tree... .
+checking directory of absolute source tree... /opt/hpc/build/ompi
+checking directory of build tree... /opt/hpc/build/ompi
+checking directory of prefix... /opt/hpc/external/ompi
+checking directory of absolute prefix... /opt/hpc/external/ompi
+
+*** Checking versions
+checking for repo version... dev-10895-ga222b37
+checking Open MPI version... 5.1.0a1
+checking Open MPI release date... Unreleased developer copy
+checking Open MPI repository version... dev-10895-ga222b37
+checking for repo version... dev-10895-ga222b37
+checking Open SHMEM version... 5.1.0a1
+checking Open SHMEM release date... Unreleased developer copy
+checking Open SHMEM repository version... dev-10895-ga222b37
+checking for repo version... dev-10895-ga222b37
+checking Open Portable Access Layer version... 5.1.0a1
+checking Open Portable Access Layer release date... Unreleased developer copy
+checking Open Portable Access Layer repository version... dev-10895-ga222b37
+checking for bootstrap Autoconf version... 2.69
+checking for bootstrap Automake version... 1.13
+checking for boostrap Libtool version... 2.4.2
+
+*** Initialization, setup
+configure: builddir: /opt/hpc/build/ompi
+configure: srcdir: /opt/hpc/build/ompi
+installing to directory "/opt/hpc/external/ompi"
+
+*** OPAL Configuration options
+checking if want to run code coverage... no
+checking if want to compile with branch probabilities... no
+checking if want to debug memory usage... no
+checking if want to profile memory usage... no
+checking if want developer-level compiler pickyness... no
+--> developer override: enable picky compiler by default
+checking if want developer-level debugging code... no
+checking if want to developer-level timing framework... no
+checking if want to install project-internal header files... no
+checking if want pretty-print stacktrace... yes
+checking if want pty support... yes
+checking if want weak symbol support... yes
+checking if want dlopen support... yes
+checking for default value of mca_base_component_show_load_errors... enabled by default
+checking if want heterogeneous support... no
+checking if word-sized integers must be word-size aligned... no
+checking if want IPv6 support... no
+checking if want package/brand string... Open MPI mpiuser@root-node01 Distribution
+checking if want ident string... 5.1.0a1
+checking if want to use an alternative checksum algo for messages... no
+checking maximum length of processor name... 256
+checking maximum length of error string... 256
+checking maximum length of object name... 64
+checking maximum length of info key... 36
+checking maximum length of info val... 256
+checking maximum length of port name... 1024
+checking maximum length of datarep string... 128
+checking maximum length of pset name len... 512
+checking maximum length of stringtag len... 1024
+checking if want getpwuid support... yes
+checking __NetBSD__... no
+checking __FreeBSD__... no
+checking __OpenBSD__... no
+checking __DragonFly__... no
+checking __386BSD__... no
+checking __bsdi__... no
+checking __APPLE__... no
+checking __linux__... yes
+checking __sun__... no
+checking __sun... no
+checking netdb.h usability... yes
+checking netdb.h presence... yes
+checking for netdb.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking netinet/tcp.h usability... yes
+checking netinet/tcp.h presence... yes
+checking for netinet/tcp.h... yes
+checking for struct sockaddr_in... yes
+checking if --with-cuda is set... not set (--with-cuda=)
+checking whether CU_POINTER_ATTRIBUTE_SYNC_MEMOPS is declared... no
+checking whether cuPointerGetAttributes is declared... no
+checking if have cuda support... no
+
+*** OMPI Configuration options
+checking if want compile-time warnings inside of mpi.h... yes
+checking if want sparse process groups... no
+checking if want peruse support... no
+checking if want Fortran MPI bindings...  (try)
+checking if want run-time MPI parameter checking... runtime
+
+*** OSHMEM Configuration options
+checking if want oshmem... yes
+checking if want SGI/Quadrics compatibility mode... yes
+checking if want OSHMEM API parameter checking... always
+checking for on_exit... yes
+checking if want pshmem... yes
+checking if want to build OSHMEM fortran bindings... yes
+no
+checking if want custom libmpi(_FOO) name... mpi
+checking for wrapper C compiler... gcc
+checking if want wrapper compiler rpath support... yes
+checking if want wrapper compiler runpath support... yes
+
+============================================================================
+== Compiler and preprocessor tests
+============================================================================
+
+*** C compiler and preprocessor
+checking for gcc... (cached) gcc
+checking whether we are using the GNU C compiler... (cached) yes
+checking whether gcc accepts -g... (cached) yes
+checking for gcc option to accept ISO C89... (cached) none needed
+checking whether gcc and cc understand -c and -o together... yes
+checking if gcc requires a flag for C11... yes
+configure: checking if gcc supports C11 with a flag
+checking if gcc -std=gnu11 supports C11 _Thread_local... no
+checking if gcc -std=gnu11 supports C11 atomic variables... no
+checking if gcc -std=gnu11 supports C11 _Atomic keyword... no
+checking if gcc -std=gnu11 supports C11 _Generic keyword... no
+checking if gcc -std=gnu11 supports C11 _Static_assert... yes
+checking if gcc -std=gnu11 supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -std=c11 supports C11 _Thread_local... no
+checking if gcc -std=c11 supports C11 atomic variables... no
+checking if gcc -std=c11 supports C11 _Atomic keyword... no
+checking if gcc -std=c11 supports C11 _Generic keyword... no
+checking if gcc -std=c11 supports C11 _Static_assert... yes
+checking if gcc -std=c11 supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -c11 supports C11 _Thread_local... no
+checking if gcc -c11 supports C11 atomic variables... no
+checking if gcc -c11 supports C11 _Atomic keyword... no
+checking if gcc -c11 supports C11 _Generic keyword... no
+checking if gcc -c11 supports C11 _Static_assert... no
+checking if gcc -c11 supports C11 atomic_fetch_xor_explicit... no
+checking for gcc option to add a directory only to the search path for the quote form of include... -iquote
+checking for the C compiler vendor... gnu
+checking for gcc option to accept ISO C99... -std=gnu99
+checking if gcc -std=gnu99  supports C11 _Thread_local... no
+checking if gcc -std=gnu99  supports C11 atomic variables... no
+checking if gcc -std=gnu99  supports C11 _Atomic keyword... no
+checking if gcc -std=gnu99  supports C11 _Generic keyword... no
+checking if gcc -std=gnu99  supports C11 _Static_assert... yes
+checking if gcc -std=gnu99  supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -std=gnu99  supports __thread... yes
+checking if gcc -std=gnu99  supports C11 _Thread_local... no
+checking for ANSI C header files... (cached) yes
+checking if gcc -std=gnu99 supports (-Wundef)... yes
+checking if gcc -std=gnu99 supports (-Wno-long-long)... yes
+checking if gcc -std=gnu99 supports (-Wsign-compare)... yes
+checking if gcc -std=gnu99 supports (-Wmissing-prototypes)... yes
+checking if gcc -std=gnu99 supports (-Wstrict-prototypes)... yes
+checking if gcc -std=gnu99 supports (-Wcomment)... yes
+checking if gcc -std=gnu99 supports (-Wshadow)... yes
+checking if gcc -std=gnu99 supports (-Werror-implicit-function-declaration)... yes
+checking if gcc -std=gnu99 supports (-Wno-long-double)... no
+checking if gcc -std=gnu99 supports (-fno-strict-aliasing)... yes
+checking if gcc -std=gnu99 supports (-pedantic)... yes
+checking if gcc -std=gnu99 supports (-Wall)... yes
+checking if gcc -std=gnu99 supports (-finline-functions)... yes
+checking if gcc -std=gnu99 supports __builtin_expect... yes
+checking if gcc -std=gnu99 supports __builtin_prefetch... yes
+checking if gcc -std=gnu99 supports __builtin_clz... yes
+checking for C optimization flags... -O3 -DNDEBUG  -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions
+CFLAGS result: -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions
+checking for Interix environment... no
+checking for C ident string support... #ident
+checking for int8_t... yes
+checking for uint8_t... yes
+checking for int16_t... yes
+checking for uint16_t... yes
+checking for int32_t... yes
+checking for uint32_t... yes
+checking for int64_t... yes
+checking for uint64_t... yes
+checking for int128_t... no
+checking for __int128... yes
+checking for uint128_t... no
+checking for long long... yes
+checking for __float128... yes
+checking for short float... no
+checking for long double... yes
+checking complex.h usability... yes
+checking complex.h presence... yes
+checking for complex.h... yes
+checking for short float _Complex... no
+checking for float _Complex... yes
+checking for double _Complex... yes
+checking for long double _Complex... yes
+checking for intptr_t... yes
+checking for uintptr_t... yes
+checking for mode_t... yes
+checking for ssize_t... yes
+checking for ptrdiff_t... yes
+checking size of _Bool... 1
+checking size of char... 1
+checking size of short... 2
+checking size of int... 4
+checking size of unsigned int... 4
+checking size of long... 8
+checking size of unsigned long... 8
+checking size of long long... 8
+checking size of float... 4
+checking size of double... 8
+checking size of long double... 16
+checking size of __float128... 16
+checking size of float _Complex... 8
+checking size of double _Complex... 16
+checking size of long double _Complex... 32
+checking size of void *... 8
+checking size of size_t... 8
+checking size of ssize_t... 8
+checking size of ptrdiff_t... 8
+checking size of wchar_t... 4
+checking size of pid_t... 4
+checking size of atomic_short... 0
+checking size of atomic_int... 0
+checking size of atomic_long... 0
+checking size of atomic_llong... 0
+checking alignment of bool... 1
+checking alignment of int8_t... 1
+checking alignment of int16_t... 2
+checking alignment of int32_t... 4
+checking alignment of int64_t... 8
+checking alignment of char... 1
+checking alignment of short... 2
+checking alignment of wchar_t... 4
+checking alignment of int... 4
+checking alignment of long... 8
+checking alignment of long long... 8
+checking alignment of float... 4
+checking alignment of double... 8
+checking alignment of long double... 16
+checking alignment of __float128... 16
+checking alignment of float _Complex... 4
+checking alignment of double _Complex... 8
+checking alignment of long double _Complex... 16
+checking alignment of void *... 8
+checking alignment of size_t... 8
+checking for _Float16... no
+checking if want alternate C type of short float... no
+checking for weak symbol support... yes
+checking for macro weak symbol support... yes
+checking for functional offsetof macro... yes
+
+*** C++ compiler and preprocessor
+checking for g++... g++
+checking whether we are using the GNU C++ compiler... yes
+checking whether g++ accepts -g... yes
+checking dependency style of g++... gcc3
+checking how to run the C++ preprocessor... g++ -E
+checking if C and C++ are link compatible... yes
+
+*** Compiler characteristics
+checking for __attribute__... yes
+checking for __attribute__(aligned)... yes
+checking for __attribute__(always_inline)... yes
+checking for __attribute__(cold)... yes
+checking for __attribute__(const)... yes
+checking for __attribute__(deprecated)... yes
+checking for __attribute__(deprecated_argument)... yes
+checking for __attribute__(error)... yes
+checking for __attribute__(format)... yes
+checking for __attribute__(format_funcptr)... yes
+checking for __attribute__(hot)... yes
+checking for __attribute__(malloc)... yes
+checking for __attribute__(may_alias)... yes
+checking for __attribute__(no_instrument_function)... yes
+checking for __attribute__(noinline)... yes
+checking for __attribute__(nonnull)... yes
+checking for __attribute__(noreturn)... yes
+checking for __attribute__(noreturn_funcptr)... yes
+checking for __attribute__(packed)... yes
+checking for __attribute__(pure)... yes
+checking for __attribute__(sentinel)... yes
+checking for __attribute__(unused)... yes
+checking for __attribute__(visibility)... yes
+checking for __attribute__(warn_unused_result)... yes
+checking for __attribute__(weak_alias)... yes
+checking for __attribute__(destructor)... yes
+checking for __attribute__(optnone)... no
+checking for __attribute__(extension)... yes
+checking for compiler familyid... 1
+checking for compiler familyname... GNU
+checking for compiler version... 264197
+checking for compiler version_str... 4.8.5
+
+*** Java MPI bindings
+checking if want Java bindings... no
+
+*** OpenSHMEM profiling
+checking if pshmem will be enabled... yes (weak symbols supported)
+
+*** Assembler
+checking dependency style of gcc -std=gnu99... gcc3
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+checking the name lister (/usr/bin/nm -B) interface... BSD nm
+checking for fgrep... /usr/bin/grep -F
+checking for atomic_compare_exchange_strong_16... no
+checking for atomic_compare_exchange_strong_16 with -mcx16... no
+checking for atomic_compare_exchange_strong_16 with -latomic... no
+checking for __sync_bool_compare_and_swap... no
+checking for __sync_bool_compare_and_swap with -mcx16... yes
+checking if __sync_bool_compare_and_swap() gives correct results... yes
+checking for 32-bit GCC built-in atomics... yes
+checking for 64-bit GCC built-in atomics... yes
+checking if 64-bit GCC built-in atomics are lock-free... yes
+checking for __atomic_compare_exchange_n... yes
+checking if __atomic_compare_exchange_n() gives correct results... yes
+checking if __int128 atomic compare-and-swap is always lock-free... yes
+checking if .proc/endp is needed... no
+checking directive for setting text section... .text
+checking directive for exporting symbols... .globl
+checking for objdump... objdump
+checking if .note.GNU-stack is needed... yes
+checking suffix for labels... :
+checking prefix for global symbol labels... 
+checking prefix for lsym labels... .L
+checking prefix for function in .type... @
+checking if .size is needed... yes
+checking if .align directive takes logarithmic value... no
+checking for cmpxchg16b... yes
+checking if cmpxchg16b() gives correct results... yes
+checking if cmpxchg16b_result works... yes
+checking if gcc -std=gnu99 supports GCC inline assembly... yes
+checking for assembly format... default-.text-.globl-:--.L-@-1-0-1-1-1
+checking for assembly architecture... X86_64
+checking for RDTSCP assembly support... no
+checking for builtin atomics... BUILTIN_NO
+
+*** Fortran compiler
+checking for gfortran... gfortran
+checking whether we are using the GNU Fortran compiler... yes
+checking whether gfortran accepts -g... yes
+checking whether ln -s works... yes
+checking if Fortran compiler works... yes
+checking for extra arguments to build a shared library... none needed
+checking for gfortran warnings flags... none
+checking for Fortran flag to compile .f files... none
+checking for Fortran flag to compile .f90 files... none
+checking if Fortran compilers preprocess .F90 files without additional flag... yes
+checking to see if Fortran compilers need additional linker flags... none
+checking  external symbol convention... single underscore
+checking if C and Fortran are link compatible... yes
+checking to see if Fortran compiler likes the C++ exception flags... skipped (no C++ exceptions flags)
+checking to see if mpifort compiler needs additional linker flags... none
+checking if Fortran compiler supports CHARACTER... yes
+checking size of Fortran CHARACTER... 1
+checking for C type corresponding to CHARACTER... char
+checking alignment of Fortran CHARACTER... 1
+checking for corresponding KIND value of CHARACTER... C_SIGNED_CHAR
+checking KIND value of Fortran C_SIGNED_CHAR... 1
+checking if Fortran compiler supports LOGICAL... yes
+checking size of Fortran LOGICAL... 4
+checking for C type corresponding to LOGICAL... int
+checking alignment of Fortran LOGICAL... 4
+checking for corresponding KIND value of LOGICAL... C_INT
+checking KIND value of Fortran C_INT... 4
+checking if Fortran compiler supports LOGICAL*1... yes
+checking size of Fortran LOGICAL*1... 1
+checking for C type corresponding to LOGICAL*1... char
+checking alignment of Fortran LOGICAL*1... 1
+checking for corresponding KIND value of LOGICAL*1... C_SIGNED_CHAR
+checking KIND value of Fortran C_SIGNED_CHAR... (cached) 1
+checking if Fortran compiler supports LOGICAL*2... yes
+checking size of Fortran LOGICAL*2... 2
+checking for C type corresponding to LOGICAL*2... short
+checking alignment of Fortran LOGICAL*2... 2
+checking for corresponding KIND value of LOGICAL*2... C_SHORT
+checking KIND value of Fortran C_SHORT... 2
+checking if Fortran compiler supports LOGICAL*4... yes
+checking size of Fortran LOGICAL*4... 4
+checking for C type corresponding to LOGICAL*4... int
+checking alignment of Fortran LOGICAL*4... 4
+checking for corresponding KIND value of LOGICAL*4... C_INT
+checking KIND value of Fortran C_INT... (cached) 4
+checking if Fortran compiler supports LOGICAL*8... yes
+checking size of Fortran LOGICAL*8... 8
+checking for C type corresponding to LOGICAL*8... long long
+checking alignment of Fortran LOGICAL*8... 8
+checking for corresponding KIND value of LOGICAL*8... C_LONG_LONG
+checking KIND value of Fortran C_LONG_LONG... 8
+checking if Fortran compiler supports INTEGER... yes
+checking size of Fortran INTEGER... 4
+checking for C type corresponding to INTEGER... int
+checking alignment of Fortran INTEGER... 4
+checking for corresponding KIND value of INTEGER... C_INT
+checking KIND value of Fortran C_INT... (cached) 4
+checking if Fortran compiler supports INTEGER*1... yes
+checking size of Fortran INTEGER*1... 1
+checking for C type corresponding to INTEGER*1... char
+checking alignment of Fortran INTEGER*1... 1
+checking for corresponding KIND value of INTEGER*1... C_SIGNED_CHAR
+checking KIND value of Fortran C_SIGNED_CHAR... (cached) 1
+checking if Fortran compiler supports INTEGER*2... yes
+checking size of Fortran INTEGER*2... 2
+checking for C type corresponding to INTEGER*2... short
+checking alignment of Fortran INTEGER*2... 2
+checking for corresponding KIND value of INTEGER*2... C_SHORT
+checking KIND value of Fortran C_SHORT... (cached) 2
+checking if Fortran compiler supports INTEGER*4... yes
+checking size of Fortran INTEGER*4... 4
+checking for C type corresponding to INTEGER*4... int
+checking alignment of Fortran INTEGER*4... 4
+checking for corresponding KIND value of INTEGER*4... C_INT
+checking KIND value of Fortran C_INT... (cached) 4
+checking if Fortran compiler supports INTEGER*8... yes
+checking size of Fortran INTEGER*8... 8
+checking for C type corresponding to INTEGER*8... long long
+checking alignment of Fortran INTEGER*8... 8
+checking for corresponding KIND value of INTEGER*8... C_LONG_LONG
+checking KIND value of Fortran C_LONG_LONG... (cached) 8
+checking if Fortran compiler supports INTEGER*16... yes
+checking size of Fortran INTEGER*16... 16
+checking for C type corresponding to INTEGER*16... not found
+configure: WARNING: *** Did not find corresponding C type
+checking for corresponding KIND value of INTEGER*16... 0
+checking KIND value of Fortran 0... 0
+configure: WARNING: Compiler INTEGER*16 and  mismatch; MPI datatype unsupported
+checking if Fortran compiler supports REAL... yes
+checking size of Fortran REAL... 4
+checking for C type corresponding to REAL... float
+checking alignment of Fortran REAL... 4
+checking for corresponding KIND value of REAL... C_FLOAT
+checking KIND value of Fortran C_FLOAT... 4
+checking if Fortran compiler supports REAL*2... no
+checking if Fortran compiler supports REAL*4... yes
+checking size of Fortran REAL*4... 4
+checking for C type corresponding to REAL*4... float
+checking alignment of Fortran REAL*4... 4
+checking for corresponding KIND value of REAL*4... C_FLOAT
+checking KIND value of Fortran C_FLOAT... (cached) 4
+checking if Fortran compiler supports REAL*8... yes
+checking size of Fortran REAL*8... 8
+checking for C type corresponding to REAL*8... double
+checking alignment of Fortran REAL*8... 8
+checking for corresponding KIND value of REAL*8... C_DOUBLE
+checking KIND value of Fortran C_DOUBLE... 8
+checking if Fortran compiler supports REAL*16... yes
+checking size of Fortran REAL*16... 16
+checking for C type corresponding to REAL*16... long double
+checking alignment of Fortran REAL*16... 16
+checking for corresponding KIND value of REAL*16... C_LONG_DOUBLE
+checking KIND value of Fortran C_LONG_DOUBLE... 10
+checking for C type matching bit representation of REAL*16... pending
+checking if long double == REAL*16... no
+checking if gnu compiler __float128 == REAL*16... works!
+checking for C type matching bit representation of REAL*16... yes
+checking if Fortran compiler supports DOUBLE PRECISION... yes
+checking size of Fortran DOUBLE PRECISION... 8
+checking for C type corresponding to DOUBLE PRECISION... double
+checking alignment of Fortran DOUBLE PRECISION... 8
+checking for corresponding KIND value of DOUBLE PRECISION... C_DOUBLE
+checking KIND value of Fortran C_DOUBLE... (cached) 8
+checking if Fortran compiler supports COMPLEX... yes
+checking size of Fortran COMPLEX... 8
+checking for C type corresponding to COMPLEX... float _Complex
+checking alignment of Fortran COMPLEX... 4
+checking for corresponding KIND value of COMPLEX... C_FLOAT_COMPLEX
+checking KIND value of Fortran C_FLOAT_COMPLEX... 4
+checking if Fortran compiler supports COMPLEX*4... no
+checking if Fortran compiler supports COMPLEX*8... yes
+checking size of Fortran COMPLEX*8... 8
+checking for C type corresponding to COMPLEX*8... float _Complex
+checking alignment of Fortran COMPLEX*8... 4
+checking for corresponding KIND value of COMPLEX*8... C_FLOAT_COMPLEX
+checking KIND value of Fortran C_FLOAT_COMPLEX... (cached) 4
+checking if Fortran compiler supports COMPLEX*16... yes
+checking size of Fortran COMPLEX*16... 16
+checking for C type corresponding to COMPLEX*16... double _Complex
+checking alignment of Fortran COMPLEX*16... 8
+checking for corresponding KIND value of COMPLEX*16... C_DOUBLE_COMPLEX
+checking KIND value of Fortran C_DOUBLE_COMPLEX... 8
+checking if Fortran compiler supports COMPLEX*32... yes
+checking size of Fortran COMPLEX*32... 32
+checking for C type corresponding to COMPLEX*32... long double _Complex
+checking alignment of Fortran COMPLEX*32... 16
+checking for corresponding KIND value of COMPLEX*32... C_LONG_DOUBLE_COMPLEX
+checking KIND value of Fortran C_LONG_DOUBLE_COMPLEX... 10
+checking if Fortran compiler supports DOUBLE COMPLEX... yes
+checking size of Fortran DOUBLE COMPLEX... 16
+checking for C type corresponding to DOUBLE COMPLEX... double _Complex
+checking alignment of Fortran DOUBLE COMPLEX... 8
+checking for corresponding KIND value of DOUBLE COMPLEX... C_DOUBLE_COMPLEX
+checking KIND value of Fortran C_DOUBLE_COMPLEX... (cached) 8
+checking for max Fortran MPI handle index... 2147483647
+checking Fortran value for .TRUE. logical type... 1
+checking for correct handling of Fortran logical arrays... yes
+checking max supported Fortran array rank... 7
+configure: C MPI_Status is 24 bytes long
+checking for the value of MPI_STATUS_SIZE... 6 Fortran INTEGERs
+checking KIND value of Fortran C_INT16_T... 2
+checking KIND value of Fortran C_INT32_T... 4
+checking KIND value of Fortran C_INT64_T... 8
+checking if building Fortran mpif.h bindings... yes
+checking if Fortran compiler supports INTERFACE... yes
+checking if Fortran compiler supports ISO_FORTRAN_ENV... yes
+checking if Fortran compiler supports ISO_FORTRAN_ENV:REAL16... no
+checking if Fortran compiler supports STORAGE_SIZE for relevant types... no
+checking for Fortran compiler module include flag... -I
+checking Fortran compiler ignore TKR syntax... not cached; checking variants
+checking for Fortran compiler support of TYPE(*), DIMENSION(*)... no
+checking for Fortran compiler support of !GCC$ ATTRIBUTES NO_ARG_CHECK... no
+checking for Fortran compiler support of !DEC$ ATTRIBUTES NO_ARG_CHECK... no
+checking for Fortran compiler support of !$PRAGMA IGNORE_TKR... no
+checking for Fortran compiler support of !DIR$ IGNORE_TKR... no
+checking for Fortran compiler support of !IBM* IGNORE_TKR... no
+checking Fortran compiler ignore TKR syntax... 0:real:!
+checking if Fortran compiler supports ISO_C_BINDING... yes
+checking if building Fortran 'use mpi' bindings... yes
+checking if Fortran compiler supports TYPE, BIND(C)... yes
+checking if building Fortran 'use mpi_f08' bindings... no
+
+============================================================================
+== Header file tests
+============================================================================
+checking alloca.h usability... yes
+checking alloca.h presence... yes
+checking for alloca.h... yes
+checking aio.h usability... yes
+checking aio.h presence... yes
+checking for aio.h... yes
+checking arpa/inet.h usability... yes
+checking arpa/inet.h presence... yes
+checking for arpa/inet.h... yes
+checking dirent.h usability... yes
+checking dirent.h presence... yes
+checking for dirent.h... yes
+checking dlfcn.h usability... yes
+checking dlfcn.h presence... yes
+checking for dlfcn.h... yes
+checking endian.h usability... yes
+checking endian.h presence... yes
+checking for endian.h... yes
+checking execinfo.h usability... yes
+checking execinfo.h presence... yes
+checking for execinfo.h... yes
+checking err.h usability... yes
+checking err.h presence... yes
+checking for err.h... yes
+checking fcntl.h usability... yes
+checking fcntl.h presence... yes
+checking for fcntl.h... yes
+checking grp.h usability... yes
+checking grp.h presence... yes
+checking for grp.h... yes
+checking libgen.h usability... yes
+checking libgen.h presence... yes
+checking for libgen.h... yes
+checking libutil.h usability... no
+checking libutil.h presence... no
+checking for libutil.h... no
+checking for memory.h... (cached) yes
+checking for netdb.h... (cached) yes
+checking for netinet/in.h... (cached) yes
+checking for netinet/tcp.h... (cached) yes
+checking poll.h usability... yes
+checking poll.h presence... yes
+checking for poll.h... yes
+checking pthread.h usability... yes
+checking pthread.h presence... yes
+checking for pthread.h... yes
+checking pty.h usability... yes
+checking pty.h presence... yes
+checking for pty.h... yes
+checking pwd.h usability... yes
+checking pwd.h presence... yes
+checking for pwd.h... yes
+checking sched.h usability... yes
+checking sched.h presence... yes
+checking for sched.h... yes
+checking for strings.h... (cached) yes
+checking stropts.h usability... no
+checking stropts.h presence... no
+checking for stropts.h... no
+checking linux/ethtool.h usability... yes
+checking linux/ethtool.h presence... yes
+checking for linux/ethtool.h... yes
+checking linux/sockios.h usability... yes
+checking linux/sockios.h presence... yes
+checking for linux/sockios.h... yes
+checking sys/fcntl.h usability... yes
+checking sys/fcntl.h presence... yes
+checking for sys/fcntl.h... yes
+checking sys/ipc.h usability... yes
+checking sys/ipc.h presence... yes
+checking for sys/ipc.h... yes
+checking sys/shm.h usability... yes
+checking sys/shm.h presence... yes
+checking for sys/shm.h... yes
+checking sys/ioctl.h usability... yes
+checking sys/ioctl.h presence... yes
+checking for sys/ioctl.h... yes
+checking sys/mman.h usability... yes
+checking sys/mman.h presence... yes
+checking for sys/mman.h... yes
+checking sys/param.h usability... yes
+checking sys/param.h presence... yes
+checking for sys/param.h... yes
+checking sys/queue.h usability... yes
+checking sys/queue.h presence... yes
+checking for sys/queue.h... yes
+checking sys/resource.h usability... yes
+checking sys/resource.h presence... yes
+checking for sys/resource.h... yes
+checking sys/select.h usability... yes
+checking sys/select.h presence... yes
+checking for sys/select.h... yes
+checking sys/socket.h usability... yes
+checking sys/socket.h presence... yes
+checking for sys/socket.h... yes
+checking sys/sockio.h usability... no
+checking sys/sockio.h presence... no
+checking for sys/sockio.h... no
+checking for sys/stat.h... (cached) yes
+checking sys/statfs.h usability... yes
+checking sys/statfs.h presence... yes
+checking for sys/statfs.h... yes
+checking sys/statvfs.h usability... yes
+checking sys/statvfs.h presence... yes
+checking for sys/statvfs.h... yes
+checking sys/time.h usability... yes
+checking sys/time.h presence... yes
+checking for sys/time.h... yes
+checking sys/tree.h usability... no
+checking sys/tree.h presence... no
+checking for sys/tree.h... no
+checking for sys/types.h... (cached) yes
+checking sys/uio.h usability... yes
+checking sys/uio.h presence... yes
+checking for sys/uio.h... yes
+checking sys/un.h usability... yes
+checking sys/un.h presence... yes
+checking for sys/un.h... yes
+checking net/uio.h usability... no
+checking net/uio.h presence... no
+checking for net/uio.h... no
+checking sys/utsname.h usability... yes
+checking sys/utsname.h presence... yes
+checking for sys/utsname.h... yes
+checking sys/vfs.h usability... yes
+checking sys/vfs.h presence... yes
+checking for sys/vfs.h... yes
+checking sys/wait.h usability... yes
+checking sys/wait.h presence... yes
+checking for sys/wait.h... yes
+checking syslog.h usability... yes
+checking syslog.h presence... yes
+checking for syslog.h... yes
+checking termios.h usability... yes
+checking termios.h presence... yes
+checking for termios.h... yes
+checking ulimit.h usability... yes
+checking ulimit.h presence... yes
+checking for ulimit.h... yes
+checking for unistd.h... (cached) yes
+checking util.h usability... no
+checking util.h presence... no
+checking for util.h... no
+checking utmp.h usability... yes
+checking utmp.h presence... yes
+checking for utmp.h... yes
+checking malloc.h usability... yes
+checking malloc.h presence... yes
+checking for malloc.h... yes
+checking ifaddrs.h usability... yes
+checking ifaddrs.h presence... yes
+checking for ifaddrs.h... yes
+checking crt_externs.h usability... no
+checking crt_externs.h presence... no
+checking for crt_externs.h... no
+checking regex.h usability... yes
+checking regex.h presence... yes
+checking for regex.h... yes
+checking mntent.h usability... yes
+checking mntent.h presence... yes
+checking for mntent.h... yes
+checking paths.h usability... yes
+checking paths.h presence... yes
+checking for paths.h... yes
+checking ioLib.h usability... no
+checking ioLib.h presence... no
+checking for ioLib.h... no
+checking sockLib.h usability... no
+checking sockLib.h presence... no
+checking for sockLib.h... no
+checking hostLib.h usability... no
+checking hostLib.h presence... no
+checking for hostLib.h... no
+checking shlwapi.h usability... no
+checking shlwapi.h presence... no
+checking for shlwapi.h... no
+checking sys/synch.h usability... no
+checking sys/synch.h presence... no
+checking for sys/synch.h... no
+checking db.h usability... no
+checking db.h presence... no
+checking for db.h... no
+checking ndbm.h usability... no
+checking ndbm.h presence... no
+checking for ndbm.h... no
+checking ieee754.h usability... yes
+checking ieee754.h presence... yes
+checking for ieee754.h... yes
+checking for sys/mount.h... yes
+checking for sys/sysctl.h... yes
+checking for net/if.h... yes
+
+============================================================================
+== Type tests
+============================================================================
+checking for socklen_t... yes
+checking for struct sockaddr_in... (cached) yes
+checking for struct sockaddr_in6... yes
+checking for struct sockaddr_storage... yes
+checking for struct ifreq... yes
+checking for struct ethtool_cmd... yes
+checking whether ethtool_cmd_speed is declared... yes
+checking whether SIOCETHTOOL is declared... yes
+checking for struct ethtool_cmd.speed_hi... yes
+checking for struct ethtool_cmd.speed_hi... (cached) yes
+checking for struct ethtool_cmd.speed_hi... (cached) yes
+checking for struct ethtool_cmd.speed_hi... (cached) yes
+checking whether AF_UNSPEC is declared... yes
+checking whether PF_UNSPEC is declared... yes
+checking whether AF_INET6 is declared... yes
+checking whether PF_INET6 is declared... yes
+checking if SA_RESTART defined in signal.h... yes
+checking for struct sockaddr.sa_len... no
+checking for struct dirent.d_type... yes
+checking for siginfo_t.si_fd... yes
+checking for siginfo_t.si_band... yes
+checking for struct statfs.f_type... yes
+checking for struct statfs.f_fstypename... no
+checking for struct statvfs.f_basetype... no
+checking for struct statvfs.f_fstypename... no
+checking for type of MPI_Aint... ptrdiff_t (size: 8)
+checking for type of MPI_Count... long long (size: 8)
+checking for type of MPI_Offset... long long (size: 8)
+checking for an MPI datatype for MPI_Offset... MPI_LONG_LONG
+checking for MPI_INTEGER_KIND... 4
+checking for MPI_ADDRESS_KIND... 8
+checking for MPI_COUNT_KIND... 8
+checking for MPI_OFFSET_KIND... 8
+checking the linker for support for the -fini option... yes
+
+============================================================================
+== Library and Function tests
+============================================================================
+checking for library containing openpty... -lutil
+checking for library containing gethostbyname... none required
+checking for library containing socket... none required
+checking for library containing sched_yield... none required
+checking for library containing dirname... none required
+checking for library containing ceil... -lm
+checking for library containing clock_gettime... none required
+checking for asprintf... yes
+checking for snprintf... yes
+checking for vasprintf... yes
+checking for vsnprintf... yes
+checking for openpty... yes
+checking for isatty... yes
+checking for getpwuid... yes
+checking for fork... yes
+checking for waitpid... yes
+checking for execve... yes
+checking for pipe... yes
+checking for ptsname... yes
+checking for setsid... yes
+checking for mmap... yes
+checking for tcgetpgrp... yes
+checking for posix_memalign... yes
+checking for strsignal... yes
+checking for sysconf... yes
+checking for syslog... yes
+checking for vsyslog... yes
+checking for regcmp... no
+checking for regexec... yes
+checking for regfree... yes
+checking for _NSGetEnviron... no
+checking for socketpair... yes
+checking for usleep... yes
+checking for mkfifo... yes
+checking for dbopen... no
+checking for dbm_open... no
+checking for statfs... yes
+checking for statvfs... yes
+checking for setpgid... yes
+checking for setenv... yes
+checking for __malloc_initialize_hook... yes
+checking for __clear_cache... yes
+checking for htonl define... no
+checking for htonl... yes
+checking whether va_copy is declared... yes
+checking whether __va_copy is declared... yes
+checking whether __func__ is declared... yes
+
+============================================================================
+== System-specific tests
+============================================================================
+checking for _SC_NPROCESSORS_ONLN... yes
+checking whether byte ordering is bigendian... no
+checking for broken qsort... no
+checking whether ln -s works... yes
+checking for grep that handles long lines and -e... (cached) /usr/bin/grep
+checking for egrep... (cached) /usr/bin/grep -E
+checking dependency style of gcc -std=gnu99... (cached) gcc3
+checking for flex... flex
+checking lex output file root... lex.yy
+checking lex library... none needed
+checking whether yytext is a pointer... no
+checking if want man pages... yes
+checking for pandoc... /usr/bin/pandoc
+checking pandoc version... major: 1, minor: 12
+checking if pandoc version is >=v1.12... yes
+checking if build filesystem is case sensitive... yes
+checking if configuring for case sensitive filesystem... yes
+checking whether RLIMIT_NPROC is declared... yes
+checking whether RLIMIT_MEMLOCK is declared... yes
+checking whether RLIMIT_NOFILE is declared... yes
+checking whether RLIMIT_FSIZE is declared... yes
+checking whether RLIMIT_CORE is declared... yes
+checking whether RLIMIT_STACK is declared... yes
+checking whether RLIMIT_AS is declared... yes
+
+============================================================================
+== 3rd-party packages
+============================================================================
+checking for gzip... /usr/bin/gzip
+checking for bzip2... no
+
+*** Configuring Libevent
+checking event2/event.h usability... yes
+checking event2/event.h presence... yes
+checking for event2/event.h... yes
+configure: looking for library in lib
+checking for library containing event_config_new... -levent_core
+checking if libevent_core requires libnl v1 or v3... 
+checking for evthread_set_lock_callbacks in -levent_core... yes
+checking for evthread_use_pthreads in -levent_pthreads... yes
+checking if external libevent version is 2.0.21 or greater... yes
+
+*** Configuring hwloc
+checking hwloc.h usability... yes
+checking hwloc.h presence... yes
+checking for hwloc.h... yes
+configure: looking for library in lib
+checking for library containing hwloc_topology_init... -lhwloc
+checking if libhwloc requires libnl v1 or v3... 
+checking if external hwloc version is 1.6 or greater... yes
+checking whether HWLOC_OBJ_OSDEV_COPROC is declared... yes
+checking for hwloc_topology_dup... yes
+
+*** Configuring PMIx
+configure: ===== configuring 3rd-party/openpmix =====
+configure: running /bin/sh ./configure --disable-option-checking '--prefix=/opt/hpc/external/ompi' --without-tests-examples --disable-pmix-binaries --disable-pmix-backward-compatibility --disable-visibility '--with-hwloc=/opt/hpc/local/hwloc' '--with-libevent=/opt/hpc/local/libevent' '--with-ucx=no' '--enable-mpirun-prefix-by-default' --cache-file=/dev/null --srcdir=.
+configure: builddir: /opt/hpc/build/ompi/3rd-party/openpmix
+configure: srcdir: /opt/hpc/build/ompi/3rd-party/openpmix
+
+============================================================================
+== Configuring PMIx
+============================================================================
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking target system type... x86_64-pc-linux-gnu
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a thread-safe mkdir -p... /usr/bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking whether make supports nested variables... (cached) yes
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for style of include used by make... GNU
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+checking dependency style of gcc... gcc3
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+checking the name lister (/usr/bin/nm -B) interface... BSD nm
+checking how to run the C preprocessor... gcc -E
+checking for egrep... /usr/bin/grep -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking minix/config.h usability... no
+checking minix/config.h presence... no
+checking for minix/config.h... no
+checking whether it is safe to define __EXTENSIONS__... yes
+checking directory of source tree... .
+checking directory of absolute source tree... /opt/hpc/build/ompi/3rd-party/openpmix
+checking directory of build tree... /opt/hpc/build/ompi/3rd-party/openpmix
+checking directory of prefix... /opt/hpc/external/ompi
+checking directory of absolute prefix... /opt/hpc/external/ompi
+checking if want wrapper compiler rpath support... yes
+checking if want wrapper compiler runpath support... yes
+checking for ar... ar
+checking the archiver (ar) interface... ar
+checking for flex... flex
+checking lex output file root... lex.yy
+checking lex library... none needed
+checking whether yytext is a pointer... no
+checking if want dlopen support... yes
+checking if embedded mode is enabled... no
+checking if want developer-level compiler pickyness... no
+--> developer override: enable picky compiler by default
+checking if want developer-level debugging code... no
+checking if want to install project-internal header files... no
+checking if tests and examples are to be installed... no
+checking if want pretty-print stacktrace... yes
+checking if want dstore pthread-based locking... yes
+checking if want ident string... 
+checking if want developer-level timing support... no
+checking if want to disable binaries... no
+checking if want install Python bindings... no
+checking for a Python interpreter with version >= 3.4... none
+checking for python... /usr/bin/python
+checking for python version... 2.7
+checking for python platform... linux2
+checking for python script directory... ${prefix}/lib/python2.7/site-packages
+checking for python extension module directory... ${exec_prefix}/lib64/python2.7/site-packages
+checking if want to support dlopen of non-global namespaces... yes
+checking if want pty support... yes
+checking if want build psec/dummy_handshake... no
+installing to directory "/opt/hpc/external/ompi"
+checking how to print strings... printf
+checking for a sed that does not truncate output... /usr/bin/sed
+checking for fgrep... /usr/bin/grep -F
+checking for ld used by gcc... /usr/bin/ld
+checking if the linker (/usr/bin/ld) is GNU ld... yes
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking whether the shell understands some XSI constructs... yes
+checking whether the shell understands "+="... yes
+checking how to convert x86_64-pc-linux-gnu file names to x86_64-pc-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-pc-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/bin/ld option to reload object files... -r
+checking for objdump... objdump
+checking how to recognize dependent libraries... pass_all
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for archiver @FILE support... @
+checking for strip... strip
+checking for ranlib... ranlib
+checking command to parse /usr/bin/nm -B output from gcc object... ok
+checking for sysroot... no
+checking for mt... no
+checking if : is a manifest tool... no
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if gcc supports -fno-rtti -fno-exceptions... no
+checking for gcc option to produce PIC... -fPIC -DPIC
+checking if gcc PIC flag -fPIC -DPIC works... yes
+checking if gcc static flag -static works... no
+checking if gcc supports -c -o file.o... yes
+checking if gcc supports -c -o file.o... (cached) yes
+checking whether the gcc linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... no
+
+*** C compiler and preprocessor
+checking for gcc... (cached) gcc
+checking whether we are using the GNU C compiler... (cached) yes
+checking whether gcc accepts -g... (cached) yes
+checking for gcc option to accept ISO C89... (cached) none needed
+checking dependency style of gcc... (cached) gcc3
+checking whether gcc and cc understand -c and -o together... yes
+checking __NetBSD__... no
+checking __FreeBSD__... no
+checking __OpenBSD__... no
+checking __DragonFly__... no
+checking __386BSD__... no
+checking __bsdi__... no
+checking __APPLE__... no
+checking __linux__... yes
+checking __sun__... no
+checking __sun... no
+checking netdb.h usability... yes
+checking netdb.h presence... yes
+checking for netdb.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking netinet/tcp.h usability... yes
+checking netinet/tcp.h presence... yes
+checking for netinet/tcp.h... yes
+checking for struct sockaddr_in... yes
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+configure: pmix builddir: /opt/hpc/build/ompi/3rd-party/openpmix
+configure: pmix srcdir: /opt/hpc/build/ompi/3rd-party/openpmix
+checking for pmix version... 4.1.0a1
+checking for pmix standard version... 4.0
+checking if want pmix maintainer support... disabled
+checking for pmix directory prefix... (none)
+checking for extra lib... no
+checking for extra ltlib... no
+checking if want package/brand string... PMIx mpiuser@root-node01 Distribution
+
+============================================================================
+== Compiler and preprocessor tests
+============================================================================
+checking if gcc requires a flag for C11... yes
+configure: checking if gcc supports C11 with a flag
+checking if gcc -std=gnu11 supports C11 _Thread_local... no
+checking if gcc -std=gnu11 supports C11 atomic variables... no
+checking if gcc -std=gnu11 supports C11 _Atomic keyword... no
+checking if gcc -std=gnu11 supports C11 _c11_atomic functions... no
+checking if gcc -std=gnu11 supports C11 _Generic keyword... no
+checking if gcc -std=gnu11 supports C11 _Static_assert... yes
+checking if gcc -std=gnu11 supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -std=c11 supports C11 _Thread_local... no
+checking if gcc -std=c11 supports C11 atomic variables... no
+checking if gcc -std=c11 supports C11 _Atomic keyword... no
+checking if gcc -std=c11 supports C11 _c11_atomic functions... no
+checking if gcc -std=c11 supports C11 _Generic keyword... no
+checking if gcc -std=c11 supports C11 _Static_assert... yes
+checking if gcc -std=c11 supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -c11 supports C11 _Thread_local... no
+checking if gcc -c11 supports C11 atomic variables... no
+checking if gcc -c11 supports C11 _Atomic keyword... no
+checking if gcc -c11 supports C11 _c11_atomic functions... no
+checking if gcc -c11 supports C11 _Generic keyword... no
+checking if gcc -c11 supports C11 _Static_assert... no
+checking if gcc -c11 supports C11 atomic_fetch_xor_explicit... no
+checking for gcc option to add a directory only to the search path for the quote form of include... -iquote
+checking for gcc option to accept ISO C99... -std=gnu99
+checking if gcc -std=gnu99  supports C11 _Thread_local... no
+checking if gcc -std=gnu99  supports C11 atomic variables... no
+checking if gcc -std=gnu99  supports C11 _Atomic keyword... no
+checking if gcc -std=gnu99  supports C11 _c11_atomic functions... no
+checking if gcc -std=gnu99  supports C11 _Generic keyword... no
+checking if gcc -std=gnu99  supports C11 _Static_assert... yes
+checking if gcc -std=gnu99  supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -std=gnu99  supports __thread... yes
+checking if gcc -std=gnu99  supports C11 _Thread_local... no
+checking for the C compiler vendor... gnu
+checking if gcc -std=gnu99 supports (-Wundef)... yes
+checking if gcc -std=gnu99 supports (-Wno-long-long)... yes
+checking if gcc -std=gnu99 supports (-Wsign-compare)... yes
+checking if gcc -std=gnu99 supports (-Wmissing-prototypes)... yes
+checking if gcc -std=gnu99 supports (-Wstrict-prototypes)... yes
+checking if gcc -std=gnu99 supports (-Wcomment)... yes
+checking if gcc -std=gnu99 supports (-Wshadow)... yes
+checking if gcc -std=gnu99 supports (-Werror-implicit-function-declaration)... yes
+checking if gcc -std=gnu99 supports (-Wno-long-double)... no
+checking if gcc -std=gnu99 supports (-fno-strict-aliasing)... yes
+checking if gcc -std=gnu99 supports (-pedantic)... yes
+checking if gcc -std=gnu99 supports (-Wall)... yes
+checking if gcc -std=gnu99 supports (-finline-functions)... yes
+CFLAGS result: -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions
+checking if gcc -std=gnu99 supports __builtin_expect... 
+checking if gcc -std=gnu99 supports __builtin_prefetch... 
+checking if gcc -std=gnu99 supports __builtin_clz... 
+checking for C optimization flags... -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions
+checking for int8_t... yes
+checking for uint8_t... yes
+checking for int16_t... yes
+checking for uint16_t... yes
+checking for int32_t... yes
+checking for uint32_t... yes
+checking for int64_t... yes
+checking for uint64_t... yes
+checking for __int128... yes
+checking for uint128_t... no
+checking for long long... yes
+checking for intptr_t... yes
+checking for uintptr_t... yes
+checking for ptrdiff_t... yes
+checking size of _Bool... 1
+checking size of char... 1
+checking size of short... 2
+checking size of int... 4
+checking size of long... 8
+checking size of long long... 8
+checking size of float... 4
+checking size of double... 8
+checking size of void *... 8
+checking size of size_t... 8
+checking size of ptrdiff_t... 8
+checking size of wchar_t... 4
+checking size of pid_t... 4
+checking alignment of bool... 1
+checking alignment of int8_t... 1
+checking alignment of int16_t... 2
+checking alignment of int32_t... 4
+checking alignment of int64_t... 8
+checking alignment of char... 1
+checking alignment of short... 2
+checking alignment of wchar_t... 4
+checking alignment of int... 4
+checking alignment of long... 8
+checking alignment of long long... 8
+checking alignment of float... 4
+checking alignment of double... 8
+checking alignment of void *... 8
+checking alignment of size_t... 8
+checking for C bool type... no
+checking size of _Bool... (cached) 1
+checking for inline... __inline__
+
+*** Compiler characteristics
+checking for __attribute__... yes
+checking for __attribute__(aligned)... yes
+checking for __attribute__(always_inline)... yes
+checking for __attribute__(cold)... yes
+checking for __attribute__(const)... yes
+checking for __attribute__(deprecated)... yes
+checking for __attribute__(deprecated_argument)... yes
+checking for __attribute__(format)... yes
+checking for __attribute__(format_funcptr)... yes
+checking for __attribute__(hot)... yes
+checking for __attribute__(malloc)... yes
+checking for __attribute__(may_alias)... yes
+checking for __attribute__(no_instrument_function)... yes
+checking for __attribute__(nonnull)... yes
+checking for __attribute__(noreturn)... yes
+checking for __attribute__(noreturn_funcptr)... yes
+checking for __attribute__(packed)... yes
+checking for __attribute__(pure)... yes
+checking for __attribute__(sentinel)... yes
+checking for __attribute__(unused)... yes
+checking for __attribute__(visibility)... yes
+checking for __attribute__(warn_unused_result)... yes
+checking for __attribute__(destructor)... yes
+checking for __attribute__(optnone)... no
+checking for __attribute__(extension)... yes
+checking for compiler familyid... 1
+checking for compiler familyname... GNU
+checking for compiler version... 264197
+checking for compiler version_str... 4.8.5
+
+*** Atomics
+checking for 32-bit GCC built-in atomics... yes
+checking for 64-bit GCC built-in atomics... yes
+checking if 64-bit GCC built-in atomics are lock-free... yes
+checking for x86_64 architecture... yes
+checking for atomics style... gcc
+
+============================================================================
+== Header file tests
+============================================================================
+checking arpa/inet.h usability... yes
+checking arpa/inet.h presence... yes
+checking for arpa/inet.h... yes
+checking fcntl.h usability... yes
+checking fcntl.h presence... yes
+checking for fcntl.h... yes
+checking ifaddrs.h usability... yes
+checking ifaddrs.h presence... yes
+checking for ifaddrs.h... yes
+checking for inttypes.h... (cached) yes
+checking libgen.h usability... yes
+checking libgen.h presence... yes
+checking for libgen.h... yes
+checking net/uio.h usability... no
+checking net/uio.h presence... no
+checking for net/uio.h... no
+checking for netinet/in.h... (cached) yes
+checking for stdint.h... (cached) yes
+checking stddef.h usability... yes
+checking stddef.h presence... yes
+checking for stddef.h... yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking for strings.h... (cached) yes
+checking sys/ioctl.h usability... yes
+checking sys/ioctl.h presence... yes
+checking for sys/ioctl.h... yes
+checking sys/param.h usability... yes
+checking sys/param.h presence... yes
+checking for sys/param.h... yes
+checking sys/select.h usability... yes
+checking sys/select.h presence... yes
+checking for sys/select.h... yes
+checking sys/socket.h usability... yes
+checking sys/socket.h presence... yes
+checking for sys/socket.h... yes
+checking sys/sockio.h usability... no
+checking sys/sockio.h presence... no
+checking for sys/sockio.h... no
+checking stdarg.h usability... yes
+checking stdarg.h presence... yes
+checking for stdarg.h... yes
+checking for sys/stat.h... (cached) yes
+checking sys/time.h usability... yes
+checking sys/time.h presence... yes
+checking for sys/time.h... yes
+checking for sys/types.h... (cached) yes
+checking sys/un.h usability... yes
+checking sys/un.h presence... yes
+checking for sys/un.h... yes
+checking sys/uio.h usability... yes
+checking sys/uio.h presence... yes
+checking for sys/uio.h... yes
+checking sys/wait.h usability... yes
+checking sys/wait.h presence... yes
+checking for sys/wait.h... yes
+checking syslog.h usability... yes
+checking syslog.h presence... yes
+checking for syslog.h... yes
+checking time.h usability... yes
+checking time.h presence... yes
+checking for time.h... yes
+checking for unistd.h... (cached) yes
+checking dirent.h usability... yes
+checking dirent.h presence... yes
+checking for dirent.h... yes
+checking crt_externs.h usability... no
+checking crt_externs.h presence... no
+checking for crt_externs.h... no
+checking signal.h usability... yes
+checking signal.h presence... yes
+checking for signal.h... yes
+checking ioLib.h usability... no
+checking ioLib.h presence... no
+checking for ioLib.h... no
+checking sockLib.h usability... no
+checking sockLib.h presence... no
+checking for sockLib.h... no
+checking hostLib.h usability... no
+checking hostLib.h presence... no
+checking for hostLib.h... no
+checking limits.h usability... yes
+checking limits.h presence... yes
+checking for limits.h... yes
+checking sys/fcntl.h usability... yes
+checking sys/fcntl.h presence... yes
+checking for sys/fcntl.h... yes
+checking sys/statfs.h usability... yes
+checking sys/statfs.h presence... yes
+checking for sys/statfs.h... yes
+checking sys/statvfs.h usability... yes
+checking sys/statvfs.h presence... yes
+checking for sys/statvfs.h... yes
+checking for netdb.h... (cached) yes
+checking ucred.h usability... no
+checking ucred.h presence... no
+checking for ucred.h... no
+checking zlib.h usability... no
+checking zlib.h presence... no
+checking for zlib.h... no
+checking sys/auxv.h usability... yes
+checking sys/auxv.h presence... yes
+checking for sys/auxv.h... yes
+checking sys/sysctl.h usability... yes
+checking sys/sysctl.h presence... yes
+checking for sys/sysctl.h... yes
+checking termio.h usability... yes
+checking termio.h presence... yes
+checking for termio.h... yes
+checking termios.h usability... yes
+checking termios.h presence... yes
+checking for termios.h... yes
+checking pty.h usability... yes
+checking pty.h presence... yes
+checking for pty.h... yes
+checking libutil.h usability... no
+checking libutil.h presence... no
+checking for libutil.h... no
+checking util.h usability... no
+checking util.h presence... no
+checking for util.h... no
+checking grp.h usability... yes
+checking grp.h presence... yes
+checking for grp.h... yes
+checking sys/cdefs.h usability... yes
+checking sys/cdefs.h presence... yes
+checking for sys/cdefs.h... yes
+checking utmp.h usability... yes
+checking utmp.h presence... yes
+checking for utmp.h... yes
+checking stropts.h usability... no
+checking stropts.h presence... no
+checking for stropts.h... no
+checking sys/utsname.h usability... yes
+checking sys/utsname.h presence... yes
+checking for sys/utsname.h... yes
+checking for sys/mount.h... yes
+checking for sys/sysctl.h... (cached) yes
+checking for net/if.h... yes
+checking stdbool.h usability... yes
+checking stdbool.h presence... yes
+checking for stdbool.h... yes
+checking if <stdbool.h> works... yes
+
+============================================================================
+== Type tests
+============================================================================
+checking for socklen_t... yes
+checking for struct sockaddr_in... (cached) yes
+checking for struct sockaddr_un... yes
+checking for struct sockaddr_in6... yes
+checking for struct sockaddr_storage... yes
+checking whether AF_UNSPEC is declared... yes
+checking whether PF_UNSPEC is declared... yes
+checking whether AF_INET6 is declared... yes
+checking whether PF_INET6 is declared... yes
+checking if SA_RESTART defined in signal.h... yes
+checking for struct sockaddr.sa_len... no
+checking for struct dirent.d_type... yes
+checking for siginfo_t.si_fd... yes
+checking for siginfo_t.si_band... yes
+checking for struct statfs.f_type... yes
+checking for struct statfs.f_fstypename... no
+checking for struct statvfs.f_basetype... no
+checking for struct statvfs.f_fstypename... no
+checking for struct ucred.uid... yes
+checking for struct ucred.cr_uid... no
+checking for struct sockpeercred.uid... no
+checking for pointer diff type... ptrdiff_t (size: 8)
+checking the linker for support for the -fini option... yes
+
+============================================================================
+== Library and Function tests
+============================================================================
+checking for library containing openpty... -lutil
+checking for library containing gethostbyname... none required
+checking for library containing socket... none required
+checking for library containing dirname... none required
+checking for library containing ceil... -lm
+checking for library containing clock_gettime... none required
+checking for asprintf... yes
+checking for snprintf... yes
+checking for vasprintf... yes
+checking for vsnprintf... yes
+checking for strsignal... yes
+checking for socketpair... yes
+checking for strncpy_s... no
+checking for usleep... yes
+checking for statfs... yes
+checking for statvfs... yes
+checking for getpeereid... no
+checking for getpeerucred... no
+checking for strnlen... yes
+checking for posix_fallocate... yes
+checking for tcgetpgrp... yes
+checking for setpgid... yes
+checking for ptsname... yes
+checking for openpty... yes
+checking for setenv... yes
+checking for fork... yes
+checking for execve... yes
+checking for waitpid... yes
+checking for atexit... yes
+checking for htonl define... no
+checking for htonl... yes
+checking whether va_copy is declared... yes
+checking whether __va_copy is declared... yes
+checking whether __func__ is declared... yes
+
+============================================================================
+== System-specific tests
+============================================================================
+checking whether byte ordering is bigendian... no
+checking for broken qsort... no
+checking if C compiler and POSIX threads work as is... no
+checking if C compiler and POSIX threads work with -Kthread... no
+checking if C compiler and POSIX threads work with -kthread... no
+checking if C compiler and POSIX threads work with -pthread... yes
+checking for PTHREAD_MUTEX_ERRORCHECK_NP... yes
+checking for PTHREAD_MUTEX_ERRORCHECK... yes
+checking for working POSIX threads package... yes
+checking if threads have different pids (pthreads on linux)... no
+checking whether ln -s works... yes
+checking for grep that handles long lines and -e... (cached) /usr/bin/grep
+checking for egrep... (cached) /usr/bin/grep -E
+
+============================================================================
+== Symbol visibility feature
+============================================================================
+checking whether to enable symbol visibility... no (disabled)
+
+============================================================================
+== Event libraries
+============================================================================
+checking --with-libev value... simple ok (unspecified)
+checking --with-libev-libdir value... simple ok (unspecified)
+checking will libev support be built... no
+checking for libevent in... /opt/hpc/local/libevent/include and /opt/hpc/local/libevent/lib
+configure: looking for header in /opt/hpc/local/libevent/include
+checking event.h usability... yes
+checking event.h presence... yes
+checking for event.h... yes
+checking for library containing event_config_new... -levent_core
+checking for evthread_set_lock_callbacks in -levent_core... yes
+checking for evthread_use_pthreads in -levent_pthreads... yes
+checking will libevent support be built... yes
+checking libevent header... <event.h>
+checking libevent2/thread header... <event2/thread.h>
+
+============================================================================
+== JANSSON
+============================================================================
+checking Jansson support available... no
+
+============================================================================
+== CURL
+============================================================================
+checking libcurl support available... no
+
+============================================================================
+== OFI
+============================================================================
+checking --with-ofi value... simple ok (unspecified)
+checking --with-ofi-libdir value... simple ok (unspecified)
+checking for OFI libfabric headers in... (default search paths)
+checking for OFI libfabric library in... (default search paths)
+configure: looking for header without includes
+checking rdma/fabric.h usability... no
+checking rdma/fabric.h presence... no
+checking for rdma/fabric.h... no
+
+============================================================================
+== Dstore Locking
+============================================================================
+checking for struct flock.l_type... yes
+checking pthread_process_shared... yes
+checking for pthread_rwlockattr_setkind_np... yes
+checking for pthread_rwlockattr_setpshared... yes
+checking for pthread_mutexattr_setpshared... yes
+
+============================================================================
+== Modular Component Architecture (MCA) setup
+============================================================================
+checking for default value of mca_base_component_show_load_errors... disabled by default
+checking for subdir args...  '--disable-option-checking' '--prefix=/opt/hpc/external/ompi' '--without-tests-examples' '--disable-pmix-binaries' '--disable-pmix-backward-compatibility' '--disable-visibility' '--with-hwloc=/opt/hpc/local/hwloc' '--with-libevent=/opt/hpc/local/libevent' '--with-ucx=no' '--enable-mpirun-prefix-by-default'
+checking which components should be disabled... 
+checking which components should be run-time loadable... prm pnet-sshot pnet-opa ploc-hwloc pcompress-zlib 
+checking which components should be static... default
+
+*** Configuring MCA
+checking for frameworks... common, bfrops, gds, pcompress, pdl, pfexec, pif, pinstalldirs, ploc, plog, pmdl, pnet, preg, prm, psec, psensor, psquash, pstat, pstrg, ptl
+
++++ Configuring MCA framework common
+checking for no configure components in framework common... 
+checking for m4 configure components in framework common... sse
+
+--- MCA component common:sse (m4 configuration macro)
+checking for MCA component common:sse compile mode... static
+checking if MCA component common:sse can compile... no
+
++++ Configuring MCA framework bfrops
+checking for no configure components in framework bfrops... v12, v20, v21, v3, v4, v401, v41
+checking for m4 configure components in framework bfrops... 
+
+--- MCA component bfrops:v12 (no configuration)
+checking for MCA component bfrops:v12 compile mode... static
+checking if MCA component bfrops:v12 can compile... yes
+
+--- MCA component bfrops:v20 (no configuration)
+checking for MCA component bfrops:v20 compile mode... static
+checking if MCA component bfrops:v20 can compile... yes
+
+--- MCA component bfrops:v21 (no configuration)
+checking for MCA component bfrops:v21 compile mode... static
+checking if MCA component bfrops:v21 can compile... yes
+
+--- MCA component bfrops:v3 (no configuration)
+checking for MCA component bfrops:v3 compile mode... static
+checking if MCA component bfrops:v3 can compile... yes
+
+--- MCA component bfrops:v4 (no configuration)
+checking for MCA component bfrops:v4 compile mode... static
+checking if MCA component bfrops:v4 can compile... yes
+
+--- MCA component bfrops:v401 (no configuration)
+checking for MCA component bfrops:v401 compile mode... static
+checking if MCA component bfrops:v401 can compile... yes
+
+--- MCA component bfrops:v41 (no configuration)
+checking for MCA component bfrops:v41 compile mode... static
+checking if MCA component bfrops:v41 can compile... yes
+
++++ Configuring MCA framework gds
+checking for no configure components in framework gds... hash
+checking for m4 configure components in framework gds... 
+
+--- MCA component gds:hash (no configuration)
+checking for MCA component gds:hash compile mode... static
+checking if MCA component gds:hash can compile... yes
+
++++ Configuring MCA framework pcompress
+checking for no configure components in framework pcompress... 
+checking for m4 configure components in framework pcompress... zlib
+
+--- MCA component pcompress:zlib (m4 configuration macro)
+checking for MCA component pcompress:zlib compile mode... dso
+checking for zlib in... (default search paths)
+configure: looking for header without includes
+checking zlib.h usability... no
+checking zlib.h presence... no
+checking for zlib.h... no
+checking will zlib support be built... no
+configure: WARNING: *************************************************
+configure: WARNING: * PMIx was unable to find a usable version      *
+configure: WARNING: * of zlib and zlib-devel on the system. We will *
+configure: WARNING: * be unable to compress large data streams.     *
+configure: WARNING: * This may result in longer-than-normal startup *
+configure: WARNING: * times and larger memory footprints. We will   *
+configure: WARNING: * continue, but strongly recommend installing   *
+configure: WARNING: * zlib for better user experience.              *
+configure: WARNING: *************************************************
+checking if MCA component pcompress:zlib can compile... no
+
++++ Configuring MCA framework pdl
+checking for no configure components in framework pdl... 
+checking for m4 configure components in framework pdl... pdlopen, plibltdl
+
+--- MCA component pdl:pdlopen (m4 configuration macro, priority 80)
+checking for MCA component pdl:pdlopen compile mode... static
+configure: looking for header without includes
+checking dlfcn.h usability... yes
+checking dlfcn.h presence... yes
+checking for dlfcn.h... yes
+configure: looking for library without search path
+checking for library containing dlopen... -ldl
+checking if MCA component pdl:pdlopen can compile... yes
+
+--- MCA component pdl:plibltdl (m4 configuration macro, priority 50)
+checking for MCA component pdl:plibltdl compile mode... static
+checking --with-plibltdl value... simple ok (unspecified)
+checking --with-plibltdl-libdir value... simple ok (unspecified)
+checking for libltdl dir... compiler default
+checking for libltdl library dir... linker default
+configure: looking for header without includes
+checking ltdl.h usability... no
+checking ltdl.h presence... no
+checking for ltdl.h... no
+checking if MCA component pdl:plibltdl can compile... no
+
++++ Configuring MCA framework pfexec
+checking for no configure components in framework pfexec... 
+checking for m4 configure components in framework pfexec... linux
+
+--- MCA component pfexec:linux (m4 configuration macro)
+checking for MCA component pfexec:linux compile mode... static
+checking for fork... (cached) yes
+checking if MCA component pfexec:linux can compile... yes
+
++++ Configuring MCA framework pif
+checking for no configure components in framework pif... 
+checking for m4 configure components in framework pif... bsdx_ipv4, bsdx_ipv6, linux_ipv6, posix_ipv4, solaris_ipv6
+
+--- MCA component pif:bsdx_ipv4 (m4 configuration macro)
+checking for MCA component pif:bsdx_ipv4 compile mode... static
+checking struct sockaddr... yes (cached)
+checking NetBSD, FreeBSD, OpenBSD, or DragonFly... no
+checking if MCA component pif:bsdx_ipv4 can compile... no
+
+--- MCA component pif:bsdx_ipv6 (m4 configuration macro)
+checking for MCA component pif:bsdx_ipv6 compile mode... static
+checking struct sockaddr... yes (cached)
+checking some flavor of BSD... no
+checking if MCA component pif:bsdx_ipv6 can compile... no
+
+--- MCA component pif:linux_ipv6 (m4 configuration macro)
+checking for MCA component pif:linux_ipv6 compile mode... static
+checking if we are on Linux with TCP... yes
+checking if MCA component pif:linux_ipv6 can compile... yes
+
+--- MCA component pif:posix_ipv4 (m4 configuration macro)
+checking for MCA component pif:posix_ipv4 compile mode... static
+checking struct sockaddr... yes (cached)
+checking not NetBSD, FreeBSD, OpenBSD, or DragonFly... yes
+checking for struct ifreq.ifr_hwaddr... yes
+checking for struct ifreq.ifr_mtu... yes
+checking if MCA component pif:posix_ipv4 can compile... yes
+
+--- MCA component pif:solaris_ipv6 (m4 configuration macro)
+checking for MCA component pif:solaris_ipv6 compile mode... static
+checking if MCA component pif:solaris_ipv6 can compile... no
+
++++ Configuring MCA framework pinstalldirs
+checking for no configure components in framework pinstalldirs... 
+checking for m4 configure components in framework pinstalldirs... config, env
+
+--- MCA component pinstalldirs:env (m4 configuration macro, priority 10)
+checking for MCA component pinstalldirs:env compile mode... static
+checking if MCA component pinstalldirs:env can compile... yes
+
+--- MCA component pinstalldirs:config (m4 configuration macro, priority 0)
+checking for MCA component pinstalldirs:config compile mode... static
+checking if MCA component pinstalldirs:config can compile... yes
+
++++ Configuring MCA framework ploc
+checking for no configure components in framework ploc... 
+checking for m4 configure components in framework ploc... hwloc
+
+--- MCA component ploc:hwloc (m4 configuration macro)
+checking for MCA component ploc:hwloc compile mode... dso
+checking for hwloc in... /opt/hpc/local/hwloc/include and /opt/hpc/local/hwloc/lib
+configure: looking for header in /opt/hpc/local/hwloc/include
+checking hwloc.h usability... yes
+checking hwloc.h presence... yes
+checking for hwloc.h... yes
+checking for library containing hwloc_topology_init... -lhwloc
+checking if external hwloc version is 1.5 or greater... yes
+checking if external hwloc version is 1.8 or greater... yes
+checking will hwloc support be built... yes
+checking hwloc header... <hwloc.h>
+checking if MCA component ploc:hwloc can compile... yes
+
++++ Configuring MCA framework plog
+checking for no configure components in framework plog... default, stdfd
+checking for m4 configure components in framework plog... syslog
+
+--- MCA component plog:default (no configuration)
+checking for MCA component plog:default compile mode... static
+checking if MCA component plog:default can compile... yes
+
+--- MCA component plog:stdfd (no configuration)
+checking for MCA component plog:stdfd compile mode... static
+checking if MCA component plog:stdfd can compile... yes
+
+--- MCA component plog:syslog (m4 configuration macro)
+checking for MCA component plog:syslog compile mode... static
+checking for syslog.h... (cached) yes
+checking if MCA component plog:syslog can compile... yes
+
++++ Configuring MCA framework pmdl
+checking for no configure components in framework pmdl... ompi, oshmem
+checking for m4 configure components in framework pmdl... 
+
+--- MCA component pmdl:ompi (no configuration)
+checking for MCA component pmdl:ompi compile mode... static
+checking if MCA component pmdl:ompi can compile... yes
+
+--- MCA component pmdl:oshmem (no configuration)
+checking for MCA component pmdl:oshmem compile mode... static
+checking if MCA component pmdl:oshmem can compile... yes
+
++++ Configuring MCA framework pnet
+checking for no configure components in framework pnet... 
+checking for m4 configure components in framework pnet... opa, sshot
+
+--- MCA component pnet:opa (m4 configuration macro)
+checking for MCA component pnet:opa compile mode... dso
+checking --with-psm2 value... simple ok (unspecified)
+checking --with-psm2-libdir value... simple ok (unspecified)
+configure: looking for header without includes
+checking psm2.h usability... no
+checking psm2.h presence... no
+checking for psm2.h... no
+checking if MCA component pnet:opa can compile... no
+
+--- MCA component pnet:sshot (m4 configuration macro)
+checking for MCA component pnet:sshot compile mode... dso
+no
+checking if MCA component pnet:sshot can compile... no
+
++++ Configuring MCA framework preg
+checking for no configure components in framework preg... compress, native, raw
+checking for m4 configure components in framework preg... 
+
+--- MCA component preg:compress (no configuration)
+checking for MCA component preg:compress compile mode... static
+checking if MCA component preg:compress can compile... yes
+
+--- MCA component preg:native (no configuration)
+checking for MCA component preg:native compile mode... static
+checking if MCA component preg:native can compile... yes
+
+--- MCA component preg:raw (no configuration)
+checking for MCA component preg:raw compile mode... static
+checking if MCA component preg:raw can compile... yes
+
++++ Configuring MCA framework prm
+checking for no configure components in framework prm... default
+checking for m4 configure components in framework prm... hpesmf, slurm, tm
+
+--- MCA component prm:default (no configuration)
+checking for MCA component prm:default compile mode... dso
+checking if MCA component prm:default can compile... yes
+
+--- MCA component prm:hpesmf (m4 configuration macro)
+checking for MCA component prm:hpesmf compile mode... dso
+checking if MCA component prm:hpesmf can compile... no
+
+--- MCA component prm:slurm (m4 configuration macro)
+checking for MCA component prm:slurm compile mode... dso
+checking for fork... (cached) yes
+checking for execve... (cached) yes
+checking for setpgid... (cached) yes
+checking for ALPS support cle level unknown... checking for CRAY_ALPSLLI... no
+checking for CRAY_ALPSUTIL... no
+checking for CRAY_ALPS... no
+checking for CRAY_WLM_DETECT... no
+pmix_check_cray_alps_happy = no
+checking if MCA component prm:slurm can compile... yes
+
+--- MCA component prm:tm (m4 configuration macro)
+checking for MCA component prm:tm compile mode... dso
+checking --with-tm value... simple ok (unspecified)
+checking for pbs-config... not found
+configure: looking for header without includes
+checking tm.h usability... no
+checking tm.h presence... no
+checking for tm.h... no
+checking if MCA component prm:tm can compile... no
+
++++ Configuring MCA framework psec
+checking for no configure components in framework psec... dummy_handshake, native, none
+checking for m4 configure components in framework psec... munge
+
+--- MCA component psec:dummy_handshake (no configuration)
+checking for MCA component psec:dummy_handshake compile mode... static
+checking if MCA component psec:dummy_handshake can compile... no
+
+--- MCA component psec:native (no configuration)
+checking for MCA component psec:native compile mode... static
+checking if MCA component psec:native can compile... yes
+
+--- MCA component psec:none (no configuration)
+checking for MCA component psec:none compile mode... static
+checking if MCA component psec:none can compile... yes
+
+--- MCA component psec:munge (m4 configuration macro)
+checking for MCA component psec:munge compile mode... static
+checking will munge support be built... no
+checking if MCA component psec:munge can compile... no
+
++++ Configuring MCA framework psensor
+checking for no configure components in framework psensor... file, heartbeat
+checking for m4 configure components in framework psensor... 
+
+--- MCA component psensor:file (no configuration)
+checking for MCA component psensor:file compile mode... static
+checking if MCA component psensor:file can compile... yes
+
+--- MCA component psensor:heartbeat (no configuration)
+checking for MCA component psensor:heartbeat compile mode... static
+checking if MCA component psensor:heartbeat can compile... yes
+
++++ Configuring MCA framework psquash
+checking for no configure components in framework psquash... flex128, native
+checking for m4 configure components in framework psquash... 
+
+--- MCA component psquash:flex128 (no configuration)
+checking for MCA component psquash:flex128 compile mode... static
+checking if MCA component psquash:flex128 can compile... yes
+
+--- MCA component psquash:native (no configuration)
+checking for MCA component psquash:native compile mode... static
+checking if MCA component psquash:native can compile... yes
+
++++ Configuring MCA framework pstat
+checking for no configure components in framework pstat... 
+checking for m4 configure components in framework pstat... linux, test
+
+--- MCA component pstat:linux (m4 configuration macro, priority 60)
+checking for MCA component pstat:linux compile mode... static
+checking whether HZ is declared... yes
+checking if MCA component pstat:linux can compile... yes
+
+--- MCA component pstat:test (m4 configuration macro, priority 10)
+checking for MCA component pstat:test compile mode... static
+checking if MCA component pstat:test can compile... no
+
++++ Configuring MCA framework pstrg
+checking for no configure components in framework pstrg... vfs
+checking for m4 configure components in framework pstrg... lustre
+
+--- MCA component pstrg:vfs (no configuration)
+checking for MCA component pstrg:vfs compile mode... static
+checking if MCA component pstrg:vfs can compile... yes
+
+--- MCA component pstrg:lustre (m4 configuration macro)
+checking for MCA component pstrg:lustre compile mode... static
+checking --with-lustre value... simple ok (unspecified)
+checking looking for lustre libraries and header files in... ()
+configure: looking for header without includes
+checking lustre/lustreapi.h usability... no
+checking lustre/lustreapi.h presence... no
+checking for lustre/lustreapi.h... no
+checking if MCA component pstrg:lustre can compile... yes
+
++++ Configuring MCA framework ptl
+checking for no configure components in framework ptl... client, server, tool
+checking for m4 configure components in framework ptl... 
+
+--- MCA component ptl:client (no configuration)
+checking for MCA component ptl:client compile mode... static
+checking if MCA component ptl:client can compile... yes
+
+--- MCA component ptl:server (no configuration)
+checking for MCA component ptl:server compile mode... static
+checking if MCA component ptl:server can compile... yes
+
+--- MCA component ptl:tool (no configuration)
+checking for MCA component ptl:tool compile mode... static
+checking if MCA component ptl:tool can compile... yes
+
+*** Set path-related compiler flags
+
+*** Wrapper compiler final setup
+checking for perl... /usr/bin/perl
+configure: creating ./config.lt
+chmod: changing permissions of './config.lt': Operation not permitted
+chmod: changing permissions of './config.lt': Operation not permitted
+config.lt: creating libtool
+checking if linker supports RPATH... yes (-Wl,-rpath -Wl,LIBDIR)
+checking if linker supports RUNPATH... yes (-Wl,--enable-new-dtags)
+checking for PMIX CPPFLAGS... -I/opt/hpc/local/libevent/include -I/opt/hpc/local/hwloc/include
+checking for PMIX CFLAGS... -pthread
+checking for PMIX CFLAGS_PREFIX... 
+checking for PMIX LDFLAGS... -L/opt/hpc/local/libevent/lib -L/opt/hpc/local/hwloc/lib  -Wl,-rpath -Wl,/opt/hpc/local/libevent/lib -Wl,-rpath -Wl,/opt/hpc/local/hwloc/lib -Wl,-rpath -Wl,@{libdir} -Wl,--enable-new-dtags
+checking for PMIX pkg-config LDFLAGS... -L/opt/hpc/local/libevent/lib -L/opt/hpc/local/hwloc/lib  -Wl,-rpath -Wl,/opt/hpc/local/libevent/lib -Wl,-rpath -Wl,/opt/hpc/local/hwloc/lib -Wl,-rpath -Wl,${libdir} -Wl,--enable-new-dtags
+checking for PMIX LIBS... -levent_core -levent_pthreads -lhwloc
+
+*** Man page setup
+checking if want man pages... yes
+checking for pandoc... /usr/bin/pandoc
+checking pandoc version... major: 1, minor: 12
+checking if pandoc version is >=v1.12... yes
+
+*** Final output
+
+============================================================================
+== Final compiler flags
+============================================================================
+checking final CPPFLAGS... -iquote/opt/hpc/build/ompi/3rd-party/openpmix -iquote/opt/hpc/build/ompi/3rd-party/openpmix/src -I/opt/hpc/build/ompi/3rd-party/openpmix/include -I/opt/hpc/local/libevent/include -I/opt/hpc/local/hwloc/include
+checking final CFLAGS... -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions -pthread
+checking final LDFLAGS... -L/opt/hpc/local/libevent/lib -L/opt/hpc/local/hwloc/lib
+checking final LIBS... -lm -lutil -ldl -levent_core -levent_pthreads -lhwloc
+
+============================================================================
+== Configuration complete
+============================================================================
+checking that generated files are newer than configure... done
+configure: creating ./config.status
+chmod: changing permissions of './config.status': Operation not permitted
+configure: error: write failure creating ./config.status
+configure: ===== done with 3rd-party/openpmix configure =====
+checking pmix.h usability... yes
+checking pmix.h presence... yes
+checking for pmix.h... yes
+configure: looking for library in lib
+checking for library containing PMIx_Init... -lpmix
+checking if libpmix requires libnl v1 or v3... 
+checking if external PMIx version is 3.1.5 or greater... yes
+
+*** Configuring PRRTE
+with_prrte: 
+opal_prrte_mode: unspecified
+configure: WARNING: Open MPI no longer uses the ORTE environment - it has been
+configure: WARNING: replaced by PRRTE. Accordingly, the "--enable-orterun-prefix-by-default"
+configure: WARNING: and "--enable-mpirun-prefix-by-default" options have been replaced
+configure: WARNING: by "--enable-prte-prefix-by-default". We will do the translation for
+configure: WARNING: you now, but these older options are deprecated and will be removed
+configure: WARNING: in a later release, so please update your build scripts.
+checking if PMIx version is 4.0.0 or greater... yes
+configure: ===== configuring 3rd-party/prrte =====
+configure: running /bin/sh ./configure --disable-option-checking '--prefix=/opt/hpc/external/ompi' --enable-prte-ft --with-proxy-version-string=5.1.0a1 --with-proxy-package-name="Open MPI" --with-proxy-bugreport="https://www.open-mpi.org/community/help/" --enable-prte-prefix-by-default --with-prte-extra-lib="" --with-prte-extra-ltlib="" '--with-hwloc=/opt/hpc/local/hwloc' '--with-libevent=/opt/hpc/local/libevent' '--with-pmix=/opt/hpc/external/pmix' '--with-ucx=no' '--enable-mpirun-prefix-by-default' --cache-file=/dev/null --srcdir=.
+
+============================================================================
+== Configuring PRTE
+============================================================================
+
+*** Startup tests
+checking for perl... perl
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking target system type... x86_64-pc-linux-gnu
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+checking how to run the C preprocessor... gcc -E
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking minix/config.h usability... no
+checking minix/config.h presence... no
+checking for minix/config.h... no
+checking whether it is safe to define __EXTENSIONS__... yes
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a thread-safe mkdir -p... /usr/bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking for style of include used by make... GNU
+checking whether make supports nested variables... yes
+checking dependency style of gcc... gcc3
+checking whether make supports nested variables... (cached) yes
+checking for grep that handles long lines and -e... (cached) /usr/bin/grep
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+checking the name lister (/usr/bin/nm -B) interface... BSD nm
+checking directory of source tree... .
+checking directory of absolute source tree... /opt/hpc/build/ompi/3rd-party/prrte
+checking directory of build tree... /opt/hpc/build/ompi/3rd-party/prrte
+checking directory of prefix... /opt/hpc/external/ompi
+checking directory of absolute prefix... /opt/hpc/external/ompi
+
+*** Checking versions
+checking for repo version... psrvr-v2.0.0rc1-3795-g4e7638b
+checking PMIx Reference Run-Time Environment version... 2.0.0a1
+checking PMIx Reference Run-Time Environment release date... Nov 24, 2018
+checking PMIx Reference Run-Time Environment repository version... psrvr-v2.0.0rc1-3795-g4e7638b
+checking for bootstrap Autoconf version... 2.69
+checking for bootstrap Automake version... 1.13
+checking for boostrap Libtool version... 2.4.2
+
+*** Initialization, setup
+configure: builddir: /opt/hpc/build/ompi/3rd-party/prrte
+configure: srcdir: /opt/hpc/build/ompi/3rd-party/prrte
+installing to directory "/opt/hpc/external/ompi"
+checking __NetBSD__... no
+checking __FreeBSD__... no
+checking __OpenBSD__... no
+checking __DragonFly__... no
+checking __386BSD__... no
+checking __bsdi__... no
+checking __APPLE__... no
+checking __linux__... yes
+checking __sun__... no
+checking __sun... no
+checking netdb.h usability... yes
+checking netdb.h presence... yes
+checking for netdb.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking netinet/tcp.h usability... yes
+checking netinet/tcp.h presence... yes
+checking for netinet/tcp.h... yes
+checking for struct sockaddr_in... yes
+
+*** PRTE Configuration options
+checking if want prte "--prefix" behavior to be enabled by default... yes
+checking if want developer-level compiler pickyness... no
+--> developer override: enable picky compiler by default
+checking if want developer-level debugging code... no
+checking if want to install project-internal header files... no
+checking if want pretty-print stacktrace... yes
+checking if want pty support... yes
+checking if want dlopen support... yes
+checking for default value of mca_base_component_show_load_errors... disabled by default
+checking if a proxy version string for prte is required... yes
+checking if a proxy package name for prte is required... yes
+checking if a proxy bugreport path for prte is required... yes
+checking if want IPv6 support... no
+checking for extra lib... no
+checking for extra ltlib... no
+checking for extra lib LDFLAGS... no
+checking if want package/brand string... Open MPI mpiuser@root-node01 Distribution
+checking if want ident string... 2.0.0a1
+checking if want getpwuid support... yes
+checking if want fault tolerance support... yes
+checking if want wrapper compiler rpath support... yes
+checking if want wrapper compiler runpath support... yes
+
+============================================================================
+== Compiler and preprocessor tests
+============================================================================
+
+*** C compiler and preprocessor
+checking for gcc... (cached) gcc
+checking whether we are using the GNU C compiler... (cached) yes
+checking whether gcc accepts -g... (cached) yes
+checking for gcc option to accept ISO C89... (cached) none needed
+checking whether gcc and cc understand -c and -o together... yes
+checking if gcc requires a flag for C11... yes
+configure: checking if gcc supports C11 with a flag
+checking if gcc -std=gnu11 supports C11 _Thread_local... no
+checking if gcc -std=gnu11 supports C11 atomic variables... no
+checking if gcc -std=gnu11 supports C11 _Atomic keyword... no
+checking if gcc -std=gnu11 supports C11 _c11_atomic functions... no
+checking if gcc -std=gnu11 supports C11 _Generic keyword... no
+checking if gcc -std=gnu11 supports C11 _Static_assert... yes
+checking if gcc -std=gnu11 supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -std=c11 supports C11 _Thread_local... no
+checking if gcc -std=c11 supports C11 atomic variables... no
+checking if gcc -std=c11 supports C11 _Atomic keyword... no
+checking if gcc -std=c11 supports C11 _c11_atomic functions... no
+checking if gcc -std=c11 supports C11 _Generic keyword... no
+checking if gcc -std=c11 supports C11 _Static_assert... yes
+checking if gcc -std=c11 supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -c11 supports C11 _Thread_local... no
+checking if gcc -c11 supports C11 atomic variables... no
+checking if gcc -c11 supports C11 _Atomic keyword... no
+checking if gcc -c11 supports C11 _c11_atomic functions... no
+checking if gcc -c11 supports C11 _Generic keyword... no
+checking if gcc -c11 supports C11 _Static_assert... no
+checking if gcc -c11 supports C11 atomic_fetch_xor_explicit... no
+checking for gcc option to add a directory only to the search path for the quote form of include... -iquote
+checking for gcc option to accept ISO C99... -std=gnu99
+checking if gcc -std=gnu99  supports C11 _Thread_local... no
+checking if gcc -std=gnu99  supports C11 atomic variables... no
+checking if gcc -std=gnu99  supports C11 _Atomic keyword... no
+checking if gcc -std=gnu99  supports C11 _c11_atomic functions... no
+checking if gcc -std=gnu99  supports C11 _Generic keyword... no
+checking if gcc -std=gnu99  supports C11 _Static_assert... yes
+checking if gcc -std=gnu99  supports C11 atomic_fetch_xor_explicit... no
+checking if gcc -std=gnu99  supports __thread... yes
+checking if gcc -std=gnu99  supports C11 _Thread_local... no
+checking for the C compiler vendor... gnu
+checking if gcc -std=gnu99 supports (-Wundef)... yes
+checking if gcc -std=gnu99 supports (-Wno-long-long)... yes
+checking if gcc -std=gnu99 supports (-Wsign-compare)... yes
+checking if gcc -std=gnu99 supports (-Wmissing-prototypes)... yes
+checking if gcc -std=gnu99 supports (-Wstrict-prototypes)... yes
+checking if gcc -std=gnu99 supports (-Wcomment)... yes
+checking if gcc -std=gnu99 supports (-Wshadow)... yes
+checking if gcc -std=gnu99 supports (-Werror-implicit-function-declaration)... yes
+checking if gcc -std=gnu99 supports (-Wno-long-double)... no
+checking if gcc -std=gnu99 supports (-fno-strict-aliasing)... yes
+checking if gcc -std=gnu99 supports (-pedantic)... yes
+checking if gcc -std=gnu99 supports (-Wall)... yes
+checking if gcc -std=gnu99 supports (-finline-functions)... yes
+CFLAGS result: -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions
+checking if gcc -std=gnu99 supports __builtin_expect... 
+checking if gcc -std=gnu99 supports __builtin_prefetch... 
+checking if gcc -std=gnu99 supports __builtin_clz... 
+checking for C optimization flags... -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions
+checking for C ident string support... static const char
+checking for int8_t... yes
+checking for uint8_t... yes
+checking for int16_t... yes
+checking for uint16_t... yes
+checking for int32_t... yes
+checking for uint32_t... yes
+checking for int64_t... yes
+checking for uint64_t... yes
+checking for int128_t... no
+checking for __int128... yes
+checking for uint128_t... no
+checking for long long... yes
+checking for __float128... yes
+checking for long double... yes
+checking complex.h usability... yes
+checking complex.h presence... yes
+checking for complex.h... yes
+checking for float _Complex... yes
+checking for double _Complex... yes
+checking for long double _Complex... yes
+checking for intptr_t... yes
+checking for uintptr_t... yes
+checking for mode_t... yes
+checking for ssize_t... yes
+checking for ptrdiff_t... yes
+checking size of _Bool... 1
+checking size of char... 1
+checking size of short... 2
+checking size of int... 4
+checking size of long... 8
+checking size of long long... 8
+checking size of float... 4
+checking size of double... 8
+checking size of long double... 16
+checking size of long double... (cached) 16
+checking size of __float128... 16
+checking size of float _Complex... 8
+checking size of double _Complex... 16
+checking size of long double _Complex... 32
+checking size of void *... 8
+checking size of size_t... 8
+checking size of ssize_t... 8
+checking size of ptrdiff_t... 8
+checking size of wchar_t... 4
+checking size of pid_t... 4
+checking size of atomic_short... 0
+checking size of atomic_int... 0
+checking size of atomic_long... 0
+checking size of atomic_llong... 0
+checking alignment of bool... 1
+checking alignment of int8_t... 1
+checking alignment of int16_t... 2
+checking alignment of int32_t... 4
+checking alignment of int64_t... 8
+checking alignment of char... 1
+checking alignment of short... 2
+checking alignment of wchar_t... 4
+checking alignment of int... 4
+checking alignment of long... 8
+checking alignment of long long... 8
+checking alignment of float... 4
+checking alignment of double... 8
+checking alignment of long double... 16
+checking alignment of __float128... 16
+checking alignment of float _Complex... 4
+checking alignment of double _Complex... 8
+checking alignment of long double _Complex... 16
+checking alignment of void *... 8
+checking alignment of size_t... 8
+checking for weak symbol support... yes
+checking for macro weak symbol support... yes
+checking for functional offsetof macro... yes
+
+*** Compiler characteristics
+checking for __attribute__... yes
+checking for __attribute__(aligned)... yes
+checking for __attribute__(always_inline)... yes
+checking for __attribute__(cold)... yes
+checking for __attribute__(const)... yes
+checking for __attribute__(deprecated)... yes
+checking for __attribute__(deprecated_argument)... yes
+checking for __attribute__(format)... yes
+checking for __attribute__(format_funcptr)... yes
+checking for __attribute__(hot)... yes
+checking for __attribute__(malloc)... yes
+checking for __attribute__(may_alias)... yes
+checking for __attribute__(no_instrument_function)... yes
+checking for __attribute__(noinline)... yes
+checking for __attribute__(nonnull)... yes
+checking for __attribute__(noreturn)... yes
+checking for __attribute__(noreturn_funcptr)... yes
+checking for __attribute__(packed)... yes
+checking for __attribute__(pure)... yes
+checking for __attribute__(sentinel)... yes
+checking for __attribute__(unused)... yes
+checking for __attribute__(visibility)... yes
+checking for __attribute__(warn_unused_result)... yes
+checking for __attribute__(weak_alias)... yes
+checking for __attribute__(destructor)... yes
+checking for __attribute__(optnone)... no
+checking for __attribute__(extension)... yes
+checking for compiler familyid... 1
+checking for compiler familyname... GNU
+checking for compiler version... 264197
+checking for compiler version_str... 4.8.5
+
+*** Atomics
+checking for 32-bit GCC built-in atomics... yes
+checking for 64-bit GCC built-in atomics... yes
+checking if 64-bit GCC built-in atomics are lock-free... yes
+checking for x86_64 architecture... yes
+checking for atomics style... gcc
+
+============================================================================
+== Header file tests
+============================================================================
+checking alloca.h usability... yes
+checking alloca.h presence... yes
+checking for alloca.h... yes
+checking aio.h usability... yes
+checking aio.h presence... yes
+checking for aio.h... yes
+checking arpa/inet.h usability... yes
+checking arpa/inet.h presence... yes
+checking for arpa/inet.h... yes
+checking dirent.h usability... yes
+checking dirent.h presence... yes
+checking for dirent.h... yes
+checking dlfcn.h usability... yes
+checking dlfcn.h presence... yes
+checking for dlfcn.h... yes
+checking endian.h usability... yes
+checking endian.h presence... yes
+checking for endian.h... yes
+checking execinfo.h usability... yes
+checking execinfo.h presence... yes
+checking for execinfo.h... yes
+checking err.h usability... yes
+checking err.h presence... yes
+checking for err.h... yes
+checking fcntl.h usability... yes
+checking fcntl.h presence... yes
+checking for fcntl.h... yes
+checking grp.h usability... yes
+checking grp.h presence... yes
+checking for grp.h... yes
+checking libgen.h usability... yes
+checking libgen.h presence... yes
+checking for libgen.h... yes
+checking libutil.h usability... no
+checking libutil.h presence... no
+checking for libutil.h... no
+checking for memory.h... (cached) yes
+checking for netdb.h... (cached) yes
+checking for netinet/in.h... (cached) yes
+checking for netinet/tcp.h... (cached) yes
+checking poll.h usability... yes
+checking poll.h presence... yes
+checking for poll.h... yes
+checking pthread.h usability... yes
+checking pthread.h presence... yes
+checking for pthread.h... yes
+checking pty.h usability... yes
+checking pty.h presence... yes
+checking for pty.h... yes
+checking pwd.h usability... yes
+checking pwd.h presence... yes
+checking for pwd.h... yes
+checking sched.h usability... yes
+checking sched.h presence... yes
+checking for sched.h... yes
+checking for strings.h... (cached) yes
+checking stropts.h usability... no
+checking stropts.h presence... no
+checking for stropts.h... no
+checking linux/ethtool.h usability... yes
+checking linux/ethtool.h presence... yes
+checking for linux/ethtool.h... yes
+checking linux/sockios.h usability... yes
+checking linux/sockios.h presence... yes
+checking for linux/sockios.h... yes
+checking sys/fcntl.h usability... yes
+checking sys/fcntl.h presence... yes
+checking for sys/fcntl.h... yes
+checking sys/ipc.h usability... yes
+checking sys/ipc.h presence... yes
+checking for sys/ipc.h... yes
+checking sys/shm.h usability... yes
+checking sys/shm.h presence... yes
+checking for sys/shm.h... yes
+checking sys/ioctl.h usability... yes
+checking sys/ioctl.h presence... yes
+checking for sys/ioctl.h... yes
+checking sys/mman.h usability... yes
+checking sys/mman.h presence... yes
+checking for sys/mman.h... yes
+checking sys/param.h usability... yes
+checking sys/param.h presence... yes
+checking for sys/param.h... yes
+checking sys/queue.h usability... yes
+checking sys/queue.h presence... yes
+checking for sys/queue.h... yes
+checking sys/resource.h usability... yes
+checking sys/resource.h presence... yes
+checking for sys/resource.h... yes
+checking sys/select.h usability... yes
+checking sys/select.h presence... yes
+checking for sys/select.h... yes
+checking sys/socket.h usability... yes
+checking sys/socket.h presence... yes
+checking for sys/socket.h... yes
+checking sys/sockio.h usability... no
+checking sys/sockio.h presence... no
+checking for sys/sockio.h... no
+checking for sys/stat.h... (cached) yes
+checking sys/statfs.h usability... yes
+checking sys/statfs.h presence... yes
+checking for sys/statfs.h... yes
+checking sys/statvfs.h usability... yes
+checking sys/statvfs.h presence... yes
+checking for sys/statvfs.h... yes
+checking sys/time.h usability... yes
+checking sys/time.h presence... yes
+checking for sys/time.h... yes
+checking sys/tree.h usability... no
+checking sys/tree.h presence... no
+checking for sys/tree.h... no
+checking for sys/types.h... (cached) yes
+checking sys/uio.h usability... yes
+checking sys/uio.h presence... yes
+checking for sys/uio.h... yes
+checking sys/un.h usability... yes
+checking sys/un.h presence... yes
+checking for sys/un.h... yes
+checking net/uio.h usability... no
+checking net/uio.h presence... no
+checking for net/uio.h... no
+checking sys/utsname.h usability... yes
+checking sys/utsname.h presence... yes
+checking for sys/utsname.h... yes
+checking sys/vfs.h usability... yes
+checking sys/vfs.h presence... yes
+checking for sys/vfs.h... yes
+checking sys/wait.h usability... yes
+checking sys/wait.h presence... yes
+checking for sys/wait.h... yes
+checking syslog.h usability... yes
+checking syslog.h presence... yes
+checking for syslog.h... yes
+checking termios.h usability... yes
+checking termios.h presence... yes
+checking for termios.h... yes
+checking ulimit.h usability... yes
+checking ulimit.h presence... yes
+checking for ulimit.h... yes
+checking for unistd.h... (cached) yes
+checking util.h usability... no
+checking util.h presence... no
+checking for util.h... no
+checking utmp.h usability... yes
+checking utmp.h presence... yes
+checking for utmp.h... yes
+checking malloc.h usability... yes
+checking malloc.h presence... yes
+checking for malloc.h... yes
+checking ifaddrs.h usability... yes
+checking ifaddrs.h presence... yes
+checking for ifaddrs.h... yes
+checking crt_externs.h usability... no
+checking crt_externs.h presence... no
+checking for crt_externs.h... no
+checking regex.h usability... yes
+checking regex.h presence... yes
+checking for regex.h... yes
+checking mntent.h usability... yes
+checking mntent.h presence... yes
+checking for mntent.h... yes
+checking paths.h usability... yes
+checking paths.h presence... yes
+checking for paths.h... yes
+checking ioLib.h usability... no
+checking ioLib.h presence... no
+checking for ioLib.h... no
+checking sockLib.h usability... no
+checking sockLib.h presence... no
+checking for sockLib.h... no
+checking hostLib.h usability... no
+checking hostLib.h presence... no
+checking for hostLib.h... no
+checking shlwapi.h usability... no
+checking shlwapi.h presence... no
+checking for shlwapi.h... no
+checking sys/synch.h usability... no
+checking sys/synch.h presence... no
+checking for sys/synch.h... no
+checking db.h usability... no
+checking db.h presence... no
+checking for db.h... no
+checking ndbm.h usability... no
+checking ndbm.h presence... no
+checking for ndbm.h... no
+checking ieee754.h usability... yes
+checking ieee754.h presence... yes
+checking for ieee754.h... yes
+checking for sys/mount.h... yes
+checking for sys/sysctl.h... yes
+checking for net/if.h... yes
+
+============================================================================
+== Type tests
+============================================================================
+checking for socklen_t... yes
+checking for struct sockaddr_in... (cached) yes
+checking for struct sockaddr_in6... yes
+checking for struct sockaddr_storage... yes
+checking for struct ifreq... yes
+checking for struct ethtool_cmd... yes
+checking whether ethtool_cmd_speed is declared... yes
+checking whether SIOCETHTOOL is declared... yes
+checking for struct ethtool_cmd.speed_hi... yes
+checking for struct ethtool_cmd.speed_hi... (cached) yes
+checking for struct ethtool_cmd.speed_hi... (cached) yes
+checking for struct ethtool_cmd.speed_hi... (cached) yes
+checking whether AF_UNSPEC is declared... yes
+checking whether PF_UNSPEC is declared... yes
+checking whether AF_INET6 is declared... yes
+checking whether PF_INET6 is declared... yes
+checking if SA_RESTART defined in signal.h... yes
+checking for struct sockaddr.sa_len... no
+checking for struct dirent.d_type... yes
+checking for siginfo_t.si_fd... yes
+checking for siginfo_t.si_band... yes
+checking for struct statfs.f_type... yes
+checking for struct statfs.f_fstypename... no
+checking for struct statvfs.f_basetype... no
+checking for struct statvfs.f_fstypename... no
+checking for pointer diff type... ptrdiff_t (size: 8)
+checking the linker for support for the -fini option... yes
+
+============================================================================
+== Library and Function tests
+============================================================================
+checking for library containing openpty... -lutil
+checking for library containing gethostbyname... none required
+checking for library containing socket... none required
+checking for library containing sched_yield... none required
+checking for library containing dirname... none required
+checking for library containing ceil... -lm
+checking for library containing clock_gettime... none required
+checking for asprintf... yes
+checking for snprintf... yes
+checking for vasprintf... yes
+checking for vsnprintf... yes
+checking for openpty... yes
+checking for isatty... yes
+checking for getpwuid... yes
+checking for fork... yes
+checking for waitpid... yes
+checking for execve... yes
+checking for pipe... yes
+checking for ptsname... yes
+checking for setsid... yes
+checking for mmap... yes
+checking for tcgetpgrp... yes
+checking for posix_memalign... yes
+checking for strsignal... yes
+checking for sysconf... yes
+checking for syslog... yes
+checking for vsyslog... yes
+checking for regcmp... no
+checking for regexec... yes
+checking for regfree... yes
+checking for _NSGetEnviron... no
+checking for socketpair... yes
+checking for strncpy_s... no
+checking for usleep... yes
+checking for mkfifo... yes
+checking for dbopen... no
+checking for dbm_open... no
+checking for statfs... yes
+checking for statvfs... yes
+checking for setpgid... yes
+checking for setenv... yes
+checking for __malloc_initialize_hook... yes
+checking for htonl define... 
+checking for htonl... yes
+checking whether va_copy is declared... yes
+checking whether __va_copy is declared... yes
+checking whether __func__ is declared... yes
+
+============================================================================
+== System-specific tests
+============================================================================
+checking for _SC_NPROCESSORS_ONLN... yes
+checking whether byte ordering is bigendian... no
+checking for broken qsort... no
+checking if C compiler and POSIX threads work as is... no
+checking if C compiler and POSIX threads work with -Kthread... no
+checking if C compiler and POSIX threads work with -kthread... no
+checking if C compiler and POSIX threads work with -pthread... yes
+checking for pthread_mutexattr_setpshared... yes
+checking for pthread_condattr_setpshared... yes
+checking for PTHREAD_MUTEX_ERRORCHECK_NP... yes
+checking for PTHREAD_MUTEX_ERRORCHECK... yes
+checking for working POSIX threads package... yes
+checking if threads have different pids (pthreads on linux)... no
+checking whether ln -s works... yes
+checking for grep that handles long lines and -e... (cached) /usr/bin/grep
+checking for egrep... (cached) /usr/bin/grep -E
+checking dependency style of gcc -std=gnu99... gcc3
+checking for flex... flex
+checking lex output file root... lex.yy
+checking lex library... none needed
+checking whether yytext is a pointer... no
+checking for flavor of ps to use... ps -A -o fname,pid,uid
+checking if build filesystem is case sensitive... yes
+checking if configuring for case sensitive filesystem... yes
+checking whether RLIMIT_NPROC is declared... yes
+checking whether RLIMIT_MEMLOCK is declared... yes
+checking whether RLIMIT_NOFILE is declared... yes
+checking whether RLIMIT_FSIZE is declared... yes
+checking whether RLIMIT_CORE is declared... yes
+checking whether RLIMIT_STACK is declared... yes
+checking whether RLIMIT_AS is declared... yes
+
+============================================================================
+== Configure event library support - libev
+============================================================================
+checking will libev support be built... no
+
+============================================================================
+== Configure event library support - libevent
+============================================================================
+checking for libevent in... /opt/hpc/local/libevent and /opt/hpc/local/libevent/lib
+checking event.h usability... yes
+checking event.h presence... yes
+checking for event.h... yes
+checking for library containing event_config_new... -levent_core
+checking if libevent_core requires libnl v1 or v3... 
+checking for evthread_set_lock_callbacks in -levent_core... yes
+checking for evthread_use_pthreads in -levent_pthreads... yes
+checking will libevent support be built... yes
+
+============================================================================
+== Configure PMIx
+============================================================================
+checking --with-pmix value... sanity check ok (/opt/hpc/external/pmix/include)
+checking libpmix.* in /opt/hpc/external/pmix/lib64... not found
+checking libpmix.* in /opt/hpc/external/pmix/lib... found
+checking for PMIx version file... found
+checking version 4x... found
+checking version 4.0.1 or greater... found
+
+============================================================================
+== Configure HWLOC
+============================================================================
+checking for hwloc in... /opt/hpc/local/hwloc and /opt/hpc/local/hwloc/lib
+checking hwloc.h usability... yes
+checking hwloc.h presence... yes
+checking for hwloc.h... yes
+checking for library containing hwloc_topology_init... -lhwloc
+checking if libhwloc requires libnl v1 or v3... 
+checking if external hwloc version is 1.5 or greater... yes
+checking if external hwloc version is 1.8 or greater... yes
+checking hwloc header... <hwloc.h>
+checking will hwloc support be built... yes
+
+============================================================================
+== Modular Component Architecture (MCA) setup
+============================================================================
+checking for subdir args...  '--disable-option-checking' '--prefix=/opt/hpc/external/ompi' '--enable-prte-ft' '--with-proxy-version-string=5.1.0a1' '--with-proxy-package-name=Open MPI' '--with-proxy-bugreport=https://www.open-mpi.org/community/help/' '--enable-prte-prefix-by-default' '--with-prte-extra-lib=' '--with-prte-extra-ltlib=' '--with-hwloc=/opt/hpc/local/hwloc' '--with-libevent=/opt/hpc/local/libevent' '--with-pmix=/opt/hpc/external/pmix' '--with-ucx=no' '--enable-mpirun-prefix-by-default'
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking which components should be disabled... 
+checking which components should be run-time loadable... ras-lsf ras-alps plm-tm plm-lsf plm-alps ess-alps 
+checking which components should be static... default
+
+*** Configuring MCA
+checking for frameworks... common, errmgr, ess, filem, grpcomm, iof, odls, oob, plm, propagate, prtebacktrace, prtedl, prteif, prteinstalldirs, prtereachable, ras, rmaps, rml, routed, rtc, schizo, state
+
++++ Configuring MCA framework common
+checking for no configure components in framework common... 
+checking for m4 configure components in framework common... alps
+
+--- MCA component common:alps (m4 configuration macro)
+checking for MCA component common:alps compile mode... static
+checking for ALPS support cle level unknown... checking for CRAY_ALPSLLI... no
+checking for CRAY_ALPSUTIL... no
+checking for CRAY_ALPS... no
+checking for CRAY_WLM_DETECT... no
+checking for CRAY_UGNI... no
+prte_check_cray_alps_happy = no
+checking if MCA component common:alps can compile... no
+
++++ Configuring MCA framework errmgr
+checking for no configure components in framework errmgr... dvm, prted
+checking for m4 configure components in framework errmgr... detector
+
+--- MCA component errmgr:dvm (no configuration)
+checking for MCA component errmgr:dvm compile mode... static
+checking if MCA component errmgr:dvm can compile... yes
+
+--- MCA component errmgr:prted (no configuration)
+checking for MCA component errmgr:prted compile mode... static
+checking if MCA component errmgr:prted can compile... yes
+
+--- MCA component errmgr:detector (m4 configuration macro)
+checking for MCA component errmgr:detector compile mode... static
+checking if MCA component errmgr:detector can compile... yes
+
++++ Configuring MCA framework ess
+checking for no configure components in framework ess... env, hnp
+checking for m4 configure components in framework ess... alps, lsf, slurm, tm
+
+--- MCA component ess:env (no configuration)
+checking for MCA component ess:env compile mode... static
+checking if MCA component ess:env can compile... yes
+
+--- MCA component ess:hnp (no configuration)
+checking for MCA component ess:hnp compile mode... static
+checking if MCA component ess:hnp can compile... yes
+
+--- MCA component ess:alps (m4 configuration macro)
+checking for MCA component ess:alps compile mode... dso
+checking if MCA component ess:alps can compile... no
+
+--- MCA component ess:lsf (m4 configuration macro)
+checking for MCA component ess:lsf compile mode... static
+checking --with-lsf value... simple ok (unspecified)
+checking --with-lsf-libdir value... simple ok (unspecified)
+checking for library containing yp_all... -lnsl
+checking for library containing shm_open... -lrt
+checking lsf/lsf.h usability... no
+checking lsf/lsf.h presence... no
+checking for lsf/lsf.h... no
+checking for libevent conflict... No. -levent is not being explicitly used.
+checking if MCA component ess:lsf can compile... no
+
+--- MCA component ess:slurm (m4 configuration macro)
+checking for MCA component ess:slurm compile mode... static
+checking for fork... (cached) yes
+checking for execve... (cached) yes
+checking for setpgid... (cached) yes
+checking if MCA component ess:slurm can compile... yes
+
+--- MCA component ess:tm (m4 configuration macro)
+checking for MCA component ess:tm compile mode... static
+checking --with-tm value... simple ok (unspecified)
+checking for pbs-config... not found
+checking tm.h usability... no
+checking tm.h presence... no
+checking for tm.h... no
+checking if MCA component ess:tm can compile... no
+
++++ Configuring MCA framework filem
+checking for no configure components in framework filem... raw
+checking for m4 configure components in framework filem... 
+
+--- MCA component filem:raw (no configuration)
+checking for MCA component filem:raw compile mode... static
+checking if MCA component filem:raw can compile... yes
+
++++ Configuring MCA framework grpcomm
+checking for no configure components in framework grpcomm... direct
+checking for m4 configure components in framework grpcomm... bmg
+
+--- MCA component grpcomm:direct (no configuration)
+checking for MCA component grpcomm:direct compile mode... static
+checking if MCA component grpcomm:direct can compile... yes
+
+--- MCA component grpcomm:bmg (m4 configuration macro)
+checking for MCA component grpcomm:bmg compile mode... static
+checking if MCA component grpcomm:bmg can compile... yes
+
++++ Configuring MCA framework iof
+checking for no configure components in framework iof... hnp, prted
+checking for m4 configure components in framework iof... 
+
+--- MCA component iof:hnp (no configuration)
+checking for MCA component iof:hnp compile mode... static
+checking if MCA component iof:hnp can compile... yes
+
+--- MCA component iof:prted (no configuration)
+checking for MCA component iof:prted compile mode... static
+checking if MCA component iof:prted can compile... yes
+
++++ Configuring MCA framework odls
+checking for no configure components in framework odls... 
+checking for m4 configure components in framework odls... alps, default
+
+--- MCA component odls:alps (m4 configuration macro)
+checking for MCA component odls:alps compile mode... static
+checking if MCA component odls:alps can compile... no
+
+--- MCA component odls:default (m4 configuration macro)
+checking for MCA component odls:default compile mode... static
+checking for fork... (cached) yes
+checking if MCA component odls:default can compile... yes
+
++++ Configuring MCA framework oob
+checking for no configure components in framework oob... 
+checking for m4 configure components in framework oob... alps, tcp
+
+--- MCA component oob:alps (m4 configuration macro)
+checking for MCA component oob:alps compile mode... static
+checking if MCA component oob:alps can compile... no
+
+--- MCA component oob:tcp (m4 configuration macro)
+checking for MCA component oob:tcp compile mode... static
+checking for struct sockaddr_in... (cached) yes
+checking if MCA component oob:tcp can compile... yes
+
++++ Configuring MCA framework plm
+checking for no configure components in framework plm... 
+checking for m4 configure components in framework plm... alps, lsf, slurm, ssh, tm
+
+--- MCA component plm:alps (m4 configuration macro)
+checking for MCA component plm:alps compile mode... dso
+checking if MCA component plm:alps can compile... no
+
+--- MCA component plm:lsf (m4 configuration macro)
+checking for MCA component plm:lsf compile mode... dso
+checking if MCA component plm:lsf can compile... no
+
+--- MCA component plm:slurm (m4 configuration macro)
+checking for MCA component plm:slurm compile mode... static
+checking if MCA component plm:slurm can compile... yes
+
+--- MCA component plm:ssh (m4 configuration macro)
+checking for MCA component plm:ssh compile mode... static
+checking for fork... (cached) yes
+checking if MCA component plm:ssh can compile... yes
+
+--- MCA component plm:tm (m4 configuration macro)
+checking for MCA component plm:tm compile mode... dso
+checking if MCA component plm:tm can compile... no
+
++++ Configuring MCA framework propagate
+checking for no configure components in framework propagate... 
+checking for m4 configure components in framework propagate... prperror
+
+--- MCA component propagate:prperror (m4 configuration macro)
+checking for MCA component propagate:prperror compile mode... static
+checking if MCA component propagate:prperror can compile... yes
+
++++ Configuring MCA framework prtebacktrace
+checking for no configure components in framework prtebacktrace... 
+checking for m4 configure components in framework prtebacktrace... execinfo, none, printstack
+
+--- MCA component prtebacktrace:execinfo (m4 configuration macro, priority 30)
+checking for MCA component prtebacktrace:execinfo compile mode... static
+checking for execinfo.h... (cached) yes
+checking for library containing backtrace... none required
+checking if MCA component prtebacktrace:execinfo can compile... yes
+
+--- MCA component prtebacktrace:printstack (m4 configuration macro, priority 30)
+checking for MCA component prtebacktrace:printstack compile mode... static
+checking ucontext.h usability... yes
+checking ucontext.h presence... yes
+checking for ucontext.h... yes
+checking for printstack... no
+checking if MCA component prtebacktrace:printstack can compile... no
+
+--- MCA component prtebacktrace:none (m4 configuration macro, priority 0)
+checking for MCA component prtebacktrace:none compile mode... static
+checking if MCA component prtebacktrace:none can compile... no
+
++++ Configuring MCA framework prtedl
+checking for no configure components in framework prtedl... 
+checking for m4 configure components in framework prtedl... dlopen, libltdl
+
+--- MCA component prtedl:dlopen (m4 configuration macro, priority 80)
+checking for MCA component prtedl:dlopen compile mode... static
+checking dlfcn.h usability... yes
+checking dlfcn.h presence... yes
+checking for dlfcn.h... yes
+configure: looking for library without search path
+checking for library containing dlopen... -ldl
+checking if libdl requires libnl v1 or v3... 
+checking if MCA component prtedl:dlopen can compile... yes
+
+--- MCA component prtedl:libltdl (m4 configuration macro, priority 50)
+checking for MCA component prtedl:libltdl compile mode... static
+checking --with-libltdl value... simple ok (unspecified)
+checking --with-libltdl-libdir value... simple ok (unspecified)
+checking for libltdl dir... compiler default
+checking for libltdl library dir... linker default
+checking ltprtedl.h usability... no
+checking ltprtedl.h presence... no
+checking for ltprtedl.h... no
+checking if MCA component prtedl:libltdl can compile... no
+
++++ Configuring MCA framework prteif
+checking for no configure components in framework prteif... 
+checking for m4 configure components in framework prteif... bsdx_ipv4, bsdx_ipv6, linux_ipv6, posix_ipv4, solaris_ipv6
+
+--- MCA component prteif:bsdx_ipv4 (m4 configuration macro)
+checking for MCA component prteif:bsdx_ipv4 compile mode... static
+checking struct sockaddr... yes (cached)
+checking NetBSD, FreeBSD, OpenBSD, or DragonFly... no
+checking if MCA component prteif:bsdx_ipv4 can compile... no
+
+--- MCA component prteif:bsdx_ipv6 (m4 configuration macro)
+checking for MCA component prteif:bsdx_ipv6 compile mode... static
+checking struct sockaddr... yes (cached)
+checking some flavor of BSD... no
+checking if MCA component prteif:bsdx_ipv6 can compile... no
+
+--- MCA component prteif:linux_ipv6 (m4 configuration macro)
+checking for MCA component prteif:linux_ipv6 compile mode... static
+checking if we are on Linux with TCP... yes
+checking if MCA component prteif:linux_ipv6 can compile... yes
+
+--- MCA component prteif:posix_ipv4 (m4 configuration macro)
+checking for MCA component prteif:posix_ipv4 compile mode... static
+checking struct sockaddr... yes (cached)
+checking not NetBSD, FreeBSD, OpenBSD, or DragonFly... yes
+checking for struct ifreq.ifr_hwaddr... yes
+checking for struct ifreq.ifr_mtu... yes
+checking if MCA component prteif:posix_ipv4 can compile... yes
+
+--- MCA component prteif:solaris_ipv6 (m4 configuration macro)
+checking for MCA component prteif:solaris_ipv6 compile mode... static
+checking if MCA component prteif:solaris_ipv6 can compile... no
+
++++ Configuring MCA framework prteinstalldirs
+checking for no configure components in framework prteinstalldirs... 
+checking for m4 configure components in framework prteinstalldirs... config, env
+
+--- MCA component prteinstalldirs:env (m4 configuration macro, priority 10)
+checking for MCA component prteinstalldirs:env compile mode... static
+checking if MCA component prteinstalldirs:env can compile... yes
+
+--- MCA component prteinstalldirs:config (m4 configuration macro, priority 0)
+checking for MCA component prteinstalldirs:config compile mode... static
+checking if MCA component prteinstalldirs:config can compile... yes
+
++++ Configuring MCA framework prtereachable
+checking for no configure components in framework prtereachable... weighted
+checking for m4 configure components in framework prtereachable... netlink
+
+--- MCA component prtereachable:weighted (no configuration)
+checking for MCA component prtereachable:weighted compile mode... static
+checking if MCA component prtereachable:weighted can compile... yes
+
+--- MCA component prtereachable:netlink (m4 configuration macro)
+checking for MCA component prtereachable:netlink compile mode... static
+checking for linux/netlink.h... yes
+configure: checking for libnl v3
+checking for /usr/include/libnl3... not found
+checking for /usr/local/include/libnl3... not found
+checking if MCA component prtereachable:netlink can compile... no
+
++++ Configuring MCA framework ras
+checking for no configure components in framework ras... simulator
+checking for m4 configure components in framework ras... alps, gridengine, lsf, slurm, tm
+
+--- MCA component ras:simulator (no configuration)
+checking for MCA component ras:simulator compile mode... static
+checking if MCA component ras:simulator can compile... yes
+
+--- MCA component ras:alps (m4 configuration macro)
+checking for MCA component ras:alps compile mode... dso
+checking alps/apInfo.h usability... no
+checking alps/apInfo.h presence... no
+checking for alps/apInfo.h... no
+checking if MCA component ras:alps can compile... no
+
+--- MCA component ras:gridengine (m4 configuration macro)
+checking for MCA component ras:gridengine compile mode... static
+checking if user requested SGE build... not specified; checking environment
+checking for qrsh... no
+checking for SGE_ROOT environment variable... not found
+checking if MCA component ras:gridengine can compile... no
+
+--- MCA component ras:lsf (m4 configuration macro)
+checking for MCA component ras:lsf compile mode... dso
+checking if MCA component ras:lsf can compile... no
+
+--- MCA component ras:slurm (m4 configuration macro)
+checking for MCA component ras:slurm compile mode... static
+checking if MCA component ras:slurm can compile... yes
+
+--- MCA component ras:tm (m4 configuration macro)
+checking for MCA component ras:tm compile mode... static
+checking if MCA component ras:tm can compile... no
+
++++ Configuring MCA framework rmaps
+checking for no configure components in framework rmaps... mindist, ppr, rank_file, round_robin, seq
+checking for m4 configure components in framework rmaps... 
+
+--- MCA component rmaps:mindist (no configuration)
+checking for MCA component rmaps:mindist compile mode... static
+checking if MCA component rmaps:mindist can compile... yes
+
+--- MCA component rmaps:ppr (no configuration)
+checking for MCA component rmaps:ppr compile mode... static
+checking if MCA component rmaps:ppr can compile... yes
+
+--- MCA component rmaps:rank_file (no configuration)
+checking for MCA component rmaps:rank_file compile mode... static
+checking if MCA component rmaps:rank_file can compile... yes
+
+--- MCA component rmaps:round_robin (no configuration)
+checking for MCA component rmaps:round_robin compile mode... static
+checking if MCA component rmaps:round_robin can compile... yes
+
+--- MCA component rmaps:seq (no configuration)
+checking for MCA component rmaps:seq compile mode... static
+checking if MCA component rmaps:seq can compile... yes
+
++++ Configuring MCA framework rml
+checking for no configure components in framework rml... oob
+checking for m4 configure components in framework rml... 
+
+--- MCA component rml:oob (no configuration)
+checking for MCA component rml:oob compile mode... static
+checking if MCA component rml:oob can compile... yes
+
++++ Configuring MCA framework routed
+checking for no configure components in framework routed... binomial, debruijn, direct, radix
+checking for m4 configure components in framework routed... 
+
+--- MCA component routed:binomial (no configuration)
+checking for MCA component routed:binomial compile mode... static
+checking if MCA component routed:binomial can compile... yes
+
+--- MCA component routed:debruijn (no configuration)
+checking for MCA component routed:debruijn compile mode... static
+checking if MCA component routed:debruijn can compile... yes
+
+--- MCA component routed:direct (no configuration)
+checking for MCA component routed:direct compile mode... static
+checking if MCA component routed:direct can compile... yes
+
+--- MCA component routed:radix (no configuration)
+checking for MCA component routed:radix compile mode... static
+checking if MCA component routed:radix can compile... yes
+
++++ Configuring MCA framework rtc
+checking for no configure components in framework rtc... hwloc
+checking for m4 configure components in framework rtc... 
+
+--- MCA component rtc:hwloc (no configuration)
+checking for MCA component rtc:hwloc compile mode... static
+checking if MCA component rtc:hwloc can compile... yes
+
++++ Configuring MCA framework schizo
+checking for no configure components in framework schizo... ompi, prte
+checking for m4 configure components in framework schizo... 
+
+--- MCA component schizo:ompi (no configuration)
+checking for MCA component schizo:ompi compile mode... static
+checking if MCA component schizo:ompi can compile... yes
+
+--- MCA component schizo:prte (no configuration)
+checking for MCA component schizo:prte compile mode... static
+checking if MCA component schizo:prte can compile... yes
+
++++ Configuring MCA framework state
+checking for no configure components in framework state... dvm, prted
+checking for m4 configure components in framework state... 
+
+--- MCA component state:dvm (no configuration)
+checking for MCA component state:dvm compile mode... static
+checking if MCA component state:dvm can compile... yes
+
+--- MCA component state:prted (no configuration)
+checking for MCA component state:prted compile mode... static
+checking if MCA component state:prted can compile... yes
+
+============================================================================
+== Symbol visibility feature
+============================================================================
+checking if gcc -std=gnu99 supports -fvisibility=hidden... yes
+checking whether to enable symbol visibility... yes (via -fvisibility=hidden)
+
+============================================================================
+== Ptrace stop-on-exec support
+============================================================================
+checking sys/ptrace.h usability... yes
+checking sys/ptrace.h presence... yes
+checking for sys/ptrace.h... yes
+checking for ptrace... yes
+checking PTRACE_TRACEME... no
+checking PT_TRACE_ME... yes
+checking PTRACE_DETACH... no
+checking PT_DETACH... yes
+checking Linux ptrace function signature... no
+checking ptrace stop-on-exec will be supported... yes
+
+============================================================================
+== Final top-level PRTE configuration
+============================================================================
+
+*** Libtool configuration
+checking how to print strings... printf
+checking for a sed that does not truncate output... /usr/bin/sed
+checking for fgrep... /usr/bin/grep -F
+checking for ld used by gcc -std=gnu99... /usr/bin/ld
+checking if the linker (/usr/bin/ld) is GNU ld... yes
+checking the maximum length of command line arguments... 1572864
+checking whether the shell understands some XSI constructs... yes
+checking whether the shell understands "+="... yes
+checking how to convert x86_64-pc-linux-gnu file names to x86_64-pc-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-pc-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/bin/ld option to reload object files... -r
+checking for objdump... objdump
+checking how to recognize dependent libraries... pass_all
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for ar... ar
+checking for archiver @FILE support... @
+checking for strip... strip
+checking for ranlib... ranlib
+checking command to parse /usr/bin/nm -B output from gcc -std=gnu99 object... ok
+checking for sysroot... no
+checking for mt... no
+checking if : is a manifest tool... no
+checking for dlfcn.h... (cached) yes
+checking for objdir... .libs
+checking if gcc -std=gnu99 supports -fno-rtti -fno-exceptions... no
+checking for gcc -std=gnu99 option to produce PIC... -fPIC -DPIC
+checking if gcc -std=gnu99 PIC flag -fPIC -DPIC works... yes
+checking if gcc -std=gnu99 static flag -static works... no
+checking if gcc -std=gnu99 supports -c -o file.o... yes
+checking if gcc -std=gnu99 supports -c -o file.o... (cached) yes
+checking whether the gcc -std=gnu99 linker (/usr/bin/ld -m elf_x86_64) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... no
+configure: creating ./config.lt
+chmod: changing permissions of './config.lt': Operation not permitted
+chmod: changing permissions of './config.lt': Operation not permitted
+config.lt: creating libtool
+
+*** Compiler flags
+
+*** Wrapper compiler final setup
+checking if linker supports RPATH... yes (-Wl,-rpath -Wl,LIBDIR)
+checking if linker supports RUNPATH... yes (-Wl,--enable-new-dtags)
+checking for PRTE CPPFLAGS... -I/opt/hpc/local/libevent/include -I/opt/hpc/external/pmix/include -I/opt/hpc/local/hwloc/include 
+checking for PRTE CFLAGS... -pthread 
+checking for PRTE CFLAGS_PREFIX... 
+checking for PRTE CXXFLAGS...  
+checking for PRTE CXXFLAGS_PREFIX... 
+checking for PRTE LDFLAGS...  -L/opt/hpc/local/libevent/lib -L/opt/hpc/external/pmix/lib -L/opt/hpc/local/hwloc/lib   -Wl,-rpath -Wl,/opt/hpc/local/libevent/lib -Wl,-rpath -Wl,/opt/hpc/external/pmix/lib -Wl,-rpath -Wl,/opt/hpc/local/hwloc/lib -Wl,-rpath -Wl,@{libdir} -Wl,--enable-new-dtags
+checking for PRTE pkg-config LDFLAGS...  -L/opt/hpc/local/libevent/lib -L/opt/hpc/external/pmix/lib -L/opt/hpc/local/hwloc/lib   -Wl,-rpath -Wl,/opt/hpc/local/libevent/lib -Wl,-rpath -Wl,/opt/hpc/external/pmix/lib -Wl,-rpath -Wl,/opt/hpc/local/hwloc/lib -Wl,-rpath -Wl,${libdir} -Wl,--enable-new-dtags
+checking for PRTE LIBS... -levent_core -levent_pthreads -lpmix -lhwloc 
+
+*** Man page setup
+checking if want man pages... yes
+checking for pandoc... /usr/bin/pandoc
+checking pandoc version... major: 1, minor: 12
+checking if pandoc version is >=v1.12... yes
+checking if libtool needs -no-undefined flag to build shared libraries... no
+
+*** Final output
+checking for libraries that use libnl v1... (none)
+checking for libraries that use libnl v3... (none)
+checking that generated files are newer than configure... done
+configure: creating ./config.status
+chmod: changing permissions of './config.status': Operation not permitted
+configure: error: write failure creating ./config.status
+configure: ===== done with 3rd-party/prrte configure =====
+configure: error: PRRTE configuration failed.  Cannot continue.

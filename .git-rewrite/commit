@@ -1,0 +1,10 @@
+tree 76b4a436f585cea1d1b210e5b702cf8e1dda7846
+parent d5a5caa7e0d736f265eff5504079f156d5337c1d
+author Ralph Castain <rhc@open-mpi.org> 1388678484 +0000
+committer Ralph Castain <rhc@open-mpi.org> 1388678484 +0000
+
+Update platform file
+
+cmr=v1.7.4:reviewer=ompi-gk1.7
+
+This commit was SVN r30104.

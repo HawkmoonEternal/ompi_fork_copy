@@ -559,6 +559,7 @@ void mca_btl_tcp_endpoint_close(mca_btl_base_endpoint_t *btl_endpoint)
             .count = 0,
             .size = 0,
         };
+        printf("send blocking tcp endpoint, %s:%d\n", opal_process_info.myprocid.nspace, opal_process_info.myprocid.rank);
         mca_btl_tcp_endpoint_send_blocking(btl_endpoint, &fin_msg, sizeof(fin_msg));
     }
 
@@ -570,7 +571,7 @@ void mca_btl_tcp_endpoint_close(mca_btl_base_endpoint_t *btl_endpoint)
      * reporting the error. The upper layer has then the opportunity to
      * re-route or re-schedule the fragments.
      */
-    if (MCA_BTL_TCP_FAILED == btl_endpoint->endpoint_state) {
+    if (MCA_BTL_TCP_FAILED == btl_endpoint->endpoint_state && false) {
         mca_btl_tcp_frag_t *frag = btl_endpoint->endpoint_send_frag;
         if (NULL == frag) {
             frag = (mca_btl_tcp_frag_t *) opal_list_remove_first(&btl_endpoint->endpoint_frags);

@@ -8,7 +8,7 @@ Description: Open MPI based Open SHMEM implementation
 Version: 5.1.0a1
 URL: http://www.open-mpi.org/
 #
-prefix=/usr/local
+prefix=/opt/hpc/external/ompi
 exec_prefix=${prefix}
 includedir=${prefix}/include
 libdir=${exec_prefix}/lib
@@ -18,6 +18,6 @@ pkgincludedir=${includedir}/openmpi
 # static linking, so only list these in Libs.private.
 #
 Libs: -L${libdir}    -Wl,-rpath -Wl,${libdir}  -Wl,--enable-new-dtags  -loshmem -lmpi
-Libs.private: -lopen-pal -lfabric -ldl -lrt -lpthread -lutil -lm 
+Libs.private: -lopen-pal -ldl -lrt -lpthread -lutil -lm 
 #
 Cflags: -I${includedir}     -pthread 

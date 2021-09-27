@@ -1543,6 +1543,7 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
         /* We just need to inform the RM that we accept the substraction */
     }else if(rc_type==MPI_RC_SUB){
         
+        /*
         bool non_default=true;
         pmix_info_t *event_info;
         PMIX_INFO_CREATE(event_info, 2);
@@ -1552,6 +1553,7 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
         PMIX_VALUE_LOAD(&event_info[1].value, delta_pset, PMIX_STRING);
         rc = PMIx_Notify_event(PMIX_RC_FINALIZED, NULL, PMIX_RANGE_RM, event_info, 2, NULL, NULL);
         PMIX_INFO_FREE(event_info, 2);
+        */
         ompi_instance_clear_rc_cache(delta_pset);
         return opal_pmix_convert_status(rc);
     }

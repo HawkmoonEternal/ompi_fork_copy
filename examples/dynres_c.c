@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "mpi.h"
+#include <unistd.h>
 #include "../ompi/include/ompi_config.h"
 #include "../instance/instance.h"
 #include "../opal/util/arch.h"
@@ -133,8 +134,12 @@ int init(MPI_Session *session_handle, MPI_Comm *comm, char *main_pset_name){
     MPI_Group wgroup = MPI_GROUP_NULL;
 
     /* create a group from pset */
+    printf("MPI_Group_from_session pset:\n");
     rc= MPI_Group_from_session_pset (session_handle, main_pset_name, &wgroup);
+    printf("MPI_Group_from_session pset finished with status: %d\n", rc);
     MPI_Group_size(wgroup, &num_procs);
+    printf("group size is %d\n", num_procs);
+    
     /* create a communicator from group */
     start=clock();
     if(MPI_SUCCESS != (rc = MPI_Comm_create_from_group(wgroup, "mpi.forum.example", MPI_INFO_NULL, MPI_ERRORS_RETURN, comm))){
@@ -142,6 +147,7 @@ int init(MPI_Session *session_handle, MPI_Comm *comm, char *main_pset_name){
         MPI_Session_finalize(&session_handle);
         return -1;
     }
+    printf("MPI_comm_create_from_group success\n");
     int msec=(clock()-start)*1000/CLOCKS_PER_SEC;
   
     /* new rank & size */
@@ -243,6 +249,9 @@ void rebalance_step(){
 
 int main(int argc, char* argv[])
 {
+	char host[256];
+	gethostname(host, 256);
+    printf("application processes started on host: %s\n", host);
     int  size, len, flag, npsets, counter=0;
     char pset_name[PMIX_MAX_KEYLEN];
     char delta_pset[PMIX_MAX_KEYLEN];
@@ -261,6 +270,7 @@ int main(int argc, char* argv[])
     //printf("MPI_Session_init\n");
     /* initialize the session */
     int init_ret=MPI_Session_init(MPI_INFO_NULL, MPI_ERRORS_RETURN, &session_handle);
+    printf("MPI_Session_init finished\n");
     rank=ompi_proc_local_proc->super.proc_name.vpid; 
     //MPI_Session_get_num_psets(session_handle, info, &npsets);
     strcpy(pset_result,pset_name);
@@ -275,6 +285,8 @@ int main(int argc, char* argv[])
 
     /* check if there is a resource change right at the beginning */
     MPI_Session_get_res_change(session_handle, pset_name,  &rc_type, delta_pset, &incl_flag, &rc_status, &info);
+    printf("get res change finished\n");
+    sleep(10);
     /* if we are included in the delta_pset we are a dynamically added process, so we need to confirm the resource change */
     if(rc_type != MPI_RC_NULL && rc_status == RC_ANNOUNCED && incl_flag){
         printf("    DELTA PSET RANK %d: I was added dynamically. Need to confirm \n", rank);
@@ -292,7 +304,9 @@ int main(int argc, char* argv[])
 
     }else{
         /* initialize communication */
+        printf("init comm\n");
         init(&session_handle, &lib_comm, pset_name);
+        printf("init comm finished\n");
         rc=MPI_SUCCESS;
     }
     

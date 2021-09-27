@@ -1332,6 +1332,7 @@ int ompi_comm_create_from_group (ompi_group_t *group, const char *tag, opal_info
     if (NULL == newcomp->super.s_info) {
         return OMPI_ERR_OUT_OF_RESOURCE;
     }
+    printf("activate\n");
     /* activate communicator and init coll-module. use the group allreduce implementation as
      * no collective module has yet been selected. the tag does not matter as any tag will
      * be unique on the new communicator. */
@@ -1340,7 +1341,7 @@ int ompi_comm_create_from_group (ompi_group_t *group, const char *tag, opal_info
     if ( OMPI_SUCCESS != rc ) {
         return rc;
     }
-
+    printf("activate finished\n");
     newcomp->instance = group->grp_instance;
 
     *newcomm = newcomp;
