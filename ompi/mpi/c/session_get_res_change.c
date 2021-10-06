@@ -18,28 +18,35 @@
 static const char FUNC_NAME[] = "MPI_Session_get_res_change";
 
 
-int MPI_Session_get_res_change(MPI_Session session, char *pset_name, MPI_RC_TYPE *type, char *delta_pset, int *incl, MPI_RC_STATUS *status, MPI_Info *info_used);{
+int MPI_Session_get_res_change(MPI_Session session, int *type, char *delta_pset, int *incl, int *status, MPI_Info *info_used){
     int rc;
+    char bound_pset[PMIX_MAX_KEYLEN];
+    int flag = 0;
+    ompi_rc_op_type_t ompi_rc_op_type;
     //PARAM CHECK
-    if (MPI_PARAM_CHECK) {
-        OMPI_ERR_INIT_FINALIZE(FUNC_NAME);
-        if (NULL == session || MPI_SESSION_NULL == session) {
+    if (NULL == session || MPI_SESSION_NULL == session) {
             return MPI_ERR_ARG;
-        }
-        if (NULL == info_used) {
-            return OMPI_ERRHANDLER_INVOKE (session, MPI_ERR_INFO, FUNC_NAME);
-        }
     }
 
-    uint8_t type_unsigned;
-    bool inluded;
-
-    rc=ompi_instance_get_res_change(session, pset_name, &type_unsigned, delta_pset, &included, status, (opal_info_t**)info_used, true);
-    *incl= included ? 1 : 0;
-    *type=(int)type_unsigned;
-
+    //PARAM CHECK
+    printf("check info\n");
+    if(NULL != info_used && MPI_INFO_NULL != *info_used){
+        printf("ompi_info_get\n");
+        MPI_Info_get(*info_used, "MPI_RC_BOUND_PSET", PMIX_MAX_KEYLEN, bound_pset, &flag);
+        printf("ompi_info_get\ finished\n");
+        printf("extracted %s from info object\n", bound_pset);
+    }
+    if (!flag) {
+        rc = ompi_instance_get_res_change(session, NULL, &ompi_rc_op_type, delta_pset, incl, status, (opal_info_t**)info_used, true);
+    }else{
+        rc = ompi_instance_get_res_change(session, bound_pset, &ompi_rc_op_type, delta_pset, incl, status, (opal_info_t**)info_used, true);
+    }
+    if(rc == OPAL_ERR_NOT_FOUND || rc == OMPI_SUCCESS){
+        rc = MPI_SUCCESS;
+    }
     //ERROR HANDLING
     
-    //ERROR HANDLING
-    OMPI_ERRHANDLER_RETURN (rc, session, rc, FUNC_NAME);
+    *type = MPI_OMPI_CONVT_RC_OP(ompi_rc_op_type);
+    
+    return rc;
 }

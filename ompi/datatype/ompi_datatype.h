@@ -448,6 +448,8 @@ typedef struct {
     int new_type_was_created;
 } ompi_datatype_consolidate_t;
 
+
+
 static inline int
 ompi_datatype_consolidate_create(
     MPI_Count count, MPI_Datatype dtype, ompi_datatype_consolidate_t *dtmod,

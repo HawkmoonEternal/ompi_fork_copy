@@ -594,6 +594,28 @@ enum {
 
 #define MPI_ERR_SYSRESOURCE          -2
 
+/* Pset operation constants. Don't change the order of these */
+enum{
+   MPI_PSETOP_NULL,
+   MPI_PSETOP_UNION, 
+   MPI_PSETOP_DIFFERENCE,
+   MPI_PSETOP_INTERSECTION
+};
+
+/* Resource change types. Don't change the order of these */
+enum{
+   MPI_RC_NULL,
+   MPI_RC_ADD, 
+   MPI_RC_SUB
+};
+
+enum{
+   MPI_RC_INVALID,
+   MPI_RC_ANNOUNCED,
+   MPI_RC_CONFIRMATION_PENDING,
+   MPI_RC_FINALIZED 
+};
+
 
 /*
  * Comparison results.  Don't change the order of these, the group

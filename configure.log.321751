@@ -1,0 +1,2 @@
+configure: error: unrecognized option: `-j'
+Try `./configure --help' for more information

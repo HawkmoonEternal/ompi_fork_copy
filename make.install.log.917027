@@ -1,0 +1,1861 @@
+Making install in config
+make[1]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/config'
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/config'
+make[2]: Nothing to be done for 'install-exec-am'.
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/config'
+make[1]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/config'
+Making install in contrib
+make[1]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/contrib'
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/contrib'
+make[2]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi/amca-param-sets'
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 openmpi-valgrind.supp '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 amca-param-sets/example.conf amca-param-sets/ft-mpi '/usr/local/share/openmpi/amca-param-sets'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/contrib'
+make[1]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/contrib'
+Making install in 3rd-party
+make[1]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party'
+Makefile:1614: warning: overriding recipe for target 'check-recursive'
+Makefile:1335: warning: ignoring old recipe for target 'check-recursive'
+Making install in openpmix
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix'
+Making install in config
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/config'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/config'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/config'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/config'
+Making install in contrib
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/contrib'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/contrib'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 pmix-valgrind.supp '/usr/local/share/pmix'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/contrib'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/contrib'
+Making install in include
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/include'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/include'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/include'
+ /usr/bin/mkdir -p '/usr/local/include'
+ /usr/bin/install -c -m 644 pmix.h pmix_server.h pmix_tool.h pmix_extend.h pmix_deprecated.h '/usr/local/include'
+ /usr/bin/install -c -m 644 pmix_common.h pmix_version.h '/usr/local/include'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/include'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/include'
+Making install in src
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src'
+Making install in include
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/include'
+make  install-am
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/include'
+make[6]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/include'
+make[6]: Nothing to be done for 'install-exec-am'.
+make[6]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/include'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/include'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/include'
+Making install in util/keyval
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/util/keyval'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/util/keyval'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/util/keyval'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/util/keyval'
+Making install in mca/base
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/base'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/base'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 help-pmix-mca-base.txt help-pmix-mca-var.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/base'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/base'
+Making install in mca/common
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/common'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/common'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/common'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/common'
+Making install in mca/bfrops
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops'
+Making install in mca/gds
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/gds'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/gds'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/gds'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/gds'
+Making install in mca/pcompress
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pcompress'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pcompress'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 base/help-pcompress.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pcompress'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pcompress'
+Making install in mca/pdl
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pdl'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pdl'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pdl'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pdl'
+Making install in mca/pfexec
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pfexec'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pfexec'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 base/help-pfexec-base.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pfexec'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pfexec'
+Making install in mca/pif
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif'
+Making install in mca/pinstalldirs
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs'
+Making install in mca/ploc
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 base/help-ploc.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc'
+Making install in mca/plog
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 base/help-pmix-plog.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog'
+Making install in mca/pmdl
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 base/help-pmdl.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl'
+Making install in mca/pnet
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pnet'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pnet'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pnet'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pnet'
+Making install in mca/preg
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg'
+Making install in mca/prm
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 base/help-prm.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm'
+Making install in mca/psec
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec'
+Making install in mca/psensor
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor'
+Making install in mca/psquash
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash'
+Making install in mca/pstat
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstat'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstat'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstat'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstat'
+Making install in mca/pstrg
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg'
+Making install in mca/ptl
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 base/help-ptl-base.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl'
+Making install in mca/bfrops/v12
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v12'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v12'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v12'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v12'
+Making install in mca/bfrops/v20
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v20'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v20'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v20'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v20'
+Making install in mca/bfrops/v21
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v21'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v21'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v21'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v21'
+Making install in mca/bfrops/v3
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v3'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v3'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v3'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v3'
+Making install in mca/bfrops/v4
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v4'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v4'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v4'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v4'
+Making install in mca/bfrops/v401
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v401'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v401'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v401'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v401'
+Making install in mca/bfrops/v41
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v41'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v41'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v41'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/bfrops/v41'
+Making install in mca/gds/hash
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/gds/hash'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/gds/hash'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/gds/hash'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/gds/hash'
+Making install in mca/pdl/pdlopen
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pdl/pdlopen'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pdl/pdlopen'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pdl/pdlopen'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pdl/pdlopen'
+Making install in mca/pfexec/linux
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pfexec/linux'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pfexec/linux'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 help-pfexec-linux.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pfexec/linux'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pfexec/linux'
+Making install in mca/pif/linux_ipv6
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif/linux_ipv6'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif/linux_ipv6'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif/linux_ipv6'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif/linux_ipv6'
+Making install in mca/pif/posix_ipv4
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif/posix_ipv4'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif/posix_ipv4'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif/posix_ipv4'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pif/posix_ipv4'
+Making install in mca/pinstalldirs/env
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs/env'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs/env'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs/env'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs/env'
+Making install in mca/pinstalldirs/config
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs/config'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs/config'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs/config'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pinstalldirs/config'
+Making install in mca/plog/default
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/default'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/default'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/default'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/default'
+Making install in mca/plog/stdfd
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/stdfd'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/stdfd'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/stdfd'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/stdfd'
+Making install in mca/plog/syslog
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/syslog'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/syslog'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/syslog'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/plog/syslog'
+Making install in mca/pmdl/ompi
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl/ompi'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl/ompi'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl/ompi'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl/ompi'
+Making install in mca/pmdl/oshmem
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl/oshmem'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl/oshmem'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl/oshmem'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pmdl/oshmem'
+Making install in mca/preg/compress
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/compress'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/compress'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/compress'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/compress'
+Making install in mca/preg/native
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/native'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/native'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/native'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/native'
+Making install in mca/preg/raw
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/raw'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/raw'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/raw'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/preg/raw'
+Making install in mca/psec/native
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec/native'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec/native'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec/native'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec/native'
+Making install in mca/psec/none
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec/none'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec/none'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec/none'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psec/none'
+Making install in mca/psensor/file
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor/file'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor/file'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 help-pmix-psensor-file.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor/file'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor/file'
+Making install in mca/psensor/heartbeat
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor/heartbeat'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor/heartbeat'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 help-pmix-psensor-heartbeat.txt '/usr/local/share/pmix'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor/heartbeat'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psensor/heartbeat'
+Making install in mca/psquash/flex128
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash/flex128'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash/flex128'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash/flex128'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash/flex128'
+Making install in mca/psquash/native
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash/native'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash/native'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash/native'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/psquash/native'
+Making install in mca/pstat/linux
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstat/linux'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstat/linux'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstat/linux'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstat/linux'
+Making install in mca/pstrg/vfs
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg/vfs'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg/vfs'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg/vfs'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg/vfs'
+Making install in mca/pstrg/lustre
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg/lustre'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg/lustre'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg/lustre'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/pstrg/lustre'
+Making install in mca/ptl/client
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/client'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/client'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/client'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/client'
+Making install in mca/ptl/server
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/server'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/server'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/server'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/server'
+Making install in mca/ptl/tool
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/tool'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/tool'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/tool'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ptl/tool'
+Making install in .
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src'
+ /usr/bin/mkdir -p '/usr/local/lib'
+ /bin/bash ../libtool   --mode=install /usr/bin/install -c   libpmix.la '/usr/local/lib'
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/install -c -m 644 server/help-pmix-server.txt runtime/help-pmix-runtime.txt '/usr/local/share/pmix'
+libtool: install: /usr/bin/install -c .libs/libpmix.so.0.0.0 /usr/local/lib/libpmix.so.0.0.0
+libtool: install: (cd /usr/local/lib && { ln -s -f libpmix.so.0.0.0 libpmix.so.0 || { rm -f libpmix.so.0 && ln -s libpmix.so.0.0.0 libpmix.so.0; }; })
+libtool: install: (cd /usr/local/lib && { ln -s -f libpmix.so.0.0.0 libpmix.so || { rm -f libpmix.so && ln -s libpmix.so.0.0.0 libpmix.so; }; })
+libtool: install: /usr/bin/install -c .libs/libpmix.lai /usr/local/lib/libpmix.la
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/sbin" ldconfig -n /usr/local/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src'
+Making install in mca/ploc/hwloc
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc/hwloc'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc/hwloc'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/lib/pmix'
+ /bin/bash ../../../../libtool   --mode=install /usr/bin/install -c   mca_ploc_hwloc.la '/usr/local/lib/pmix'
+libtool: warning: relinking 'mca_ploc_hwloc.la'
+libtool: install: (cd /home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc/hwloc; /bin/bash "/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/libtool"  --silent --tag CC --mode=relink gcc -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions -pthread -module -avoid-version -o mca_ploc_hwloc.la -rpath /usr/local/lib/pmix ploc_hwloc_component.lo ploc_hwloc.lo ../../../../src/libpmix.la -lm -lutil -ldl -levent_core -levent_pthreads -lhwloc )
+libtool: install: /usr/bin/install -c .libs/mca_ploc_hwloc.soT /usr/local/lib/pmix/mca_ploc_hwloc.so
+libtool: install: /usr/bin/install -c .libs/mca_ploc_hwloc.lai /usr/local/lib/pmix/mca_ploc_hwloc.la
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/sbin" ldconfig -n /usr/local/lib/pmix
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib/pmix
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc/hwloc'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/ploc/hwloc'
+Making install in mca/prm/default
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/default'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/default'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/lib/pmix'
+ /bin/bash ../../../../libtool   --mode=install /usr/bin/install -c   mca_prm_default.la '/usr/local/lib/pmix'
+libtool: warning: relinking 'mca_prm_default.la'
+libtool: install: (cd /home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/default; /bin/bash "/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/libtool"  --silent --tag CC --mode=relink gcc -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions -pthread -module -avoid-version -o mca_prm_default.la -rpath /usr/local/lib/pmix prm_default_component.lo prm_default.lo ../../../../src/libpmix.la -lm -lutil -ldl -levent_core -levent_pthreads -lhwloc )
+libtool: install: /usr/bin/install -c .libs/mca_prm_default.soT /usr/local/lib/pmix/mca_prm_default.so
+libtool: install: /usr/bin/install -c .libs/mca_prm_default.lai /usr/local/lib/pmix/mca_prm_default.la
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/sbin" ldconfig -n /usr/local/lib/pmix
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib/pmix
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/default'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/default'
+Making install in mca/prm/slurm
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/slurm'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/slurm'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/lib/pmix'
+ /bin/bash ../../../../libtool   --mode=install /usr/bin/install -c   mca_prm_slurm.la '/usr/local/lib/pmix'
+libtool: warning: relinking 'mca_prm_slurm.la'
+libtool: install: (cd /home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/slurm; /bin/bash "/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/libtool"  --silent --tag CC --mode=relink gcc -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions -pthread -module -avoid-version -o mca_prm_slurm.la -rpath /usr/local/lib/pmix prm_slurm_component.lo prm_slurm.lo ../../../../src/libpmix.la -lm -lutil -ldl -levent_core -levent_pthreads -lhwloc )
+libtool: install: /usr/bin/install -c .libs/mca_prm_slurm.soT /usr/local/lib/pmix/mca_prm_slurm.so
+libtool: install: /usr/bin/install -c .libs/mca_prm_slurm.lai /usr/local/lib/pmix/mca_prm_slurm.la
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/sbin" ldconfig -n /usr/local/lib/pmix
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib/pmix
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/slurm'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/mca/prm/slurm'
+Making install in tools/pevent
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pevent'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pevent'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+ /usr/bin/install -c -m 644 pevent.1 '/usr/local/share/man/man1'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pevent'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pevent'
+Making install in tools/pmix_info
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pmix_info'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pmix_info'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pmix_info'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pmix_info'
+Making install in tools/plookup
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/plookup'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/plookup'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+ /usr/bin/install -c -m 644 plookup.1 '/usr/local/share/man/man1'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/plookup'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/plookup'
+Making install in tools/pps
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pps'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pps'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+ /usr/bin/install -c -m 644 pps.1 '/usr/local/share/man/man1'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pps'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pps'
+Making install in tools/pattrs
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pattrs'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pattrs'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+ /usr/bin/install -c -m 644 pattrs.1 '/usr/local/share/man/man1'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pattrs'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pattrs'
+Making install in tools/pquery
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pquery'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pquery'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+ /usr/bin/install -c -m 644 pquery.1 '/usr/local/share/man/man1'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pquery'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/pquery'
+Making install in tools/wrapper
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/wrapper'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/wrapper'
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/wrapper'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/tools/wrapper'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src'
+Making install in etc
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/etc'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/etc'
+make[4]: Nothing to be done for 'install-exec-am'.
+/usr/bin/mkdir -p /usr/local/etc
+******************************* WARNING ************************************
+*** Not installing new pmix-mca-params.conf over existing file in:
+***   /usr/local/etc/pmix-mca-params.conf
+******************************* WARNING ************************************
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/etc'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/etc'
+Making install in bindings
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings'
+Making install in python
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings/python'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings/python'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings/python'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings/python'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings'
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/bindings'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/pmix'
+ /usr/bin/mkdir -p '/usr/local/lib/pkgconfig'
+ /usr/bin/install -c -m 644 maint/pmix.pc '/usr/local/lib/pkgconfig'
+ /usr/bin/install -c -m 644 contrib/pmix-valgrind.supp '/usr/local/share/pmix'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix'
+Making install in romio341
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341'
+Making install in mpl
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341/mpl'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341/mpl'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341/mpl'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341/mpl'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/romio341'
+Making install in treematch
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/treematch'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/treematch'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/treematch'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/treematch'
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party'
+Makefile:1614: warning: overriding recipe for target 'check-recursive'
+Makefile:1335: warning: ignoring old recipe for target 'check-recursive'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party'
+Makefile:1614: warning: overriding recipe for target 'check-recursive'
+Makefile:1335: warning: ignoring old recipe for target 'check-recursive'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party'
+make[1]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party'
+Making install in opal
+make[1]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal'
+Making install in include
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/include'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/include'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/include'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/include'
+Making install in datatype
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/datatype'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/datatype'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/datatype'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/datatype'
+Making install in etc
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/etc'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/etc'
+make[3]: Nothing to be done for 'install-exec-am'.
+/usr/bin/mkdir -p /usr/local/etc
+******************************* WARNING ************************************
+*** Not installing new openmpi-mca-params.conf over existing file in:
+***   /usr/local/etc/openmpi-mca-params.conf
+******************************* WARNING ************************************
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/etc'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/etc'
+Making install in util
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util'
+Making install in keyval
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util/keyval'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util/keyval'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util/keyval'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util/keyval'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-opal-util.txt '/usr/local/share/openmpi'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/util'
+Making install in mca/base
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/base'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/base'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-mca-base.txt help-mca-var.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/base'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/base'
+Making install in mca/common
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/common'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/common'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/common'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/common'
+Making install in mca/allocator
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator'
+Making install in mca/backtrace
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/backtrace'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/backtrace'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/backtrace'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/backtrace'
+Making install in mca/btl
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 base/help-mpi-btl-base.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl'
+Making install in mca/dl
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/dl'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/dl'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/dl'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/dl'
+Making install in mca/hwloc
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/hwloc'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/hwloc'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 base/help-opal-hwloc-base.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/hwloc'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/hwloc'
+Making install in mca/if
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if'
+Making install in mca/installdirs
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs'
+Making install in mca/memchecker
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memchecker'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memchecker'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memchecker'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memchecker'
+Making install in mca/memcpy
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memcpy'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memcpy'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memcpy'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memcpy'
+Making install in mca/memory
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memory'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memory'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memory'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memory'
+Making install in mca/mpool
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/mpool'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/mpool'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 base/help-mpool-base.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/mpool'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/mpool'
+Making install in mca/patcher
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/patcher'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/patcher'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/patcher'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/patcher'
+Making install in mca/pmix
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/pmix'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/pmix'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 base/help-pmix-base.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/pmix'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/pmix'
+Making install in mca/rcache
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/rcache'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/rcache'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 base/help-rcache-base.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/rcache'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/rcache'
+Making install in mca/reachable
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/reachable'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/reachable'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/reachable'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/reachable'
+Making install in mca/shmem
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem'
+Making install in mca/threads
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/threads'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/threads'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/threads'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/threads'
+Making install in mca/timer
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/timer'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/timer'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/timer'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/timer'
+Making install in mca/common/sm
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/common/sm'
+  LN_S     libopen-palmca_common_sm.la
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/common/sm'
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-mpi-common-sm.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/common/sm'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/common/sm'
+Making install in mca/allocator/basic
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator/basic'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator/basic'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator/basic'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator/basic'
+Making install in mca/allocator/bucket
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator/bucket'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator/bucket'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator/bucket'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/allocator/bucket'
+Making install in mca/backtrace/execinfo
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/backtrace/execinfo'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/backtrace/execinfo'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/backtrace/execinfo'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/backtrace/execinfo'
+Making install in mca/btl/self
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/self'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/self'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/self'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/self'
+Making install in mca/btl/sm
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/sm'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/sm'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-btl-sm.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/sm'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/sm'
+Making install in mca/btl/tcp
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/tcp'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/tcp'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-mpi-btl-tcp.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/tcp'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/btl/tcp'
+Making install in mca/dl/dlopen
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/dl/dlopen'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/dl/dlopen'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/dl/dlopen'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/dl/dlopen'
+Making install in mca/if/linux_ipv6
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if/linux_ipv6'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if/linux_ipv6'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-opal-if-linux-ipv6.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if/linux_ipv6'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if/linux_ipv6'
+Making install in mca/if/posix_ipv4
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if/posix_ipv4'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if/posix_ipv4'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if/posix_ipv4'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/if/posix_ipv4'
+Making install in mca/installdirs/env
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs/env'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs/env'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs/env'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs/env'
+Making install in mca/installdirs/config
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs/config'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs/config'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs/config'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/installdirs/config'
+Making install in mca/memory/patcher
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memory/patcher'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memory/patcher'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memory/patcher'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/memory/patcher'
+Making install in mca/mpool/hugepage
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/mpool/hugepage'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/mpool/hugepage'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/mpool/hugepage'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/mpool/hugepage'
+Making install in mca/patcher/overwrite
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/patcher/overwrite'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/patcher/overwrite'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/patcher/overwrite'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/patcher/overwrite'
+Making install in mca/rcache/grdma
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/rcache/grdma'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/rcache/grdma'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/rcache/grdma'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/rcache/grdma'
+Making install in mca/reachable/weighted
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/reachable/weighted'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/reachable/weighted'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/reachable/weighted'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/reachable/weighted'
+Making install in mca/shmem/mmap
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/mmap'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/mmap'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-opal-shmem-mmap.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/mmap'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/mmap'
+Making install in mca/shmem/posix
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/posix'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/posix'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-opal-shmem-posix.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/posix'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/posix'
+Making install in mca/shmem/sysv
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/sysv'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/sysv'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-opal-shmem-sysv.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/sysv'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/shmem/sysv'
+Making install in mca/threads/pthreads
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/threads/pthreads'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/threads/pthreads'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/threads/pthreads'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/threads/pthreads'
+Making install in mca/timer/linux
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/timer/linux'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/timer/linux'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-opal-timer-linux.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/timer/linux'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/mca/timer/linux'
+Making install in .
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal'
+ /usr/bin/mkdir -p '/usr/local/lib'
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /bin/bash ../libtool   --mode=install /usr/bin/install -c   libopen-pal.la '/usr/local/lib'
+ /usr/bin/install -c -m 644 runtime/help-opal-runtime.txt runtime/help-opal_info.txt '/usr/local/share/openmpi'
+libtool: warning: relinking 'libopen-pal.la'
+libtool: install: (cd /home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal; /bin/bash "/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/libtool"  --silent --tag CC --mode=relink gcc -DOPAL_CONFIGURE_HOST=\"dominik-VirtualBox\" -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions -mcx16 -version-info 0:0:0 -o libopen-pal.la -rpath /usr/local/lib class/opal_bitmap.lo class/opal_cstring.lo class/opal_free_list.lo class/opal_hash_table.lo class/opal_hotel.lo class/opal_list.lo class/opal_object.lo class/opal_graph.lo class/opal_lifo.lo class/opal_fifo.lo class/opal_pointer_array.lo class/opal_value_array.lo class/opal_ring_buffer.lo class/opal_rb_tree.lo class/opal_interval_tree.lo memoryhooks/memory.lo runtime/opal_progress.lo runtime/opal_finalize.lo runtime/opal_init.lo runtime/opal_params.lo runtime/opal_info_support.lo runtime/opal_progress_threads.lo datatype/libdatatype.la mca/base/libmca_base.la util/libopalutil.la mca/common/sm/libopen-palmca_common_sm.la mca/allocator/libmca_allocator.la mca/allocator/bucket/libmca_allocator_bucket.la mca/allocator/basic/libmca_allocator_basic.la mca/backtrace/libmca_backtrace.la mca/backtrace/execinfo/libmca_backtrace_execinfo.la mca/btl/libmca_btl.la mca/btl/tcp/libmca_btl_tcp.la mca/btl/sm/libmca_btl_sm.la mca/btl/self/libmca_btl_self.la mca/dl/libmca_dl.la mca/dl/dlopen/libmca_dl_dlopen.la mca/hwloc/libmca_hwloc.la mca/if/libmca_if.la mca/if/posix_ipv4/libmca_if_posix_ipv4.la mca/if/linux_ipv6/libmca_if_linux_ipv6.la mca/installdirs/libmca_installdirs.la mca/installdirs/config/libmca_installdirs_config.la mca/installdirs/env/libmca_installdirs_env.la mca/memchecker/libmca_memchecker.la mca/memcpy/libmca_memcpy.la mca/memory/libmca_memory.la mca/memory/patcher/libmca_memory_patcher.la mca/mpool/libmca_mpool.la mca/mpool/hugepage/libmca_mpool_hugepage.la mca/patcher/libmca_patcher.la mca/patcher/overwrite/libmca_patcher_overwrite.la mca/pmix/libmca_pmix.la mca/rcache/libmca_rcache.la mca/rcache/grdma/libmca_rcache_grdma.la mca/reachable/libmca_reachable.la mca/reachable/weighted/libmca_reachable_weighted.la mca/shmem/libmca_shmem.la mca/shmem/sysv/libmca_shmem_sysv.la mca/shmem/posix/libmca_shmem_posix.la mca/shmem/mmap/libmca_shmem_mmap.la mca/threads/libmca_threads.la mca/threads/pthreads/libmca_threads_pthreads.la mca/timer/libmca_timer.la mca/timer/linux/libmca_timer_linux.la -levent_core -levent_pthreads -lhwloc /home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/3rd-party/openpmix/src/libpmix.la -lpthread -lrt -lm -lutil )
+libtool: install: /usr/bin/install -c .libs/libopen-pal.so.0.0.0T /usr/local/lib/libopen-pal.so.0.0.0
+libtool: install: (cd /usr/local/lib && { ln -s -f libopen-pal.so.0.0.0 libopen-pal.so.0 || { rm -f libopen-pal.so.0 && ln -s libopen-pal.so.0.0.0 libopen-pal.so.0; }; })
+libtool: install: (cd /usr/local/lib && { ln -s -f libopen-pal.so.0.0.0 libopen-pal.so || { rm -f libopen-pal.so && ln -s libopen-pal.so.0.0.0 libopen-pal.so; }; })
+libtool: install: /usr/bin/install -c .libs/libopen-pal.lai /usr/local/lib/libopen-pal.la
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/sbin" ldconfig -n /usr/local/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal'
+Making install in tools/wrappers
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/tools/wrappers'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/tools/wrappers'
+ /usr/bin/mkdir -p '/usr/local/bin'
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+  /bin/bash ../../../libtool   --mode=install /usr/bin/install -c opal_wrapper '/usr/local/bin'
+ /usr/bin/install -c -m 644 help-opal-wrapper.txt '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 opal_wrapper.1 '/usr/local/share/man/man1'
+libtool: install: /usr/bin/install -c .libs/opal_wrapper /usr/local/bin/opal_wrapper
+make  install-exec-hook
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/tools/wrappers'
+make[4]: Nothing to be done for 'install-exec-hook'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/tools/wrappers'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/tools/wrappers'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/tools/wrappers'
+make[1]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal'
+Making install in ompi
+make[1]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi'
+Making install in include
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/include'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/include'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/include'
+ /usr/bin/install -c -m 644 mpi.h mpi-ext.h mpif.h mpif-ext.h mpif-sizeof.h mpif-c-constants-decl.h mpi_portable_platform.h '/usr/local/include'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/include'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/include'
+Making install in datatype
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/datatype'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/datatype'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/datatype'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/datatype'
+Making install in debuggers
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/debuggers'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/debuggers'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/lib/openmpi'
+ /bin/bash ../../libtool   --mode=install /usr/bin/install -c   libompi_dbg_msgq.la '/usr/local/lib/openmpi'
+libtool: install: /usr/bin/install -c .libs/libompi_dbg_msgq.so /usr/local/lib/openmpi/libompi_dbg_msgq.so
+libtool: install: /usr/bin/install -c .libs/libompi_dbg_msgq.lai /usr/local/lib/openmpi/libompi_dbg_msgq.la
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/sbin" ldconfig -n /usr/local/lib/openmpi
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib/openmpi
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/debuggers'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/debuggers'
+Making install in etc
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/etc'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/etc'
+make[3]: Nothing to be done for 'install-exec-am'.
+/usr/bin/mkdir -p /usr/local/etc
+******************************* WARNING ************************************
+*** Not installing new openmpi-totalview.tcl over existing file in:
+***   /usr/local/etc/openmpi-totalview.tcl
+******************************* WARNING ************************************
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/etc'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/etc'
+Making install in mpi/c
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c'
+Making install in profile
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c/profile'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c/profile'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c/profile'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/c'
+Making install in mpi/tool
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool'
+Making install in profile
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool/profile'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool/profile'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool/profile'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/tool'
+Making install in mpiext/affinity/c
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/affinity/c'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/affinity/c'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/include/openmpi/mpiext/'
+ /usr/bin/mkdir -p '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 mpiext_affinity_c.h '/usr/local/include/openmpi/mpiext/'
+ /usr/bin/install -c -m 644 OMPI_Affinity_str.3 '/usr/local/share/man/man3'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/affinity/c'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/affinity/c'
+Making install in mpiext/cuda/c
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/cuda/c'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/cuda/c'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/man/man3'
+ /usr/bin/mkdir -p '/usr/local/include/openmpi/mpiext'
+ /usr/bin/install -c -m 644 mpiext_cuda_c.h '/usr/local/include/openmpi/mpiext'
+ /usr/bin/install -c -m 644 MPIX_Query_cuda_support.3 '/usr/local/share/man/man3'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/cuda/c'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/cuda/c'
+Making install in mpiext/ftmpi/c
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c'
+Making install in profile
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c/profile'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c/profile'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c/profile'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/mkdir -p '/usr/local/include/openmpi/mpiext/'
+ /usr/bin/install -c -m 644 mpiext_ftmpi_c.h '/usr/local/include/openmpi/mpiext/'
+ /usr/bin/install -c -m 644 help-mpi-ft.txt '/usr/local/share/openmpi'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/c'
+Making install in mpiext/pcollreq/c
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c'
+Making install in profile
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c/profile'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/include/openmpi/mpiext'
+ /usr/bin/install -c -m 644 pmpiext_pcollreq_c.h '/usr/local/include/openmpi/mpiext'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c/profile'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c/profile'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/include/openmpi/mpiext'
+ /usr/bin/mkdir -p '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 mpiext_pcollreq_c.h '/usr/local/include/openmpi/mpiext'
+ /usr/bin/install -c -m 644 MPIX_Allgather_init.3 MPIX_Allgatherv_init.3 MPIX_Allreduce_init.3 MPIX_Alltoall_init.3 MPIX_Alltoallv_init.3 MPIX_Alltoallw_init.3 MPIX_Barrier_init.3 MPIX_Bcast_init.3 MPIX_Exscan_init.3 MPIX_Gather_init.3 MPIX_Gatherv_init.3 MPIX_Reduce_init.3 MPIX_Reduce_scatter_block_init.3 MPIX_Reduce_scatter_init.3 MPIX_Scan_init.3 MPIX_Scatter_init.3 MPIX_Scatterv_init.3 MPIX_Neighbor_allgather_init.3 MPIX_Neighbor_allgatherv_init.3 MPIX_Neighbor_alltoall_init.3 MPIX_Neighbor_alltoallv_init.3 MPIX_Neighbor_alltoallw_init.3 '/usr/local/share/man/man3'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/c'
+Making install in mpi/fortran/base/
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/base'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/base'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/base'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/base'
+Making install in mca/common
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common'
+Making install in mca/bml
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/bml'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/bml'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/bml'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/bml'
+Making install in mca/coll
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 base/help-mca-coll-base.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll'
+Making install in mca/fbtl
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fbtl'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fbtl'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fbtl'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fbtl'
+Making install in mca/fcoll
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll'
+Making install in mca/fs
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fs'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fs'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fs'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fs'
+Making install in mca/hook
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/hook'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/hook'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 base/help-mca-hook-base.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/hook'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/hook'
+Making install in mca/io
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io'
+Making install in mca/mtl
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/mtl'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/mtl'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/mtl'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/mtl'
+Making install in mca/op
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/op'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/op'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/op'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/op'
+Making install in mca/osc
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc'
+Making install in mca/part
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/part'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/part'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/part'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/part'
+Making install in mca/pml
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml'
+Making install in mca/sharedfp
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp'
+Making install in mca/topo
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo'
+Making install in mca/vprotocol
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/vprotocol'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/vprotocol'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/vprotocol'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/vprotocol'
+Making install in mca/common/monitoring
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common/monitoring'
+  LN_S     libmca_common_monitoring.la
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common/monitoring'
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common/monitoring'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common/monitoring'
+Making install in mca/common/ompio
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common/ompio'
+  LN_S     libmca_common_ompio.la
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common/ompio'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common/ompio'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/common/ompio'
+Making install in mca/bml/r2
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/bml/r2'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/bml/r2'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-mca-bml-r2.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/bml/r2'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/bml/r2'
+Making install in mca/coll/adapt
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/adapt'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/adapt'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/adapt'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/adapt'
+Making install in mca/coll/basic
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/basic'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/basic'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/basic'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/basic'
+Making install in mca/coll/han
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/han'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/han'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/han'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/han'
+Making install in mca/coll/inter
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/inter'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/inter'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/inter'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/inter'
+Making install in mca/coll/libnbc
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/libnbc'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/libnbc'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/libnbc'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/libnbc'
+Making install in mca/coll/self
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/self'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/self'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/self'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/self'
+Making install in mca/coll/sm
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/sm'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/sm'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-mpi-coll-sm.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/sm'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/sm'
+Making install in mca/coll/sync
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/sync'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/sync'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-coll-sync.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/sync'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/sync'
+Making install in mca/coll/tuned
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/tuned'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/tuned'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/tuned'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/tuned'
+Making install in mca/coll/ftagree
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/ftagree'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/ftagree'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/ftagree'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/coll/ftagree'
+Making install in mca/fbtl/posix
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fbtl/posix'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fbtl/posix'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fbtl/posix'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fbtl/posix'
+Making install in mca/fcoll/dynamic
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/dynamic'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/dynamic'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/dynamic'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/dynamic'
+Making install in mca/fcoll/dynamic_gen2
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/dynamic_gen2'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/dynamic_gen2'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/dynamic_gen2'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/dynamic_gen2'
+Making install in mca/fcoll/individual
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/individual'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/individual'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/individual'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/individual'
+Making install in mca/fcoll/vulcan
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/vulcan'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/vulcan'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/vulcan'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fcoll/vulcan'
+Making install in mca/fs/ufs
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fs/ufs'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fs/ufs'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fs/ufs'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/fs/ufs'
+Making install in mca/hook/comm_method
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/hook/comm_method'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/hook/comm_method'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/hook/comm_method'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/hook/comm_method'
+Making install in mca/io/ompio
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io/ompio'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io/ompio'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io/ompio'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io/ompio'
+Making install in mca/io/romio341
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io/romio341'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io/romio341'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io/romio341'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/io/romio341'
+Making install in mca/op/avx
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/op/avx'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/op/avx'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/op/avx'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/op/avx'
+Making install in mca/osc/sm
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc/sm'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc/sm'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc/sm'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc/sm'
+Making install in mca/osc/rdma
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc/rdma'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc/rdma'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc/rdma'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/osc/rdma'
+Making install in mca/part/persist
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/part/persist'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/part/persist'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/part/persist'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/part/persist'
+Making install in mca/pml/cm
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/cm'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/cm'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/cm'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/cm'
+Making install in mca/pml/ob1
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/ob1'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/ob1'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/install -c -m 644 help-mpi-pml-ob1.txt '/usr/local/share/openmpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/ob1'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/ob1'
+Making install in mca/pml/v
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/v'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/v'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/v'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/pml/v'
+Making install in mca/sharedfp/individual
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/individual'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/individual'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/individual'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/individual'
+Making install in mca/sharedfp/lockedfile
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/lockedfile'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/lockedfile'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/lockedfile'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/lockedfile'
+Making install in mca/sharedfp/sm
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/sm'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/sm'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/sm'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/sharedfp/sm'
+Making install in mca/topo/basic
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo/basic'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo/basic'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo/basic'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo/basic'
+Making install in mca/topo/treematch
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo/treematch'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo/treematch'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo/treematch'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/topo/treematch'
+Making install in mca/vprotocol/pessimist
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/vprotocol/pessimist'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/vprotocol/pessimist'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/vprotocol/pessimist'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mca/vprotocol/pessimist'
+Making install in .
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi'
+ /usr/bin/mkdir -p '/usr/local/lib'
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /bin/bash ../libtool   --mode=install /usr/bin/install -c   libmpi.la '/usr/local/lib'
+ /usr/bin/install -c -m 644 communicator/help-comm.txt dpm/help-dpm.txt errhandler/help-mpi-errors.txt runtime/help-mpi-runtime.txt mpi/help-mpi-api.txt '/usr/local/share/openmpi'
+libtool: warning: relinking 'libmpi.la'
+libtool: install: (cd /home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi; /bin/bash "/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/libtool"  --silent --tag CC --mode=relink gcc -O3 -DNDEBUG -Wundef -Wno-long-long -Wsign-compare -Wmissing-prototypes -Wstrict-prototypes -Wcomment -Wshadow -Werror-implicit-function-declaration -fno-strict-aliasing -pedantic -Wall -finline-functions -mcx16 -version-info 0:0:0 -o libmpi.la -rpath /usr/local/lib class/ompi_seq_tracker.lo attribute/attribute.lo attribute/attribute_predefined.lo communicator/comm_init.lo communicator/comm.lo communicator/comm_cid.lo communicator/comm_request.lo communicator/ft/comm_ft.lo communicator/ft/comm_ft_reliable_bcast.lo communicator/ft/comm_ft_propagator.lo communicator/ft/comm_ft_detector.lo communicator/ft/comm_ft_revoke.lo dpm/dpm.lo errhandler/errhandler.lo errhandler/errhandler_invoke.lo errhandler/errhandler_predefined.lo errhandler/errcode.lo errhandler/errcode-internal.lo file/file.lo group/group.lo group/group_init.lo group/group_set_rank.lo group/group_plist.lo group/group_sporadic.lo group/group_strided.lo group/group_bitmap.lo info/info.lo interlib/interlib.lo message/message.lo op/op.lo proc/proc.lo request/grequest.lo request/request.lo request/req_test.lo request/req_wait.lo request/req_ft.lo runtime/ompi_mpi_init.lo runtime/ompi_mpi_abort.lo runtime/ompi_mpi_dynamics.lo runtime/ompi_mpi_finalize.lo runtime/ompi_mpi_params.lo runtime/ompi_mpi_preconnect.lo runtime/ompi_info_support.lo runtime/ompi_spc.lo runtime/ompi_rte.lo win/win.lo mpiext/mpiext.lo patterns/net/netpatterns_base.lo patterns/net/netpatterns_multinomial_tree.lo patterns/net/netpatterns_nary_tree.lo patterns/net/netpatterns_knomial_tree.lo patterns/comm/allreduce.lo patterns/comm/allgather.lo patterns/comm/bcast.lo instance/instance.lo datatype/libdatatype.la debuggers/libdebuggers.la mpi/c/libmpi_c.la mpi/tool/libmpi_mpit_common.la mpi/c/libmpi_c_mpi.la mpi/tool/libmpi_mpit.la mpi/c/profile/libmpi_c_pmpi.la mpi/tool/profile/libmpi_pmpit.la mca/common/ompio/libmca_common_ompio.la mca/common/monitoring/libmca_common_monitoring.la mca/bml/libmca_bml.la mca/bml/r2/libmca_bml_r2.la mca/coll/libmca_coll.la mca/coll/ftagree/libmca_coll_ftagree.la mca/coll/tuned/libmca_coll_tuned.la mca/coll/sync/libmca_coll_sync.la mca/coll/sm/libmca_coll_sm.la mca/coll/self/libmca_coll_self.la mca/coll/libnbc/libmca_coll_libnbc.la mca/coll/inter/libmca_coll_inter.la mca/coll/han/libmca_coll_han.la mca/coll/basic/libmca_coll_basic.la mca/coll/adapt/libmca_coll_adapt.la mca/fbtl/libmca_fbtl.la mca/fbtl/posix/libmca_fbtl_posix.la mca/fcoll/libmca_fcoll.la mca/fcoll/vulcan/libmca_fcoll_vulcan.la mca/fcoll/individual/libmca_fcoll_individual.la mca/fcoll/dynamic_gen2/libmca_fcoll_dynamic_gen2.la mca/fcoll/dynamic/libmca_fcoll_dynamic.la mca/fs/libmca_fs.la mca/fs/ufs/libmca_fs_ufs.la mca/hook/libmca_hook.la mca/hook/comm_method/libmca_hook_comm_method.la mca/io/libmca_io.la mca/io/romio341/libmca_io_romio341.la mca/io/ompio/libmca_io_ompio.la mca/mtl/libmca_mtl.la mca/op/libmca_op.la mca/op/avx/libmca_op_avx.la mca/osc/libmca_osc.la mca/osc/rdma/libmca_osc_rdma.la mca/osc/sm/libmca_osc_sm.la mca/part/libmca_part.la mca/part/persist/libmca_part_persist.la mca/pml/libmca_pml.la mca/pml/v/libmca_pml_v.la mca/pml/ob1/libmca_pml_ob1.la mca/pml/cm/libmca_pml_cm.la mca/sharedfp/libmca_sharedfp.la mca/sharedfp/sm/libmca_sharedfp_sm.la mca/sharedfp/lockedfile/libmca_sharedfp_lockedfile.la mca/sharedfp/individual/libmca_sharedfp_individual.la mca/topo/libmca_topo.la mca/topo/treematch/libmca_topo_treematch.la mca/topo/basic/libmca_topo_basic.la mca/vprotocol/libmca_vprotocol.la mca/vprotocol/pessimist/libmca_vprotocol_pessimist.la ../ompi/mpiext/affinity/c/libmpiext_affinity_c.la ../ompi/mpiext/cuda/c/libmpiext_cuda_c.la ../ompi/mpiext/ftmpi/c/libmpiext_ftmpi_c.la ../ompi/mpiext/pcollreq/c/libmpiext_pcollreq_c.la /home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/opal/libopen-pal.la -lpthread -lrt -lm -lutil )
+libtool: install: /usr/bin/install -c .libs/libmpi.so.0.0.0T /usr/local/lib/libmpi.so.0.0.0
+libtool: install: (cd /usr/local/lib && { ln -s -f libmpi.so.0.0.0 libmpi.so.0 || { rm -f libmpi.so.0 && ln -s libmpi.so.0.0.0 libmpi.so.0; }; })
+libtool: install: (cd /usr/local/lib && { ln -s -f libmpi.so.0.0.0 libmpi.so || { rm -f libmpi.so && ln -s libmpi.so.0.0.0 libmpi.so; }; })
+libtool: install: /usr/bin/install -c .libs/libmpi.lai /usr/local/lib/libmpi.la
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/sbin" ldconfig -n /usr/local/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi'
+Making install in mpiext/ftmpi/mpif-h
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/mpif-h'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/mpif-h'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/mpif-h'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/mpif-h'
+Making install in mpiext/pcollreq/mpif-h
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h'
+Making install in profile
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h/profile'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h/profile'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h/profile'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/mpif-h'
+Making install in mpi/fortran/mpif-h
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h'
+Making install in profile
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h/profile'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h/profile'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h/profile'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpif-h'
+Making install in mpi/fortran/use-mpi
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi'
+make  install-exec-hook
+make[3]: Nothing to be done for 'install-data-am'.
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi'
+make[4]: Nothing to be done for 'install-exec-hook'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi'
+Making install in mpi/fortran/mpiext-use-mpi
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi'
+make  install-exec-hook
+make[3]: Nothing to be done for 'install-data-am'.
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi'
+make[4]: Nothing to be done for 'install-exec-hook'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi'
+Making install in mpi/fortran/use-mpi-f08/base
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/base'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/base'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/base'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/base'
+Making install in mpi/fortran/use-mpi-f08/mod
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/mod'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/mod'
+make  install-exec-hook
+make[3]: Nothing to be done for 'install-data-am'.
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/mod'
+make[4]: Nothing to be done for 'install-exec-hook'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/mod'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/mod'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/mod'
+Making install in mpi/fortran/use-mpi-f08/bindings
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/bindings'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/bindings'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/bindings'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/bindings'
+Making install in mpiext/ftmpi/use-mpi-f08
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/use-mpi-f08'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/use-mpi-f08'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/use-mpi-f08'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/ftmpi/use-mpi-f08'
+Making install in mpiext/pcollreq/use-mpi-f08
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/use-mpi-f08'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/use-mpi-f08'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/use-mpi-f08'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpiext/pcollreq/use-mpi-f08'
+Making install in mpi/fortran/use-mpi-f08
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08'
+Making install in profile
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/profile'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/profile'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08/profile'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08'
+make[4]: Nothing to be done for 'install-data-am'.
+make  install-exec-hook
+make[5]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08'
+make[5]: Nothing to be done for 'install-exec-hook'.
+make[5]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08'
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/use-mpi-f08'
+Making install in mpi/fortran/mpiext-use-mpi-f08
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi-f08'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi-f08'
+make  install-exec-hook
+make[3]: Nothing to be done for 'install-data-am'.
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi-f08'
+make[4]: Nothing to be done for 'install-exec-hook'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi-f08'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi-f08'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/fortran/mpiext-use-mpi-f08'
+Making install in contrib/libompitrace
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/contrib/libompitrace'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/contrib/libompitrace'
+make[3]: Nothing to be done for 'install-data-am'.
+ /usr/bin/mkdir -p '/usr/local/lib'
+ /bin/bash ../../../libtool   --mode=install /usr/bin/install -c   libompitrace.la '/usr/local/lib'
+libtool: install: /usr/bin/install -c .libs/libompitrace.so.0.0.0 /usr/local/lib/libompitrace.so.0.0.0
+libtool: install: (cd /usr/local/lib && { ln -s -f libompitrace.so.0.0.0 libompitrace.so.0 || { rm -f libompitrace.so.0 && ln -s libompitrace.so.0.0.0 libompitrace.so.0; }; })
+libtool: install: (cd /usr/local/lib && { ln -s -f libompitrace.so.0.0.0 libompitrace.so || { rm -f libompitrace.so && ln -s libompitrace.so.0.0.0 libompitrace.so; }; })
+libtool: install: /usr/bin/install -c .libs/libompitrace.lai /usr/local/lib/libompitrace.la
+libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/sbin" ldconfig -n /usr/local/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /usr/local/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/contrib/libompitrace'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/contrib/libompitrace'
+Making install in mpi/man/man3
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/man/man3'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/man/man3'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Barrier.3 MPI_Bsend.3 MPI_Bsend_init.3 MPI_Buffer_attach.3 MPI_Buffer_detach.3 MPI_Cancel.3 MPI_Cart_coords.3 MPI_Cart_create.3 MPI_Cart_get.3 MPI_Cart_map.3 MPI_Cart_rank.3 MPI_Cart_shift.3 MPI_Close_port.3 MPI_Cart_sub.3 MPI_Cartdim_get.3 MPI_Comm_accept.3 MPI_Comm_call_errhandler.3 MPI_Comm_compare.3 MPI_Comm_connect.3 MPI_Comm_create.3 MPI_Comm_create_errhandler.3 MPI_Comm_create_group.3 MPI_Comm_create_keyval.3 MPI_Comm_delete_attr.3 MPI_Comm_disconnect.3 MPI_Comm_dup.3 MPI_Comm_dup_with_info.3 MPI_T_init_thread.3 MPI_Status_f2c.3 MPI_Status_f082c.3 MPI_Status_f082f.3 MPI_Bcast.3 MPI_File_write_ordered.3 MPI_File_write_ordered_begin.3 MPI_File_write_ordered_end.3 MPI_File_write_shared.3 MPI_Finalize.3 MPI_Finalized.3 MPI_Free_mem.3 MPI_Gather.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Gatherv.3 MPI_Get.3 MPI_Get_accumulate.3 MPI_Get_address.3 MPI_Get_count.3 MPI_Get_elements.3 MPI_Get_library_version.3 MPI_Get_processor_name.3 MPI_Get_version.3 MPI_Graph_create.3 MPI_Graph_get.3 MPI_Graph_map.3 MPI_Graph_neighbors_count.3 MPI_Graphdims_get.3 MPI_Grequest_complete.3 MPI_Grequest_start.3 MPI_Group_compare.3 MPI_Group_difference.3 MPI_Group_excl.3 MPI_Group_free.3 MPI_Group_incl.3 MPI_Group_intersection.3 MPI_Abort.3 MPI_Accumulate.3 MPI_Add_error_class.3 MPI_Add_error_code.3 MPI_Add_error_string.3 MPI_Address.3 MPI_Aint_add.3 MPI_Aint_diff.3 MPI_Allgather.3 MPI_Iallgather.3 MPI_Allgatherv.3 MPI_Iallgatherv.3 MPI_Alloc_mem.3 MPI_Allreduce.3 MPI_Iallreduce.3 MPI_Alltoall.3 MPI_Ialltoall.3 MPI_Alltoallv.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Ialltoallv.3 MPI_Alltoallw.3 MPI_Ialltoallw.3 MPI_Attr_delete.3 MPI_Attr_get.3 MPI_Attr_put.3 MPI_Ibarrier.3 MPI_Ibcast.3 MPI_Comm_c2f.3 MPI_Comm_idup.3 MPI_Comm_f2c.3 MPI_Comm_free.3 MPI_Comm_free_keyval.3 MPI_Comm_get_attr.3 MPI_Comm_get_errhandler.3 MPI_Comm_get_info.3 MPI_Comm_get_name.3 MPI_Comm_get_parent.3 MPI_Comm_group.3 MPI_Comm_join.3 MPI_Comm_rank.3 MPI_Comm_remote_group.3 MPI_Comm_remote_size.3 MPI_Comm_set_attr.3 MPI_Comm_set_errhandler.3 MPI_Comm_set_info.3 MPI_Comm_set_name.3 MPI_Comm_size.3 MPI_Comm_spawn.3 MPI_Comm_spawn_multiple.3 MPI_Comm_split.3 MPI_Comm_split_type.3 MPI_Comm_test_inter.3 MPI_Compare_and_swap.3 MPI_Dims_create.3 MPI_Dist_graph_create.3 MPI_Dist_graph_create_adjacent.3 MPI_Dist_graph_neighbors.3 MPI_Dist_graph_neighbors_count.3 MPI_Errhandler_create.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Errhandler_free.3 MPI_Errhandler_get.3 MPI_Errhandler_set.3 MPI_Error_class.3 MPI_Error_string.3 MPI_Exscan.3 MPI_Iexscan.3 MPI_Fetch_and_op.3 MPI_File_c2f.3 MPI_File_call_errhandler.3 MPI_File_close.3 MPI_File_create_errhandler.3 MPI_File_delete.3 MPI_File_f2c.3 MPI_File_get_amode.3 MPI_File_get_atomicity.3 MPI_File_get_byte_offset.3 MPI_File_get_errhandler.3 MPI_File_get_group.3 MPI_File_get_info.3 MPI_File_get_position.3 MPI_File_get_position_shared.3 MPI_File_get_size.3 MPI_File_get_type_extent.3 MPI_File_get_view.3 MPI_File_iread.3 MPI_File_iread_at.3 MPI_File_iread_all.3 MPI_File_iread_at_all.3 MPI_File_iread_shared.3 MPI_File_iwrite.3 MPI_File_iwrite_at.3 MPI_File_iwrite_all.3 MPI_File_iwrite_at_all.3 MPI_File_iwrite_shared.3 MPI_File_open.3 MPI_File_preallocate.3 MPI_File_read.3 MPI_File_read_all.3 MPI_File_read_all_begin.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_File_read_all_end.3 MPI_File_read_at.3 MPI_File_read_at_all.3 MPI_File_read_at_all_begin.3 MPI_File_read_at_all_end.3 MPI_File_read_ordered.3 MPI_File_read_ordered_begin.3 MPI_File_read_ordered_end.3 MPI_File_read_shared.3 MPI_File_seek.3 MPI_File_seek_shared.3 MPI_File_set_atomicity.3 MPI_File_set_errhandler.3 MPI_File_set_info.3 MPI_File_set_size.3 MPI_File_set_view.3 MPI_File_sync.3 MPI_File_write.3 MPI_File_write_all.3 MPI_File_write_all_begin.3 MPI_File_write_all_end.3 MPI_File_write_at.3 MPI_File_write_at_all.3 MPI_File_write_at_all_begin.3 MPI_File_write_at_all_end.3 MPI_Igather.3 MPI_Igatherv.3 MPI_Get_elements_x.3 MPI_Graph_neighbors.3 MPI_Group_c2f.3 MPI_Group_f2c.3 MPI_Group_range_excl.3 MPI_Group_range_incl.3 MPI_Group_rank.3 MPI_Group_size.3 MPI_Group_translate_ranks.3 MPI_Group_union.3 MPI_Ibsend.3 MPI_Improbe.3 MPI_Imrecv.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Info_c2f.3 MPI_Info_create.3 MPI_Info_delete.3 MPI_Info_dup.3 MPI_Info_env.3 MPI_Info_f2c.3 MPI_Info_free.3 MPI_Info_get.3 MPI_Info_get_nkeys.3 MPI_Info_get_nthkey.3 MPI_Info_get_valuelen.3 MPI_Info_set.3 MPI_Init.3 MPI_Initialized.3 MPI_Init_thread.3 MPI_Intercomm_create.3 MPI_Intercomm_merge.3 MPI_Iprobe.3 MPI_Irecv.3 MPI_Irsend.3 MPI_Isend.3 MPI_Issend.3 MPI_Is_thread_main.3 MPI_Keyval_create.3 MPI_Keyval_free.3 MPI_Lookup_name.3 MPI_Message_c2f.3 MPI_Message_f2c.3 MPI_Mprobe.3 MPI_Mrecv.3 MPI_Neighbor_allgather.3 MPI_Ineighbor_allgather.3 MPI_Neighbor_allgatherv.3 MPI_Ineighbor_allgatherv.3 MPI_Neighbor_alltoall.3 MPI_Ineighbor_alltoall.3 MPI_Neighbor_alltoallv.3 MPI_Ineighbor_alltoallv.3 MPI_Neighbor_alltoallw.3 MPI_Ineighbor_alltoallw.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Op_c2f.3 MPI_Op_commutative.3 MPI_Op_create.3 MPI_Open_port.3 MPI_Op_f2c.3 MPI_Op_free.3 MPI_Pack.3 MPI_Pack_external.3 MPI_Pack_external_size.3 MPI_Pack_size.3 MPI_Parrived.3 MPI_Pcontrol.3 MPI_Pready.3 MPI_Pready_list.3 MPI_Pready_range.3 MPI_Precv_init.3 MPI_Probe.3 MPI_Psend_init.3 MPI_Publish_name.3 MPI_Put.3 MPI_Query_thread.3 MPI_Raccumulate.3 MPI_Recv.3 MPI_Recv_init.3 MPI_Reduce.3 MPI_Ireduce.3 MPI_Reduce_local.3 MPI_Reduce_scatter.3 MPI_Ireduce_scatter.3 MPI_Reduce_scatter_block.3 MPI_Ireduce_scatter_block.3 MPI_Register_datarep.3 MPI_Request_c2f.3 MPI_Request_f2c.3 MPI_Request_free.3 MPI_Request_get_status.3 MPI_Rget.3 MPI_Rget_accumulate.3 MPI_Rput.3 MPI_Rsend.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Rsend_init.3 MPI_Scan.3 MPI_Iscan.3 MPI_Scatter.3 MPI_Iscatter.3 MPI_Scatterv.3 MPI_Iscatterv.3 MPI_Send.3 MPI_Send_init.3 MPI_Sendrecv.3 MPI_Sendrecv_replace.3 MPI_Sizeof.3 MPI_Ssend.3 MPI_Ssend_init.3 MPI_Start.3 MPI_Startall.3 MPI_Status_c2f08.3 MPI_Status_c2f.3 MPI_Status_f2f08.3 MPI_Status_set_cancelled.3 MPI_Status_set_elements.3 MPI_Status_set_elements_x.3 MPI_T_category_changed.3 MPI_T_category_get_categories.3 MPI_T_category_get_cvars.3 MPI_T_category_get_info.3 MPI_T_category_get_num.3 MPI_T_category_get_pvars.3 MPI_T_cvar_get_info.3 MPI_T_cvar_get_num.3 MPI_T_cvar_handle_alloc.3 MPI_T_cvar_handle_free.3 MPI_T_cvar_read.3 MPI_T_cvar_write.3 MPI_T_enum_get_info.3 MPI_T_enum_get_item.3 MPI_T_finalize.3 MPI_T_pvar_get_info.3 MPI_T_pvar_get_num.3 MPI_T_pvar_handle_alloc.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_T_pvar_handle_free.3 MPI_T_pvar_read.3 MPI_T_pvar_readreset.3 MPI_T_pvar_reset.3 MPI_T_pvar_session_create.3 MPI_T_pvar_session_free.3 MPI_T_pvar_start.3 MPI_T_pvar_stop.3 MPI_T_pvar_write.3 MPI_Test.3 MPI_Testall.3 MPI_Testany.3 MPI_Test_cancelled.3 MPI_Testsome.3 MPI_Topo_test.3 MPI_Type_c2f.3 MPI_Type_commit.3 MPI_Type_contiguous.3 MPI_Type_create_darray.3 MPI_Type_create_f90_complex.3 MPI_Type_create_f90_integer.3 MPI_Type_create_f90_real.3 MPI_Type_create_hindexed.3 MPI_Type_create_hindexed_block.3 MPI_Type_create_hvector.3 MPI_Type_create_indexed_block.3 MPI_Type_create_keyval.3 MPI_Type_create_resized.3 MPI_Type_create_struct.3 MPI_Type_create_subarray.3 MPI_Type_delete_attr.3 MPI_Type_dup.3 MPI_Type_extent.3 MPI_Type_f2c.3 MPI_Type_free.3 MPI_Type_free_keyval.3 MPI_Type_get_attr.3 MPI_Type_get_contents.3 MPI_Type_get_envelope.3 MPI_Type_get_extent.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Type_get_extent_x.3 MPI_Type_get_name.3 MPI_Type_get_true_extent.3 MPI_Type_get_true_extent_x.3 MPI_Type_hindexed.3 MPI_Type_hvector.3 MPI_Type_indexed.3 MPI_Type_lb.3 MPI_Type_match_size.3 MPI_Type_set_attr.3 MPI_Type_set_name.3 MPI_Type_size.3 MPI_Type_size_x.3 MPI_Type_struct.3 MPI_Type_ub.3 MPI_Type_vector.3 MPI_Unpack.3 MPI_Unpack_external.3 MPI_Unpublish_name.3 MPI_Wait.3 MPI_Waitall.3 MPI_Waitany.3 MPI_Waitsome.3 MPI_Win_allocate.3 MPI_Win_allocate_shared.3 MPI_Win_attach.3 MPI_Win_c2f.3 MPI_Win_call_errhandler.3 MPI_Win_complete.3 MPI_Win_create.3 MPI_Win_create_dynamic.3 MPI_Win_create_errhandler.3 MPI_Win_create_keyval.3 MPI_Win_delete_attr.3 MPI_Win_detach.3 MPI_Win_f2c.3 MPI_Win_fence.3 MPI_Win_flush.3 MPI_Win_flush_all.3 MPI_Win_flush_local.3 '/usr/local/share/man/man3'
+ /usr/bin/install -c -m 644 MPI_Win_flush_local_all.3 MPI_Win_free.3 MPI_Win_free_keyval.3 MPI_Win_get_attr.3 MPI_Win_get_errhandler.3 MPI_Win_get_group.3 MPI_Win_get_info.3 MPI_Win_get_name.3 MPI_Win_lock.3 MPI_Win_lock_all.3 MPI_Win_post.3 MPI_Win_set_attr.3 MPI_Win_set_errhandler.3 MPI_Win_set_info.3 MPI_Win_set_name.3 MPI_Win_shared_query.3 MPI_Win_start.3 MPI_Win_sync.3 MPI_Win_test.3 MPI_Win_unlock.3 MPI_Win_unlock_all.3 MPI_Win_wait.3 MPI_Wtick.3 MPI_Wtime.3 '/usr/local/share/man/man3'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/man/man3'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/man/man3'
+Making install in mpi/man/man5
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/man/man5'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/man/man5'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /usr/bin/mkdir -p '/usr/local/share/man/man5'
+ /usr/bin/install -c -m 644 MPI_T.5 Open-MPI.5 MPI.5 OpenMPI.5 '/usr/local/share/man/man5'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/man/man5'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/mpi/man/man5'
+Making install in tools/mpirun
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpirun'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpirun'
+ /usr/bin/mkdir -p '/usr/local/bin'
+make[3]: Nothing to be done for 'install-data-am'.
+  /bin/bash ../../../libtool   --mode=install /usr/bin/install -c mpirun '/usr/local/bin'
+libtool: install: /usr/bin/install -c .libs/mpirun /usr/local/bin/mpirun
+make  install-exec-hook
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpirun'
+(cd /usr/local/bin; rm -f mpiexec; ln -s mpirun mpiexec)
+(cd /usr/local/bin; rm -f oshrun; ln -s mpirun oshrun)
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpirun'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpirun'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpirun'
+Making install in tools/ompi_info
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/ompi_info'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/ompi_info'
+ /usr/bin/mkdir -p '/usr/local/bin'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+  /bin/bash ../../../libtool   --mode=install /usr/bin/install -c ompi_info '/usr/local/bin'
+ /usr/bin/install -c -m 644 ompi_info.1 '/usr/local/share/man/man1'
+libtool: install: /usr/bin/install -c .libs/ompi_info /usr/local/bin/ompi_info
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/ompi_info'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/ompi_info'
+Making install in tools/wrappers
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/wrappers'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/wrappers'
+ /usr/bin/mkdir -p '/usr/local/share/openmpi'
+ /usr/bin/mkdir -p '/usr/local/lib/pkgconfig'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+ /usr/bin/install -c -m 644 mpicc-wrapper-data.txt '/usr/local/share/openmpi'
+make  install-exec-hook
+ /usr/bin/install -c -m 644 ompi.pc ompi-c.pc '/usr/local/lib/pkgconfig'
+ /usr/bin/install -c -m 644 mpicc.1 '/usr/local/share/man/man1'
+make  install-data-hook
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/wrappers'
+test -z "/usr/local/bin" || /usr/bin/mkdir -p "/usr/local/bin"
+(cd /usr/local/bin; rm -f mpicc; ln -s opal_wrapper mpicc)
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/wrappers'
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/wrappers'
+make[4]: Nothing to be done for 'install-data-hook'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/wrappers'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/wrappers'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/wrappers'
+Making install in tools/mpisync
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpisync'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpisync'
+make  install-data-hook
+make[4]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpisync'
+make[4]: Nothing to be done for 'install-data-hook'.
+make[4]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpisync'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpisync'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi/tools/mpisync'
+make[1]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/ompi'
+Making install in test
+make[1]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test'
+Making install in support
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/support'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/support'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/support'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/support'
+Making install in asm
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/asm'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/asm'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/asm'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/asm'
+Making install in class
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/class'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/class'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/class'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/class'
+Making install in threads
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/threads'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/threads'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/threads'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/threads'
+Making install in datatype
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/datatype'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/datatype'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/datatype'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/datatype'
+Making install in util
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/util'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/util'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/util'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/util'
+Making install in mpool
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/mpool'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/mpool'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/mpool'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/mpool'
+Making install in monitoring
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/monitoring'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/monitoring'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/monitoring'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/monitoring'
+Making install in spc
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/spc'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/spc'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/spc'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test/spc'
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test'
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test'
+make[1]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi/test'
+make[1]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi'
+make[2]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi'
+make  install-exec-hook
+make[2]: Nothing to be done for 'install-data-am'.
+make[3]: Entering directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi'
+make[3]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi'
+make[2]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi'
+make[1]: Leaving directory '/home/dominik/master-thesis/pmix-swarm-toy-box/build/ompi'

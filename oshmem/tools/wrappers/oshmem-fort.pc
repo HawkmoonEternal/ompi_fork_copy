@@ -19,4 +19,4 @@ pkgincludedir=${includedir}/openmpi
 #
 Libs: -L${libdir}    -Wl,-rpath -Wl,${libdir}  -Wl,--enable-new-dtags -loshmem -lmpi_mpifh -lmpi
 Libs.private: -lopen-pal -ldl -lrt -lpthread -lutil -lm 
-Cflags: -I${includedir}     -pthread  -I${libdir}
+Cflags: -I${includedir}      

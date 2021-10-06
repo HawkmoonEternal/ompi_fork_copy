@@ -29,9 +29,11 @@
 
 /* Psets*/
 typedef uint8_t ompi_psetop_type_t;
-#define MPI_PSETOP_UNION PMIX_PSETOP_UNION
-#define MPI_PSETOP_DIFFERENCE PMIX_PSETOP_DIFFERENCE
-#define MPI_PSETOP_INTERSECTION PMIX_PSETOP_INTERSECTION
+#define OMPI_PSETOP_NULL PMIX_PSETOP_NULL
+#define OMPI_PSETOP_UNION PMIX_PSETOP_UNION
+#define OMPI_PSETOP_DIFFERENCE PMIX_PSETOP_DIFFERENCE
+#define OMPI_PSETOP_INTERSECTION PMIX_PSETOP_INTERSECTION
+extern ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_rc_op);
 
 struct ompi_pset_t{
     opal_list_item_t super;
@@ -64,11 +66,13 @@ OBJ_CLASS_DECLARATION(ompi_mpi_instance_pset_t);
 
 
 /* resource changes */
-
 typedef uint8_t ompi_rc_op_type_t;
-#define MPI_RC_NULL PMIX_RES_CHANGE_NULL
-#define MPI_RC_ADD  PMIX_RES_CHANGE_ADD
-#define MPI_RC_SUB  PMIX_RES_CHANGE_SUB
+typedef ompi_rc_op_type_t ompi_rc_op_type_t;
+#define OMPI_RC_NULL PMIX_RES_CHANGE_NULL
+#define OMPI_RC_ADD  PMIX_RES_CHANGE_ADD
+#define OMPI_RC_SUB  PMIX_RES_CHANGE_SUB
+extern ompi_rc_op_type_t MPI_OMPI_CONV_RC_OP(int mpi_rc_op);
+extern int MPI_OMPI_CONVT_RC_OP(ompi_rc_op_type_t ompi_rc_op_type);
 
 typedef enum{
     RC_INVALID,
@@ -76,6 +80,8 @@ typedef enum{
     RC_CONFIRMATION_PENDING,
     RC_FINALIZED 
 } ompi_rc_status_t;
+
+
 
 
 struct ompi_resource_change_t{
@@ -86,12 +92,13 @@ struct ompi_resource_change_t{
     ompi_rc_status_t status;
 };
 
+
 typedef struct ompi_resource_change_t ompi_mpi_instance_resource_change_t;
 
 static void ompi_resource_change_constructor(ompi_mpi_instance_resource_change_t *rc){
-    rc->delta_pset=rc->bound_pset=NULL;
-    rc->type=MPI_RC_NULL;
-    rc->status=RC_INVALID;
+    rc->delta_pset = rc->bound_pset=NULL;
+    rc->type = OMPI_RC_NULL;
+    rc->status = RC_INVALID;
 };
 
 static void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
@@ -125,6 +132,7 @@ struct ompi_instance_t {
 typedef struct ompi_instance_t ompi_instance_t;
 
 OBJ_CLASS_DECLARATION(ompi_instance_t);
+
 
 /* Define for the preallocated size of the predefined handle.
  * Note that we are using a pointer type as the base memory chunk
@@ -229,11 +237,12 @@ OMPI_DECLSPEC int ompi_instance_get_num_psets (ompi_instance_t *instance, int *n
 OMPI_DECLSPEC int ompi_instance_get_nth_pset (ompi_instance_t *instance, int n, int *len, char *pset_name);
 OMPI_DECLSPEC int ompi_instance_get_pset_info (ompi_instance_t *instance, const char *pset_name, opal_info_t **info_used);
 OMPI_DECLSPEC int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_name, opal_process_name_t **members, size_t *nmembers);
-OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pset_result, ompi_psetop_type_t op);
+int ompi_instance_free_pset_membership(char *pset_name);
 
 OMPI_DECLSPEC int ompi_instance_pset_fence(ompi_instance_t *instance, char *pset_name);
 
-OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char *delta_pset, bool *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool return_info);
+OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pref_name, char *pset_result, ompi_psetop_type_t op);
+OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char *delta_pset, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool return_info);
 OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset);
 OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
 
@@ -246,6 +255,7 @@ bool is_pset_leader(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc
 void ompi_instance_clear_rc_cache(char *delta_pset);
 int ompi_instance_get_rc_type(char *delta_pset, ompi_rc_op_type_t *rc_type);
 static void ompi_instance_refresh_pmix_psets (const char *key);
+ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, char *pset_name, ompi_rc_op_type_t rc_type);
 
 
 /**

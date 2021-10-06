@@ -407,6 +407,9 @@ extern "C" {
  * Typedefs
  */
 
+
+
+
 typedef OMPI_MPI_AINT_TYPE MPI_Aint;
 typedef OMPI_MPI_OFFSET_TYPE MPI_Offset;
 typedef OMPI_MPI_COUNT_TYPE MPI_Count;
@@ -428,6 +431,8 @@ typedef struct mca_base_pvar_handle_t *MPI_T_pvar_handle;
 typedef struct mca_base_pvar_session_t *MPI_T_pvar_session;
 typedef struct ompi_instance_t *MPI_Session;
 
+
+
 /*
  * MPI_Status
  */
@@ -445,7 +450,6 @@ struct ompi_status_public_t {
     size_t _ucount;
 };
 typedef struct ompi_status_public_t ompi_status_public_t;
-
 
 
 /*
@@ -708,11 +712,36 @@ enum {
    error codes without breaking ABI. */
 #define MPI_ERR_LASTCODE              92
 
+/* Pset operation constants. Don't change the order of these */
+enum{
+   MPI_PSETOP_NULL,
+   MPI_PSETOP_UNION, 
+   MPI_PSETOP_DIFFERENCE,
+   MPI_PSETOP_INTERSECTION
+};
+
+/* Resource change types. Don't change the order of these */
+enum{
+   MPI_RC_NULL,
+   MPI_RC_ADD, 
+   MPI_RC_SUB
+};
+
+enum{
+   MPI_RC_INVALID,
+   MPI_RC_ANNOUNCED,
+   MPI_RC_CONFIRMATION_PENDING,
+   MPI_RC_FINALIZED 
+};
+
+
 /*
  * Comparison results.  Don't change the order of these, the group
  * comparison functions rely on it.
  * Do not change the order of these without also modifying mpif.h.in.
  */
+
+
 enum {
   MPI_IDENT,
   MPI_CONGRUENT,
@@ -1636,7 +1665,7 @@ OMPI_DECLSPEC  int MPI_Group_excl(MPI_Group group, int n, const int ranks[],
 OMPI_DECLSPEC  MPI_Group MPI_Group_f2c(MPI_Fint group);
 OMPI_DECLSPEC  int MPI_Group_free(MPI_Group *group);
 OMPI_DECLSPEC  int MPI_Group_from_session_pset (MPI_Session session, const char *pset_name, MPI_Group *newgroup);
-//OMPI_DECLSPEC  int MPI_Session_get_res_change(MPI_Session session, char *pset_name, MPI_RC_TYPE *type, char *delta_pset, int *incl, ompi_rc_status_t *status, MPI_Info *info_used);
+
 OMPI_DECLSPEC  int MPI_Group_incl(MPI_Group group, int n, const int ranks[],
                                   MPI_Group *newgroup);
 OMPI_DECLSPEC  int MPI_Group_intersection(MPI_Group group1, MPI_Group group2,
@@ -1841,17 +1870,21 @@ OMPI_DECLSPEC  int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype
 OMPI_DECLSPEC  int MPI_Sendrecv_replace(void * buf, int count, MPI_Datatype datatype,
                                         int dest, int sendtag, int source, int recvtag,
                                         MPI_Comm comm, MPI_Status *status);
+OMPI_DECLSPEC  int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char delta_pset[], char result_pset[], int root, MPI_Comm *comm);
 OMPI_DECLSPEC  MPI_Fint MPI_Session_c2f (const MPI_Session session);
 OMPI_DECLSPEC  int MPI_Session_create_errhandler (MPI_Session_errhandler_function *session_errhandler_fn,
                                                   MPI_Errhandler *errhandler);
+OMPI_DECLSPEC  int MPI_Session_confirm_res_change(MPI_Session *session, MPI_Info *info, char delta_pset[], char *result_pset[]);
 OMPI_DECLSPEC  int MPI_Session_finalize (MPI_Session *session);
 OMPI_DECLSPEC  int MPI_Session_get_info (MPI_Session session, MPI_Info *info_used);
 OMPI_DECLSPEC  int MPI_Session_get_num_psets (MPI_Session session, MPI_Info info, int *npset_names);
 OMPI_DECLSPEC  int MPI_Session_get_nth_pset (MPI_Session session, MPI_Info info, int n, int *len, char *pset_name);
 OMPI_DECLSPEC  int MPI_Session_get_pset_info (MPI_Session session, const char *pset_name, MPI_Info *info_used);
+OMPI_DECLSPEC  int MPI_Session_get_res_change(MPI_Session session, int *type, char *delta_pset, int *incl, int *status, MPI_Info *info_used);
 OMPI_DECLSPEC  int MPI_Session_init (MPI_Info info, MPI_Errhandler errhandler,
                                      MPI_Session *session);
 OMPI_DECLSPEC  MPI_Session MPI_Session_f2c (MPI_Fint session);
+OMPI_DECLSPEC  int MPI_Session_pset_create_op(MPI_Session session, int op, char *pset1, char *pset2, char *pset_result, MPI_Info *info);
 OMPI_DECLSPEC  int MPI_Session_set_info (MPI_Session session, MPI_Info info);
 OMPI_DECLSPEC  int MPI_Ssend_init(const void *buf, int count, MPI_Datatype datatype,
                                   int dest, int tag, MPI_Comm comm,
@@ -2331,7 +2364,6 @@ OMPI_DECLSPEC  int PMPI_Group_excl(MPI_Group group, int n, const int ranks[],
 OMPI_DECLSPEC  MPI_Group PMPI_Group_f2c(MPI_Fint group);
 OMPI_DECLSPEC  int PMPI_Group_free(MPI_Group *group);
 OMPI_DECLSPEC  int PMPI_Group_from_session_pset (MPI_Session session, const char *pset_name, MPI_Group *newgroup);
-//OMPI_DECLSPEC  int MPI_Session_get_res_change(MPI_Session session, char *pset_name, MPI_RC_TYPE *type, char *delta_pset, int *incl, ompi_rc_status_t *status, MPI_Info *info_used);
 OMPI_DECLSPEC  int PMPI_Group_incl(MPI_Group group, int n, const int ranks[],
                                    MPI_Group *newgroup);
 OMPI_DECLSPEC  int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2,
@@ -2528,17 +2560,17 @@ OMPI_DECLSPEC  int PMPI_Send_init(const void *buf, int count, MPI_Datatype datat
                                   int dest, int tag, MPI_Comm comm,
                                   MPI_Request *request);
 OMPI_DECLSPEC  int PMPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest,
-                             int tag, MPI_Comm comm);
+                            int tag, MPI_Comm comm);
 OMPI_DECLSPEC  int PMPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                                 int dest, int sendtag, void *recvbuf, int recvcount,
-                                 MPI_Datatype recvtype, int source, int recvtag,
-                                 MPI_Comm comm,  MPI_Status *status);
+                                int dest, int sendtag, void *recvbuf, int recvcount,
+                                MPI_Datatype recvtype, int source, int recvtag,
+                                MPI_Comm comm,  MPI_Status *status);
 OMPI_DECLSPEC  int PMPI_Sendrecv_replace(void * buf, int count, MPI_Datatype datatype,
-                                         int dest, int sendtag, int source, int recvtag,
-                                         MPI_Comm comm, MPI_Status *status);
+                                        int dest, int sendtag, int source, int recvtag,
+                                        MPI_Comm comm, MPI_Status *status);
 OMPI_DECLSPEC  MPI_Fint PMPI_Session_c2f (const MPI_Session session);
 OMPI_DECLSPEC  int PMPI_Session_create_errhandler (MPI_Session_errhandler_function *session_errhandler_fn,
-                                                   MPI_Errhandler *errhandler);
+                                                  MPI_Errhandler *errhandler);
 OMPI_DECLSPEC  int PMPI_Session_finalize (MPI_Session *session);
 OMPI_DECLSPEC  int PMPI_Session_get_info (MPI_Session session, MPI_Info *info_used);
 OMPI_DECLSPEC  int PMPI_Session_get_num_psets (MPI_Session session, MPI_Info info, int *npset_names);
@@ -2549,10 +2581,10 @@ OMPI_DECLSPEC  int PMPI_Session_init (MPI_Info info, MPI_Errhandler errhandler,
 OMPI_DECLSPEC  MPI_Session PMPI_Session_f2c (MPI_Fint session);
 OMPI_DECLSPEC  int PMPI_Session_set_info (MPI_Session session, MPI_Info info);
 OMPI_DECLSPEC  int PMPI_Ssend_init(const void *buf, int count, MPI_Datatype datatype,
-                                   int dest, int tag, MPI_Comm comm,
-                                   MPI_Request *request);
+                                  int dest, int tag, MPI_Comm comm,
+                                  MPI_Request *request);
 OMPI_DECLSPEC  int PMPI_Ssend(const void *buf, int count, MPI_Datatype datatype, int dest,
-                              int tag, MPI_Comm comm);
+                             int tag, MPI_Comm comm);
 OMPI_DECLSPEC  int PMPI_Start(MPI_Request *request);
 OMPI_DECLSPEC  int PMPI_Startall(int count, MPI_Request array_of_requests[]);
 OMPI_DECLSPEC  int PMPI_Status_c2f(const MPI_Status *c_status, MPI_Fint *f_status);

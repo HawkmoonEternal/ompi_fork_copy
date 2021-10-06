@@ -559,7 +559,6 @@ void mca_btl_tcp_endpoint_close(mca_btl_base_endpoint_t *btl_endpoint)
             .count = 0,
             .size = 0,
         };
-        printf("send blocking tcp endpoint, %s:%d\n", opal_process_info.myprocid.nspace, opal_process_info.myprocid.rank);
         mca_btl_tcp_endpoint_send_blocking(btl_endpoint, &fin_msg, sizeof(fin_msg));
     }
 
