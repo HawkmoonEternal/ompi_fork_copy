@@ -26,18 +26,29 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
     MPI_Comm_rank(*comm, &my_rank);
 
     if(my_rank == root){
+        printf("in accept: getting rc type for:\n");
+        printf("%s\n", delta_pset);
         ompi_instance_get_rc_type(delta_pset,  &rc_type);
         rc = ompi_instance_accept_res_change(session, (opal_info_t**)info, delta_pset, result_pset);
     }
     MPI_Bcast(&rc, 1, MPI_INT, 0, *comm);
+    printf("Rank %d: receid rc = %d in bcast\n", opal_process_info.my_name.vpid, rc);
     if(MPI_SUCCESS == rc){
         if(my_rank == root){
             strcpy(d_pset, delta_pset);
         }
         MPI_Bcast(d_pset, PMIX_MAX_KEYLEN, MPI_CHAR, root, *comm);
         MPI_Bcast(&rc_type, 1, MPI_UINT8_T, root, *comm);
+        MPI_Bcast(result_pset, MPI_MAX_PSET_NAME_LEN, MPI_CHAR, root, *comm);
         /* If we want to continue running we need to refresh the instance */ 
-        if(MPI_SUCCESS != (rc = ompi_mpi_instance_refresh (session, info, d_pset, rc_type))){
+        
+        if(my_rank != root)
+            sleep(2);
+        rc = ompi_mpi_instance_refresh (session, info, d_pset, rc_type);
+        printf("Rank %d: refreshed with rc = %d \n", opal_process_info.my_name.vpid, rc);
+
+        if(MPI_SUCCESS != rc){
+            printf("Rank %d: instance_refresh failed with %d\n", opal_process_info.my_name.vpid, rc);
             if(OPAL_ERR_BAD_PARAM == rc){
                 MPI_Comm_free(comm);
                 return MPI_SUCCESS;
@@ -47,6 +58,6 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
         ompi_instance_clear_rc_cache(delta_pset);
     }
     else if(OPAL_ERR_NOT_FOUND == rc)return MPI_ERR_PENDING;
-
+    printf("Rank %d: finished accept with status %d\n", opal_process_info.my_name.vpid, rc);
     return rc;
 }

@@ -350,6 +350,7 @@ libmpi_c_mpi_la_SOURCES = \
         session_get_nth_pset.c \
         session_get_pset_info.c \
         session_get_res_change.c \
+        session_request_res_change.c \
         session_pset_create_op.c \
         session_accept_res_change.c \
         session_confirm_res_change.c \

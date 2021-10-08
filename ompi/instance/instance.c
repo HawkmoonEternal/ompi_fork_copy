@@ -336,6 +336,7 @@ ompi_mpi_instance_pset_t * get_res_change_by_name(char *name){
     opal_mutex_lock(&tracking_structures_lock);
     ompi_mpi_instance_resource_change_t *rc_out=NULL;
     OPAL_LIST_FOREACH(rc_out, &ompi_mpi_instance_resource_changes, ompi_mpi_instance_resource_change_t){
+        if(NULL != rc_out->delta_pset)printf("check rc change %s\n", rc_out->delta_pset->name);
         if(NULL != rc_out->delta_pset && 0 == strcmp(name,rc_out->delta_pset->name)){
             opal_mutex_unlock (&tracking_structures_lock);
             return rc_out;
@@ -362,6 +363,7 @@ ompi_mpi_instance_pset_t * get_res_change_for_bound_name(char *name){
 int ompi_instance_get_rc_type(char *delta_pset, ompi_rc_op_type_t *rc_type){
     opal_mutex_lock(&tracking_structures_lock);
     ompi_mpi_instance_resource_change_t *res_change;
+    printf("Have cached %d res changes\n", opal_list_get_size(&ompi_mpi_instance_resource_changes));
     res_change=get_res_change_by_name(delta_pset);
     *rc_type=res_change->type;
     opal_mutex_unlock(&tracking_structures_lock);
@@ -1377,11 +1379,15 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
             }
         }
     }
-
+    printf("Rank %d: Get job data\n", opal_process_info.my_name.vpid);
     /* now we need to update the job info */
     /* update job info on PMIx Client */
     PMIx_Get_job_data();
-
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 10000;
+    nanosleep(&ts, NULL);
+    printf("Rank %d: update opal\n", opal_process_info.my_name.vpid);
     /* update opal job size and peer information */
     ompi_rte_refresh_job_size();
     ompi_rte_refresh_peers(rc_type == OMPI_RC_SUB);
@@ -1392,6 +1398,7 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     *  NOTE:    If non continous namespaces are used ompi_proc_complete_init() will only init local procs. 
     *           The rest will be added on demand at the latest at create_group_from_pset
     */
+    printf("readd local procs %d\n", opal_process_info.my_name.vpid);
     ompi_proc_complete_init();
 
     /* 
@@ -1399,7 +1406,7 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     *  We do it here so we do not need to add them during communication setup
     */
 
-    
+    printf("Rank %d: add remote\n", opal_process_info.my_name.vpid);
     //ompi_instance_get_pset_membership(instance, pset_name, &pset_procs, &nprocs);
     if(rc_type == OMPI_RC_ADD){
         // add remote
@@ -1416,13 +1423,14 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     *  We need to add the updated endpoint information for the local procs. 
     *  TODO: call add procs only for local ones 
     */    
+    printf("Rank %d: add_procs \n", opal_process_info.my_name.vpid);
     if (NULL == (ompi_procs = ompi_proc_get_allocated (&nprocs))) {
         printf("ompi_proc_get_allocated () failed\n");
     }
     ret = MCA_PML_CALL(add_procs(ompi_procs, nprocs));
     free(ompi_procs);
     opal_mutex_unlock (&instance_lock);
-
+    printf("Rank %d: finished refresh\n", opal_process_info.my_name.vpid);
     return OPAL_SUCCESS;
 }
 
@@ -1566,6 +1574,36 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, char *pset_name, omp
     opal_mutex_unlock (&tracking_structures_lock);
     opal_mutex_unlock (&instance_lock);
     return OMPI_SUCCESS;
+}
+
+int ompi_instance_request_res_change(MPI_Session session, int delta, char *delta_pset, ompi_rc_op_type_t rc_type, MPI_Info *info){
+        
+    pmix_proc_t myproc = {"UNDEF", PMIX_RANK_UNDEF};
+    int MAX_CMD_LEN = MPI_MAX_PSET_NAME_LEN;
+    char rc_cmd[MAX_CMD_LEN];
+    bool non_default=true;
+
+    if(rc_type == MPI_RC_ADD){
+        sprintf(rc_cmd, "pmix_session add %d", delta);
+    }else{
+        sprintf(rc_cmd, "pmix_session sub %d", delta);
+    }
+
+    pmix_info_t *pinfo;
+    PMIX_INFO_CREATE(pinfo,3);
+
+    strcpy(pinfo[0].key, "PMIX_RC_CMD");
+    PMIX_VALUE_LOAD(&pinfo[0].value, (void**)&rc_cmd, PMIX_STRING);
+
+    strcpy(pinfo[1].key, "PMIX_RC_PSET");
+    PMIX_VALUE_LOAD(&pinfo[1].value, (void**)&delta_pset, PMIX_STRING);
+
+    (void)snprintf(pinfo[2].key, PMIX_MAX_KEYLEN, "%s", PMIX_EVENT_NON_DEFAULT);
+    PMIX_VALUE_LOAD(&pinfo[2].value, &non_default, PMIX_BOOL);
+
+    PMIx_Notify_event(PMIX_RC_DEFINE, &myproc, PMIX_RANGE_RM, pinfo, 3, NULL, NULL);
+
+    PMIX_INFO_FREE(pinfo, 3);
 }
 
 int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset){
@@ -1730,7 +1768,7 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
     }
     printf("strcpy\n");
     /* If the resource change was accepted, get the new_pset name */
-    strcpy(new_pset, lookup_data.value.data.string);
+    strcpy(*new_pset, lookup_data.value.data.string);
     printf("strcpy succses\n");
     PMIX_PDATA_DESTRUCT(&lookup_data);
     return OPAL_SUCCESS;
@@ -1988,7 +2026,7 @@ int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, c
     size_t sz, n, ninfo, nresults;
     int ret;
 
-
+    printf("psetop for psets %s and %s\n", pset1, pset2);
     opal_mutex_lock (&instance_lock);
     
     ninfo = NULL == pref_name ? 2 : 3;
@@ -2005,6 +2043,7 @@ int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, c
     /*
      * TODO: need to handle this better
      */
+    printf("PMIx_Pset_Op_request\n");
     if (PMIX_SUCCESS != (rc = PMIx_Pset_Op_request( op,
                                             info, ninfo, 
                                             &results, &nresults))) {

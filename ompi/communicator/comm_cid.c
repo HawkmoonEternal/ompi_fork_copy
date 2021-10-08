@@ -478,7 +478,7 @@ int ompi_comm_nextcid (ompi_communicator_t *newcomm, ompi_communicator_t *comm,
 {
     ompi_request_t *req;
     int rc;
-
+    printf("ompi_next_cid %d\n", opal_process_info.my_name.vpid);
     rc = ompi_comm_nextcid_nb (newcomm, comm, bridgecomm, arg0, arg1, send_first, mode, &req);
     if (OMPI_SUCCESS != rc) {
         return rc;

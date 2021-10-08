@@ -293,7 +293,7 @@ int main(int argc, char* argv[])
     MPI_Session session_handle;
     MPI_Info info = MPI_INFO_NULL;
     MPI_Comm lib_comm = MPI_COMM_NULL;
-
+ 
     int rc_type;
     int rc_status;
     int rc = -16;
@@ -321,7 +321,10 @@ int main(int argc, char* argv[])
     /* if we are included in the delta_pset we are a dynamically added process, so we need to confirm the resource change */
     if(rc_type != MPI_RC_NULL && rc_status == MPI_RC_ANNOUNCED && incl_flag){
         printf("    DELTA PSET RANK %d: I was added dynamically. Need to confirm \n", rank);
-        rc = MPI_Session_confirm_res_change(session_handle, &info, delta_pset, &pset_name);
+        char pset_name_fresh[MPI_MAX_PSET_NAME_LEN];
+        char **pset_ptr = &pset_name_fresh;
+        rc = MPI_Session_confirm_res_change(session_handle, &info, delta_pset, &pset_ptr);
+        strcpy(pset_name, pset_name_fresh);
         if(MPI_SUCCESS == rc){
             printf("    DELTA PSET RANK %d: Confirmation succeeded. Communication will happen via pset: %s\n", rank, pset_name);
         }else{

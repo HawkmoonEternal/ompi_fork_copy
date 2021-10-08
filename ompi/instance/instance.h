@@ -67,7 +67,6 @@ OBJ_CLASS_DECLARATION(ompi_mpi_instance_pset_t);
 
 /* resource changes */
 typedef uint8_t ompi_rc_op_type_t;
-typedef ompi_rc_op_type_t ompi_rc_op_type_t;
 #define OMPI_RC_NULL PMIX_RES_CHANGE_NULL
 #define OMPI_RC_ADD  PMIX_RES_CHANGE_ADD
 #define OMPI_RC_SUB  PMIX_RES_CHANGE_SUB
@@ -99,7 +98,7 @@ static void ompi_resource_change_constructor(ompi_mpi_instance_resource_change_t
     rc->delta_pset = rc->bound_pset=NULL;
     rc->type = OMPI_RC_NULL;
     rc->status = RC_INVALID;
-};
+}
 
 static void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
                        const pmix_proc_t *source, pmix_info_t info[], size_t ninfo,
@@ -243,6 +242,7 @@ OMPI_DECLSPEC int ompi_instance_pset_fence(ompi_instance_t *instance, char *pset
 
 OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pref_name, char *pset_result, ompi_psetop_type_t op);
 OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char *delta_pset, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool return_info);
+OMPI_DECLSPEC int ompi_instance_request_res_change(MPI_Session session, int delta, char *delta_pset, ompi_rc_op_type_t rc_type, MPI_Info *info);
 OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset);
 OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
 
