@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "*.in": "cpp"
+        "*.in": "cpp",
+        "proc.h": "c"
     },
     "git.ignoreLimitWarning": true
 }

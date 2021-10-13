@@ -29,12 +29,9 @@ int MPI_Session_get_res_change(MPI_Session session, int *type, char *delta_pset,
     }
 
     //PARAM CHECK
-    printf("check info\n");
+    
     if(NULL != info_used && MPI_INFO_NULL != *info_used){
-        printf("ompi_info_get\n");
         MPI_Info_get(*info_used, "MPI_RC_BOUND_PSET", PMIX_MAX_KEYLEN, bound_pset, &flag);
-        printf("ompi_info_get\ finished\n");
-        printf("extracted %s from info object\n", bound_pset);
     }
     if (!flag) {
         rc = ompi_instance_get_res_change(session, NULL, &ompi_rc_op_type, delta_pset, incl, status, (opal_info_t**)info_used, true);

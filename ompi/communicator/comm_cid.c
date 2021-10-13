@@ -231,7 +231,6 @@ static ompi_comm_cid_context_t *mca_comm_cid_context_alloc (ompi_communicator_t 
         context->allreduce_fn = ompi_comm_allreduce_inter_nb;
         break;
     case OMPI_COMM_CID_GROUP:
-        printf("case OMPI_COMM_CID_GROUP\n");
     case OMPI_COMM_CID_GROUP_NEW:
         context->allreduce_fn = ompi_comm_allreduce_group_nb;
         context->pml_tag = ((int *) arg0)[0];
@@ -338,11 +337,10 @@ static int ompi_comm_ext_cid_new_block (ompi_communicator_t *newcomm, ompi_commu
     }
 
     PMIX_INFO_LOAD(&pinfo, PMIX_GROUP_ASSIGN_CONTEXT_ID, NULL, PMIX_BOOL);
-    printf("comm_cid: pmix group for:\n");
+
     PMIX_PROC_CREATE(procs, proc_count);
     for (size_t i = 0 ; i < proc_count; ++i) {
         OPAL_PMIX_CONVERT_NAME(&procs[i],&name_array[i]);
-        printf("    [%s:%d]\n", procs[i].nspace, procs[i].rank);
     }
     rc = PMIx_Group_construct(tag, procs, proc_count, &pinfo, 1, &results, &nresults);
     PMIX_INFO_DESTRUCT(&pinfo);
@@ -478,7 +476,6 @@ int ompi_comm_nextcid (ompi_communicator_t *newcomm, ompi_communicator_t *comm,
 {
     ompi_request_t *req;
     int rc;
-    printf("ompi_next_cid %d\n", opal_process_info.my_name.vpid);
     rc = ompi_comm_nextcid_nb (newcomm, comm, bridgecomm, arg0, arg1, send_first, mode, &req);
     if (OMPI_SUCCESS != rc) {
         return rc;
@@ -717,7 +714,6 @@ static int ompi_comm_activate_nb_complete (ompi_comm_request_t *request);
 static int ompi_comm_activate_complete (ompi_communicator_t **newcomm, ompi_communicator_t *comm)
 {
     int ret;
-    printf("comm_activate_complete\n");
 
     /**
      * Check to see if this process is in the new communicator.
@@ -821,16 +817,16 @@ int ompi_comm_activate_nb (ompi_communicator_t **newcomm, ompi_communicator_t *c
     /* Step 1: the barrier, after which it is allowed to
      * send messages over the new communicator
      */
-     printf("allreduce_fn\n");
+    
     ret = context->allreduce_fn (&context->ok, &context->ok, 1, MPI_MIN, context,
                                  &subreq);
     if (OMPI_SUCCESS != ret) {
         ompi_comm_request_return (request);
         return ret;
     }
-    printf("schedule_append\n");
+    
     ompi_comm_request_schedule_append (request, ompi_comm_activate_nb_complete, &subreq, 1);
-    printf("request start\n");
+    
     ompi_comm_request_start (request);
 
     *req = &request->super;
@@ -850,9 +846,7 @@ int ompi_comm_activate (ompi_communicator_t **newcomm, ompi_communicator_t *comm
         return rc;
     }
     if (&ompi_request_empty != req) {
-        printf("wait for completion\n");
         ompi_request_wait_completion (req);
-        printf("waited for completion\n");
         rc = req->req_status.MPI_ERROR;
         ompi_comm_request_return ((ompi_comm_request_t *) req);
     }
@@ -1288,13 +1282,11 @@ static int ompi_comm_allreduce_group_broadcast (ompi_comm_request_t *request)
             }
         }
     }
-    printf("ompi_comm_request_schedule_append: NULL proc %d\n", opal_process_info.my_name.vpid);
     return ompi_comm_request_schedule_append (request, NULL, subreq, subreq_count);
 }
 
 static int ompi_comm_allreduce_group_recv_complete (ompi_comm_request_t *request)
 {
-    printf("ompi_comm_allreduce_group_recv_complete proc %d\n", opal_process_info.my_name.vpid);
     ompi_comm_allreduce_context_t *context = (ompi_comm_allreduce_context_t *) request->context;
     ompi_comm_cid_context_t *cid_context = context->cid_context;
     int *tmp = context->tmpbuf;
@@ -1322,10 +1314,8 @@ static int ompi_comm_allreduce_group_recv_complete (ompi_comm_request_t *request
         if (OMPI_SUCCESS != rc) {
             return rc;
         }
-        printf("ompi_comm_request_schedule_append: non-root allreduce_bcast_complete proc %d\n", opal_process_info.my_name.vpid);
         return ompi_comm_request_schedule_append (request, ompi_comm_allreduce_group_broadcast, subreq, 2);
     }
-    printf("root allreduce_bcast proc %d\n", opal_process_info.my_name.vpid);
     /* root */
     return ompi_comm_allreduce_group_broadcast (request);
 }
@@ -1385,7 +1375,6 @@ static int ompi_comm_allreduce_group_nb (int *inbuf, int *outbuf, int count,
             tmp += count;
         }
     }
-    printf("ompi_comm_request_schedule_append: allreduce_recv_complete proc %d\n", opal_process_info.my_name.vpid);
     ompi_comm_request_schedule_append (request, ompi_comm_allreduce_group_recv_complete, subreq, subreq_count);
 
     ompi_comm_request_start (request);

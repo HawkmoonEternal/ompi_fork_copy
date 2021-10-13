@@ -155,7 +155,6 @@ static int ompi_comm_request_progress (void)
         
         /* if the request schedule is empty then the request is complete */
         if (0 == opal_list_get_size (&request->schedule)) {
-            printf("Request complete proc %d\n", opal_process_info.my_name.vpid);
             opal_list_remove_item (&ompi_comm_requests_active, (opal_list_item_t *) request);
             request->super.req_status.MPI_ERROR = (OMPI_SUCCESS == rc) ? MPI_SUCCESS : rc;
             ompi_request_complete (&request->super, true);
@@ -163,7 +162,6 @@ static int ompi_comm_request_progress (void)
     }
     
     if (0 == opal_list_get_size (&ompi_comm_requests_active)) {
-        printf("All requests complete proc %d\n", opal_process_info.my_name.vpid);
         /* no more active requests. disable this progress function */
         ompi_comm_request_progress_active = false;
         opal_progress_unregister (ompi_comm_request_progress);

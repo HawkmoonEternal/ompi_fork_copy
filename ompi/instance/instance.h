@@ -255,7 +255,7 @@ bool is_pset_leader(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc
 void ompi_instance_clear_rc_cache(char *delta_pset);
 int ompi_instance_get_rc_type(char *delta_pset, ompi_rc_op_type_t *rc_type);
 static void ompi_instance_refresh_pmix_psets (const char *key);
-ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, char *pset_name, ompi_rc_op_type_t rc_type);
+ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, char *pset_name, ompi_rc_op_type_t rc_type, char *result_pset, bool root);
 
 
 /**
