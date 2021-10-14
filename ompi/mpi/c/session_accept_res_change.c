@@ -41,8 +41,7 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
         
         bool is_root = my_rank == root;
 
-        if(!is_root)
-            sleep(2);
+        MPI_Barrier(*comm);
 
         rc = ompi_mpi_instance_refresh (session, info, d_pset, rc_type, result_pset, is_root);
 
