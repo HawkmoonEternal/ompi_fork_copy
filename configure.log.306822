@@ -1,0 +1,12 @@
+configure: WARNING: you should use --build, --host, --target
+
+============================================================================
+== Configuring Open MPI
+============================================================================
+
+*** Prerequisites
+checking for perl... perl
+
+*** Startup tests
+checking build system type... Invalid configuration `enable-debug': machine `enable-unknown' not recognized
+configure: error: /bin/sh config/config.sub enable-debug failed

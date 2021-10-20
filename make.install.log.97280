@@ -1,0 +1,1837 @@
+Making install in config
+make[1]: Entering directory '/opt/hpc/build/ompi/config'
+make[2]: Entering directory '/opt/hpc/build/ompi/config'
+make[2]: Nothing to be done for 'install-exec-am'.
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/opt/hpc/build/ompi/config'
+make[1]: Leaving directory '/opt/hpc/build/ompi/config'
+Making install in contrib
+make[1]: Entering directory '/opt/hpc/build/ompi/contrib'
+make[2]: Entering directory '/opt/hpc/build/ompi/contrib'
+make[2]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi/amca-param-sets'
+ /bin/install -c -m 644 openmpi-valgrind.supp '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 amca-param-sets/example.conf amca-param-sets/ft-mpi '/opt/hpc/external/ompi/share/openmpi/amca-param-sets'
+make[2]: Leaving directory '/opt/hpc/build/ompi/contrib'
+make[1]: Leaving directory '/opt/hpc/build/ompi/contrib'
+Making install in 3rd-party
+make[1]: Entering directory '/opt/hpc/build/ompi/3rd-party'
+Makefile:1613: warning: overriding recipe for target 'check-recursive'
+Makefile:1334: warning: ignoring old recipe for target 'check-recursive'
+Making install in prrte
+make[2]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte'
+Making install in config
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/config'
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/config'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/config'
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/config'
+Making install in contrib
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/contrib'
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/contrib'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte/amca-param-sets'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 openmpi-valgrind.supp '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 amca-param-sets/example.conf '/opt/hpc/external/ompi/share/prte/amca-param-sets'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/contrib'
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/contrib'
+Making install in src
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src'
+Making install in include
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/include'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/include'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/include'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/include'
+Making install in etc
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/etc'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/etc'
+make[5]: Nothing to be done for 'install-exec-am'.
+/bin/mkdir -p /opt/hpc/external/ompi/etc
+******************************* WARNING ************************************
+*** Not installing new prte-mca-params.conf over existing file in:
+***   /opt/hpc/external/ompi/etc/prte-mca-params.conf
+******************************* WARNING ************************************
+******************************* WARNING ************************************
+*** Not installing new prte-default-hostfile over existing file in:
+***   /opt/hpc/external/ompi/etc/prte-mca-params.conf
+******************************* WARNING ************************************
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/etc'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/etc'
+Making install in util
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util'
+Making install in keyval
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util/keyval'
+make[6]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util/keyval'
+make[6]: Nothing to be done for 'install-exec-am'.
+make[6]: Nothing to be done for 'install-data-am'.
+make[6]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util/keyval'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util/keyval'
+Making install in hostfile
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util/hostfile'
+make[6]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util/hostfile'
+make[6]: Nothing to be done for 'install-exec-am'.
+make[6]: Nothing to be done for 'install-data-am'.
+make[6]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util/hostfile'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util/hostfile'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util'
+make[6]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util'
+make[6]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-util.txt help-regex.txt hostfile/help-hostfile.txt dash_host/help-dash-host.txt '/opt/hpc/external/ompi/share/prte'
+make[6]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/util'
+Making install in mca/base
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/base'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/base'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-mca-base.txt help-prte-mca-var.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/base'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/base'
+Making install in mca/common
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/common'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/common'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/common'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/common'
+Making install in mca/errmgr
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-errmgr-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr'
+Making install in mca/ess
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-ess-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess'
+Making install in mca/filem
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/filem'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/filem'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/filem'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/filem'
+Making install in mca/grpcomm
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm'
+Making install in mca/iof
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-iof-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof'
+Making install in mca/odls
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/odls'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/odls'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-prte-odls-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/odls'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/odls'
+Making install in mca/oob
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/oob'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/oob'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-oob-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/oob'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/oob'
+Making install in mca/plm
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-plm-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm'
+Making install in mca/propagate
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/propagate'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/propagate'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/propagate'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/propagate'
+Making install in mca/prtebacktrace
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtebacktrace'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtebacktrace'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtebacktrace'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtebacktrace'
+Making install in mca/prtedl
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtedl'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtedl'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtedl'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtedl'
+Making install in mca/prteif
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif'
+Making install in mca/prteinstalldirs
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs'
+Making install in mca/prtereachable
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtereachable'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtereachable'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtereachable'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtereachable'
+Making install in mca/ras
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-ras-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras'
+Making install in mca/rmaps
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-prte-rmaps-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps'
+Making install in mca/rml
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rml'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rml'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rml'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rml'
+Making install in mca/routed
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed'
+Making install in mca/rtc
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rtc'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rtc'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-prte-rtc-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rtc'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rtc'
+Making install in mca/schizo
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-schizo-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo'
+Making install in mca/state
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 base/help-state-base.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state'
+Making install in mca/errmgr/dvm
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/dvm'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/dvm'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/dvm'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/dvm'
+Making install in mca/errmgr/prted
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/prted'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/prted'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/prted'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/prted'
+Making install in mca/errmgr/detector
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/detector'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/detector'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/detector'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/errmgr/detector'
+Making install in mca/ess/env
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/env'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/env'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/env'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/env'
+Making install in mca/ess/hnp
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/hnp'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/hnp'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/hnp'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/hnp'
+Making install in mca/ess/slurm
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/slurm'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/slurm'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/slurm'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ess/slurm'
+Making install in mca/filem/raw
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/filem/raw'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/filem/raw'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-filem-raw.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/filem/raw'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/filem/raw'
+Making install in mca/grpcomm/direct
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm/direct'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm/direct'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm/direct'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm/direct'
+Making install in mca/grpcomm/bmg
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm/bmg'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm/bmg'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm/bmg'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/grpcomm/bmg'
+Making install in mca/iof/hnp
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof/hnp'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof/hnp'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof/hnp'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof/hnp'
+Making install in mca/iof/prted
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof/prted'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof/prted'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof/prted'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/iof/prted'
+Making install in mca/odls/default
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/odls/default'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/odls/default'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-odls-default.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/odls/default'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/odls/default'
+Making install in mca/oob/tcp
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/oob/tcp'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/oob/tcp'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-oob-tcp.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/oob/tcp'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/oob/tcp'
+Making install in mca/plm/slurm
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm/slurm'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm/slurm'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-plm-slurm.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm/slurm'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm/slurm'
+Making install in mca/plm/ssh
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm/ssh'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm/ssh'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-plm-ssh.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm/ssh'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/plm/ssh'
+Making install in mca/propagate/prperror
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/propagate/prperror'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/propagate/prperror'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/propagate/prperror'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/propagate/prperror'
+Making install in mca/prtebacktrace/execinfo
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtebacktrace/execinfo'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtebacktrace/execinfo'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtebacktrace/execinfo'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtebacktrace/execinfo'
+Making install in mca/prtedl/dlopen
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtedl/dlopen'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtedl/dlopen'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtedl/dlopen'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtedl/dlopen'
+Making install in mca/prteif/linux_ipv6
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif/linux_ipv6'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif/linux_ipv6'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-if-linux-ipv6.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif/linux_ipv6'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif/linux_ipv6'
+Making install in mca/prteif/posix_ipv4
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif/posix_ipv4'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif/posix_ipv4'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif/posix_ipv4'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteif/posix_ipv4'
+Making install in mca/prteinstalldirs/env
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs/env'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs/env'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs/env'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs/env'
+Making install in mca/prteinstalldirs/config
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs/config'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs/config'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Nothing to be done for 'install-data-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs/config'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prteinstalldirs/config'
+Making install in mca/prtereachable/weighted
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtereachable/weighted'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtereachable/weighted'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtereachable/weighted'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/prtereachable/weighted'
+Making install in mca/ras/simulator
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras/simulator'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras/simulator'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-ras-simulator.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras/simulator'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras/simulator'
+Making install in mca/ras/slurm
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras/slurm'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras/slurm'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-ras-slurm.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras/slurm'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/ras/slurm'
+Making install in mca/rmaps/mindist
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/mindist'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/mindist'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-rmaps-md.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/mindist'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/mindist'
+Making install in mca/rmaps/ppr
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/ppr'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/ppr'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-rmaps-ppr.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/ppr'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/ppr'
+Making install in mca/rmaps/rank_file
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/rank_file'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/rank_file'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-rmaps_rank_file.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/rank_file'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/rank_file'
+Making install in mca/rmaps/round_robin
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/round_robin'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/round_robin'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-rmaps-rr.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/round_robin'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/round_robin'
+Making install in mca/rmaps/seq
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/seq'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/seq'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-rmaps-seq.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/seq'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rmaps/seq'
+Making install in mca/rml/oob
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rml/oob'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rml/oob'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rml/oob'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rml/oob'
+Making install in mca/routed/binomial
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/binomial'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/binomial'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/binomial'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/binomial'
+Making install in mca/routed/debruijn
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/debruijn'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/debruijn'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/debruijn'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/debruijn'
+Making install in mca/routed/direct
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/direct'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/direct'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/direct'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/direct'
+Making install in mca/routed/radix
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/radix'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/radix'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/radix'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/routed/radix'
+Making install in mca/rtc/hwloc
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rtc/hwloc'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rtc/hwloc'
+make[5]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-rtc-hwloc.txt '/opt/hpc/external/ompi/share/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rtc/hwloc'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/rtc/hwloc'
+Making install in mca/schizo/ompi
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo/ompi'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo/ompi'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo/ompi'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo/ompi'
+Making install in mca/schizo/prte
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo/prte'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo/prte'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo/prte'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/schizo/prte'
+Making install in mca/state/dvm
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state/dvm'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state/dvm'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state/dvm'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state/dvm'
+Making install in mca/state/prted
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state/prted'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state/prted'
+make[5]: Nothing to be done for 'install-exec-am'.
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state/prted'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/mca/state/prted'
+Making install in .
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src'
+ /bin/mkdir -p '/opt/hpc/external/ompi/lib'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/sh ../libtool   --mode=install /bin/install -c   libprrte.la '/opt/hpc/external/ompi/lib'
+ /bin/install -c -m 644 runtime/help-prte-runtime.txt prted/help-prted.txt hwloc/help-prte-hwloc-base.txt '/opt/hpc/external/ompi/share/prte'
+libtool: install: /bin/install -c .libs/libprrte.so.2.0.0 /opt/hpc/external/ompi/lib/libprrte.so.2.0.0
+libtool: install: (cd /opt/hpc/external/ompi/lib && { ln -s -f libprrte.so.2.0.0 libprrte.so.2 || { rm -f libprrte.so.2 && ln -s libprrte.so.2.0.0 libprrte.so.2; }; })
+libtool: install: (cd /opt/hpc/external/ompi/lib && { ln -s -f libprrte.so.2.0.0 libprrte.so || { rm -f libprrte.so && ln -s libprrte.so.2.0.0 libprrte.so; }; })
+libtool: install: /bin/install -c .libs/libprrte.lai /opt/hpc/external/ompi/lib/libprrte.la
+libtool: finish: PATH="/sbin:/bin:/usr/sbin:/usr/bin:/sbin" ldconfig -n /opt/hpc/external/ompi/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /opt/hpc/external/ompi/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src'
+Making install in tools/prted
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prted'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prted'
+ /bin/mkdir -p '/opt/hpc/external/ompi/bin'
+  /bin/sh ../../../libtool   --mode=install /bin/install -c prted '/opt/hpc/external/ompi/bin'
+libtool: install: /bin/install -c .libs/prted /opt/hpc/external/ompi/bin/prted
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prted'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prted'
+Making install in tools/prun
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prun'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prun'
+ /bin/mkdir -p '/opt/hpc/external/ompi/bin'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+  /bin/sh ../../../libtool   --mode=install /bin/install -c prun '/opt/hpc/external/ompi/bin'
+ /bin/install -c -m 644 help-prun.txt '/opt/hpc/external/ompi/share/prte'
+libtool: install: /bin/install -c .libs/prun /opt/hpc/external/ompi/bin/prun
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prun'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prun'
+Making install in tools/pcc
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/pcc'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/pcc'
+ /bin/mkdir -p '/opt/hpc/external/ompi/bin'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+  /bin/sh ../../../libtool   --mode=install /bin/install -c pcc '/opt/hpc/external/ompi/bin'
+ /bin/install -c -m 644 pcc-wrapper-data.txt '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-pcc.txt '/opt/hpc/external/ompi/share/prte'
+libtool: install: /bin/install -c .libs/pcc /opt/hpc/external/ompi/bin/pcc
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/pcc'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/pcc'
+Making install in tools/prte_info
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte_info'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte_info'
+ /bin/mkdir -p '/opt/hpc/external/ompi/bin'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-prte-info.txt '/opt/hpc/external/ompi/share/prte'
+  /bin/sh ../../../libtool   --mode=install /bin/install -c prte_info '/opt/hpc/external/ompi/bin'
+libtool: install: /bin/install -c .libs/prte_info /opt/hpc/external/ompi/bin/prte_info
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte_info'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte_info'
+Making install in tools/prte
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte'
+ /bin/mkdir -p '/opt/hpc/external/ompi/bin'
+  /bin/sh ../../../libtool   --mode=install /bin/install -c prte '/opt/hpc/external/ompi/bin'
+libtool: install: /bin/install -c .libs/prte /opt/hpc/external/ompi/bin/prte
+make  install-exec-hook
+make[6]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte'
+(cd /opt/hpc/external/ompi/bin; rm -f prterun; ln -s prte prterun)
+(cd /opt/hpc/external/ompi/share/man/man1; rm -f prte-rank.1 ; ln -s prte-map.1 prte-rank.1)
+(cd /opt/hpc/external/ompi/share/man/man1; rm -f prte-bind.1 ; ln -s prte-map.1 prte-bind.1)
+make[6]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/prte'
+Making install in tools/pterm
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/pterm'
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/pterm'
+ /bin/mkdir -p '/opt/hpc/external/ompi/bin'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/prte'
+ /bin/install -c -m 644 help-pterm.txt '/opt/hpc/external/ompi/share/prte'
+  /bin/sh ../../../libtool   --mode=install /bin/install -c pterm '/opt/hpc/external/ompi/bin'
+libtool: install: /bin/install -c .libs/pterm /opt/hpc/external/ompi/bin/pterm
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/pterm'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src/tools/pterm'
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/src'
+Making install in include
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/include'
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte/include'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/include'
+ /bin/mkdir -p '/opt/hpc/external/ompi/include'
+ /bin/install -c -m 644 prte.h '/opt/hpc/external/ompi/include'
+ /bin/install -c -m 644 prte_version.h '/opt/hpc/external/ompi/include'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/include'
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte/include'
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte'
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte'
+make  install-exec-hook
+make[4]: Nothing to be done for 'install-data-am'.
+make[5]: Entering directory '/opt/hpc/build/ompi/3rd-party/prrte'
+make[5]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte'
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte'
+make[2]: Leaving directory '/opt/hpc/build/ompi/3rd-party/prrte'
+Making install in romio341
+make[2]: Entering directory '/opt/hpc/build/ompi/3rd-party/romio341'
+Making install in mpl
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party/romio341/mpl'
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/romio341/mpl'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/romio341/mpl'
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party/romio341/mpl'
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party/romio341'
+make[4]: Entering directory '/opt/hpc/build/ompi/3rd-party/romio341'
+make[4]: Leaving directory '/opt/hpc/build/ompi/3rd-party/romio341'
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party/romio341'
+make[2]: Leaving directory '/opt/hpc/build/ompi/3rd-party/romio341'
+Making install in treematch
+make[2]: Entering directory '/opt/hpc/build/ompi/3rd-party/treematch'
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party/treematch'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party/treematch'
+make[2]: Leaving directory '/opt/hpc/build/ompi/3rd-party/treematch'
+make[2]: Entering directory '/opt/hpc/build/ompi/3rd-party'
+Makefile:1613: warning: overriding recipe for target 'check-recursive'
+Makefile:1334: warning: ignoring old recipe for target 'check-recursive'
+make[3]: Entering directory '/opt/hpc/build/ompi/3rd-party'
+Makefile:1613: warning: overriding recipe for target 'check-recursive'
+Makefile:1334: warning: ignoring old recipe for target 'check-recursive'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/3rd-party'
+make[2]: Leaving directory '/opt/hpc/build/ompi/3rd-party'
+make[1]: Leaving directory '/opt/hpc/build/ompi/3rd-party'
+Making install in opal
+make[1]: Entering directory '/opt/hpc/build/ompi/opal'
+Making install in include
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/include'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/include'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/include'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/include'
+Making install in datatype
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/datatype'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/datatype'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/datatype'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/datatype'
+Making install in etc
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/etc'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/etc'
+make[3]: Nothing to be done for 'install-exec-am'.
+/bin/mkdir -p /opt/hpc/external/ompi/etc
+******************************* WARNING ************************************
+*** Not installing new openmpi-mca-params.conf over existing file in:
+***   /opt/hpc/external/ompi/etc/openmpi-mca-params.conf
+******************************* WARNING ************************************
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/etc'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/etc'
+Making install in util
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/util'
+Making install in keyval
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/util/keyval'
+make[4]: Entering directory '/opt/hpc/build/ompi/opal/util/keyval'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/opt/hpc/build/ompi/opal/util/keyval'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/util/keyval'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/util'
+make[4]: Entering directory '/opt/hpc/build/ompi/opal/util'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-opal-util.txt '/opt/hpc/external/ompi/share/openmpi'
+make[4]: Leaving directory '/opt/hpc/build/ompi/opal/util'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/util'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/util'
+Making install in mca/base
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/base'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/base'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-mca-base.txt help-mca-var.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/base'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/base'
+Making install in mca/common
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/common'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/common'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/common'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/common'
+Making install in mca/allocator
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/allocator'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/allocator'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/allocator'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/allocator'
+Making install in mca/backtrace
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/backtrace'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/backtrace'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/backtrace'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/backtrace'
+Making install in mca/btl
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/btl'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/btl'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 base/help-mpi-btl-base.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/btl'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/btl'
+Making install in mca/dl
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/dl'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/dl'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/dl'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/dl'
+Making install in mca/hwloc
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/hwloc'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/hwloc'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 base/help-opal-hwloc-base.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/hwloc'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/hwloc'
+Making install in mca/if
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/if'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/if'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/if'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/if'
+Making install in mca/installdirs
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/installdirs'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/installdirs'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/installdirs'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/installdirs'
+Making install in mca/memchecker
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/memchecker'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/memchecker'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/memchecker'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/memchecker'
+Making install in mca/memcpy
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/memcpy'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/memcpy'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/memcpy'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/memcpy'
+Making install in mca/memory
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/memory'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/memory'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/memory'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/memory'
+Making install in mca/mpool
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/mpool'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/mpool'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 base/help-mpool-base.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/mpool'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/mpool'
+Making install in mca/patcher
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/patcher'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/patcher'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/patcher'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/patcher'
+Making install in mca/pmix
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/pmix'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/pmix'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 base/help-pmix-base.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/pmix'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/pmix'
+Making install in mca/rcache
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/rcache'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/rcache'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 base/help-rcache-base.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/rcache'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/rcache'
+Making install in mca/reachable
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/reachable'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/reachable'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/reachable'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/reachable'
+Making install in mca/shmem
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/shmem'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/shmem'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/shmem'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/shmem'
+Making install in mca/threads
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/threads'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/threads'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/threads'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/threads'
+Making install in mca/timer
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/timer'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/timer'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/timer'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/timer'
+Making install in mca/common/sm
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/common/sm'
+  LN_S     libopen-palmca_common_sm.la
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/common/sm'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-mpi-common-sm.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/common/sm'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/common/sm'
+Making install in mca/allocator/basic
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/allocator/basic'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/allocator/basic'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/allocator/basic'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/allocator/basic'
+Making install in mca/allocator/bucket
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/allocator/bucket'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/allocator/bucket'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/allocator/bucket'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/allocator/bucket'
+Making install in mca/backtrace/execinfo
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/backtrace/execinfo'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/backtrace/execinfo'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/backtrace/execinfo'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/backtrace/execinfo'
+Making install in mca/btl/self
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/btl/self'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/btl/self'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/btl/self'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/btl/self'
+Making install in mca/btl/sm
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/btl/sm'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/btl/sm'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-btl-sm.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/btl/sm'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/btl/sm'
+Making install in mca/btl/tcp
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/btl/tcp'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/btl/tcp'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-mpi-btl-tcp.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/btl/tcp'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/btl/tcp'
+Making install in mca/dl/dlopen
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/dl/dlopen'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/dl/dlopen'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/dl/dlopen'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/dl/dlopen'
+Making install in mca/if/linux_ipv6
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/if/linux_ipv6'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/if/linux_ipv6'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-opal-if-linux-ipv6.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/if/linux_ipv6'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/if/linux_ipv6'
+Making install in mca/if/posix_ipv4
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/if/posix_ipv4'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/if/posix_ipv4'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/if/posix_ipv4'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/if/posix_ipv4'
+Making install in mca/installdirs/env
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/installdirs/env'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/installdirs/env'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/installdirs/env'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/installdirs/env'
+Making install in mca/installdirs/config
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/installdirs/config'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/installdirs/config'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/installdirs/config'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/installdirs/config'
+Making install in mca/memory/patcher
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/memory/patcher'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/memory/patcher'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/memory/patcher'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/memory/patcher'
+Making install in mca/mpool/hugepage
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/mpool/hugepage'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/mpool/hugepage'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/mpool/hugepage'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/mpool/hugepage'
+Making install in mca/patcher/overwrite
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/patcher/overwrite'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/patcher/overwrite'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/patcher/overwrite'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/patcher/overwrite'
+Making install in mca/rcache/grdma
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/rcache/grdma'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/rcache/grdma'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/rcache/grdma'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/rcache/grdma'
+Making install in mca/reachable/weighted
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/reachable/weighted'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/reachable/weighted'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/reachable/weighted'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/reachable/weighted'
+Making install in mca/shmem/mmap
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/shmem/mmap'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/shmem/mmap'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-opal-shmem-mmap.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/shmem/mmap'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/shmem/mmap'
+Making install in mca/shmem/posix
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/shmem/posix'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/shmem/posix'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-opal-shmem-posix.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/shmem/posix'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/shmem/posix'
+Making install in mca/shmem/sysv
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/shmem/sysv'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/shmem/sysv'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-opal-shmem-sysv.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/shmem/sysv'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/shmem/sysv'
+Making install in mca/threads/pthreads
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/threads/pthreads'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/threads/pthreads'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/threads/pthreads'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/threads/pthreads'
+Making install in mca/timer/linux
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/mca/timer/linux'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/mca/timer/linux'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-opal-timer-linux.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/mca/timer/linux'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/mca/timer/linux'
+Making install in .
+make[2]: Entering directory '/opt/hpc/build/ompi/opal'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal'
+ /bin/mkdir -p '/opt/hpc/external/ompi/lib'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/sh ../libtool   --mode=install /bin/install -c   libopen-pal.la '/opt/hpc/external/ompi/lib'
+ /bin/install -c -m 644 runtime/help-opal-runtime.txt runtime/help-opal_info.txt '/opt/hpc/external/ompi/share/openmpi'
+libtool: install: /bin/install -c .libs/libopen-pal.so.0.0.0 /opt/hpc/external/ompi/lib/libopen-pal.so.0.0.0
+libtool: install: (cd /opt/hpc/external/ompi/lib && { ln -s -f libopen-pal.so.0.0.0 libopen-pal.so.0 || { rm -f libopen-pal.so.0 && ln -s libopen-pal.so.0.0.0 libopen-pal.so.0; }; })
+libtool: install: (cd /opt/hpc/external/ompi/lib && { ln -s -f libopen-pal.so.0.0.0 libopen-pal.so || { rm -f libopen-pal.so && ln -s libopen-pal.so.0.0.0 libopen-pal.so; }; })
+libtool: install: /bin/install -c .libs/libopen-pal.lai /opt/hpc/external/ompi/lib/libopen-pal.la
+libtool: finish: PATH="/sbin:/bin:/usr/sbin:/usr/bin:/sbin" ldconfig -n /opt/hpc/external/ompi/lib
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /opt/hpc/external/ompi/lib
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal'
+Making install in tools/wrappers
+make[2]: Entering directory '/opt/hpc/build/ompi/opal/tools/wrappers'
+make[3]: Entering directory '/opt/hpc/build/ompi/opal/tools/wrappers'
+ /bin/mkdir -p '/opt/hpc/external/ompi/bin'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/man/man1'
+ /bin/install -c -m 644 help-opal-wrapper.txt '/opt/hpc/external/ompi/share/openmpi'
+  /bin/sh ../../../libtool   --mode=install /bin/install -c opal_wrapper '/opt/hpc/external/ompi/bin'
+ /bin/install -c -m 644 opal_wrapper.1 '/opt/hpc/external/ompi/share/man/man1'
+libtool: install: /bin/install -c .libs/opal_wrapper /opt/hpc/external/ompi/bin/opal_wrapper
+make  install-exec-hook
+make[4]: Entering directory '/opt/hpc/build/ompi/opal/tools/wrappers'
+make[4]: Nothing to be done for 'install-exec-hook'.
+make[4]: Leaving directory '/opt/hpc/build/ompi/opal/tools/wrappers'
+make[3]: Leaving directory '/opt/hpc/build/ompi/opal/tools/wrappers'
+make[2]: Leaving directory '/opt/hpc/build/ompi/opal/tools/wrappers'
+make[1]: Leaving directory '/opt/hpc/build/ompi/opal'
+Making install in ompi
+make[1]: Entering directory '/opt/hpc/build/ompi/ompi'
+Making install in include
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/include'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/include'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/include'
+ /bin/install -c -m 644 mpi.h mpi-ext.h mpif.h mpif-ext.h mpif-sizeof.h mpif-c-constants-decl.h mpi_portable_platform.h '/opt/hpc/external/ompi/include'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/include'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/include'
+Making install in datatype
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/datatype'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/datatype'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/datatype'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/datatype'
+Making install in debuggers
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/debuggers'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/debuggers'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/lib/openmpi'
+ /bin/sh ../../libtool   --mode=install /bin/install -c   libompi_dbg_msgq.la '/opt/hpc/external/ompi/lib/openmpi'
+libtool: install: /bin/install -c .libs/libompi_dbg_msgq.so /opt/hpc/external/ompi/lib/openmpi/libompi_dbg_msgq.so
+libtool: install: /bin/install -c .libs/libompi_dbg_msgq.lai /opt/hpc/external/ompi/lib/openmpi/libompi_dbg_msgq.la
+libtool: finish: PATH="/sbin:/bin:/usr/sbin:/usr/bin:/sbin" ldconfig -n /opt/hpc/external/ompi/lib/openmpi
+----------------------------------------------------------------------
+Libraries have been installed in:
+   /opt/hpc/external/ompi/lib/openmpi
+
+If you ever happen to want to link against installed libraries
+in a given directory, LIBDIR, you must either use libtool, and
+specify the full pathname of the library, or use the '-LLIBDIR'
+flag during linking and do at least one of the following:
+   - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+     during execution
+   - add LIBDIR to the 'LD_RUN_PATH' environment variable
+     during linking
+   - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+   - have your system administrator add LIBDIR to '/etc/ld.so.conf'
+
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/debuggers'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/debuggers'
+Making install in etc
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/etc'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/etc'
+make[3]: Nothing to be done for 'install-exec-am'.
+/bin/mkdir -p /opt/hpc/external/ompi/etc
+******************************* WARNING ************************************
+*** Not installing new openmpi-totalview.tcl over existing file in:
+***   /opt/hpc/external/ompi/etc/openmpi-totalview.tcl
+******************************* WARNING ************************************
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/etc'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/etc'
+Making install in mpi/c
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/c'
+Making install in profile
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/c/profile'
+make[4]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/c/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/c/profile'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/c/profile'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/c'
+make[4]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/c'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/c'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/c'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/c'
+Making install in mpi/tool
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/tool'
+Making install in profile
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/tool/profile'
+make[4]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/tool/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/tool/profile'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/tool/profile'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/tool'
+make[4]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/tool'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/tool'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/tool'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/tool'
+Making install in mpiext/affinity/c
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/affinity/c'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/affinity/c'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/include/openmpi/mpiext/'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/man/man3'
+ /bin/install -c -m 644 mpiext_affinity_c.h '/opt/hpc/external/ompi/include/openmpi/mpiext/'
+ /bin/install -c -m 644 OMPI_Affinity_str.3 '/opt/hpc/external/ompi/share/man/man3'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/affinity/c'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/affinity/c'
+Making install in mpiext/cuda/c
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/cuda/c'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/cuda/c'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/man/man3'
+ /bin/mkdir -p '/opt/hpc/external/ompi/include/openmpi/mpiext'
+ /bin/install -c -m 644 mpiext_cuda_c.h '/opt/hpc/external/ompi/include/openmpi/mpiext'
+ /bin/install -c -m 644 MPIX_Query_cuda_support.3 '/opt/hpc/external/ompi/share/man/man3'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/cuda/c'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/cuda/c'
+Making install in mpiext/ftmpi/c
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c'
+Making install in profile
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c/profile'
+make[4]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+make[4]: Nothing to be done for 'install-data-am'.
+make[4]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c/profile'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c/profile'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c'
+make[4]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/include/openmpi/mpiext/'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-mpi-ft.txt '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 mpiext_ftmpi_c.h '/opt/hpc/external/ompi/include/openmpi/mpiext/'
+make[4]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/ftmpi/c'
+Making install in mpiext/pcollreq/c
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c'
+Making install in profile
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c/profile'
+make[4]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c/profile'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/include/openmpi/mpiext'
+ /bin/install -c -m 644 pmpiext_pcollreq_c.h '/opt/hpc/external/ompi/include/openmpi/mpiext'
+make[4]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c/profile'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c/profile'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c'
+make[4]: Entering directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c'
+make[4]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/include/openmpi/mpiext'
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/man/man3'
+ /bin/install -c -m 644 mpiext_pcollreq_c.h '/opt/hpc/external/ompi/include/openmpi/mpiext'
+ /bin/install -c -m 644 MPIX_Allgather_init.3 MPIX_Allgatherv_init.3 MPIX_Allreduce_init.3 MPIX_Alltoall_init.3 MPIX_Alltoallv_init.3 MPIX_Alltoallw_init.3 MPIX_Barrier_init.3 MPIX_Bcast_init.3 MPIX_Exscan_init.3 MPIX_Gather_init.3 MPIX_Gatherv_init.3 MPIX_Reduce_init.3 MPIX_Reduce_scatter_block_init.3 MPIX_Reduce_scatter_init.3 MPIX_Scan_init.3 MPIX_Scatter_init.3 MPIX_Scatterv_init.3 MPIX_Neighbor_allgather_init.3 MPIX_Neighbor_allgatherv_init.3 MPIX_Neighbor_alltoall_init.3 MPIX_Neighbor_alltoallv_init.3 MPIX_Neighbor_alltoallw_init.3 '/opt/hpc/external/ompi/share/man/man3'
+make[4]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mpiext/pcollreq/c'
+Making install in mpi/fortran/base/
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/fortran/base'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mpi/fortran/base'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/fortran/base'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mpi/fortran/base'
+Making install in mca/common
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/common'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/common'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/common'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/common'
+Making install in mca/bml
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/bml'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/bml'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/bml'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/bml'
+Making install in mca/coll
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 base/help-mca-coll-base.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll'
+Making install in mca/fbtl
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fbtl'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fbtl'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fbtl'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fbtl'
+Making install in mca/fcoll
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll'
+Making install in mca/fs
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fs'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fs'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fs'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fs'
+Making install in mca/hook
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/hook'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/hook'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 base/help-mca-hook-base.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/hook'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/hook'
+Making install in mca/io
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/io'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/io'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/io'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/io'
+Making install in mca/mtl
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/mtl'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/mtl'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/mtl'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/mtl'
+Making install in mca/op
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/op'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/op'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/op'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/op'
+Making install in mca/osc
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/osc'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/osc'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/osc'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/osc'
+Making install in mca/part
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/part'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/part'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/part'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/part'
+Making install in mca/pml
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/pml'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/pml'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/pml'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/pml'
+Making install in mca/sharedfp
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/sharedfp'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/sharedfp'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/sharedfp'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/sharedfp'
+Making install in mca/topo
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/topo'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/topo'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/topo'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/topo'
+Making install in mca/vprotocol
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/vprotocol'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/vprotocol'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/vprotocol'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/vprotocol'
+Making install in mca/common/monitoring
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/common/monitoring'
+  LN_S     libmca_common_monitoring.la
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/common/monitoring'
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/common/monitoring'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/common/monitoring'
+Making install in mca/common/ompio
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/common/ompio'
+  LN_S     libmca_common_ompio.la
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/common/ompio'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/common/ompio'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/common/ompio'
+Making install in mca/bml/r2
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/bml/r2'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/bml/r2'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-mca-bml-r2.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/bml/r2'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/bml/r2'
+Making install in mca/coll/adapt
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/adapt'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/adapt'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/adapt'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/adapt'
+Making install in mca/coll/basic
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/basic'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/basic'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/basic'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/basic'
+Making install in mca/coll/han
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/han'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/han'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/han'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/han'
+Making install in mca/coll/inter
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/inter'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/inter'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/inter'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/inter'
+Making install in mca/coll/libnbc
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/libnbc'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/libnbc'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/libnbc'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/libnbc'
+Making install in mca/coll/self
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/self'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/self'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/self'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/self'
+Making install in mca/coll/sm
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/sm'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/sm'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-mpi-coll-sm.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/sm'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/sm'
+Making install in mca/coll/sync
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/sync'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/sync'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-coll-sync.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/sync'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/sync'
+Making install in mca/coll/tuned
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/tuned'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/tuned'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/tuned'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/tuned'
+Making install in mca/coll/ftagree
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/ftagree'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/coll/ftagree'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/ftagree'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/coll/ftagree'
+Making install in mca/fbtl/posix
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fbtl/posix'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fbtl/posix'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fbtl/posix'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fbtl/posix'
+Making install in mca/fcoll/dynamic
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll/dynamic'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll/dynamic'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll/dynamic'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll/dynamic'
+Making install in mca/fcoll/dynamic_gen2
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll/dynamic_gen2'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll/dynamic_gen2'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll/dynamic_gen2'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll/dynamic_gen2'
+Making install in mca/fcoll/individual
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll/individual'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll/individual'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll/individual'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll/individual'
+Making install in mca/fcoll/vulcan
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll/vulcan'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fcoll/vulcan'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll/vulcan'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fcoll/vulcan'
+Making install in mca/fs/ufs
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fs/ufs'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/fs/ufs'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fs/ufs'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/fs/ufs'
+Making install in mca/hook/comm_method
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/hook/comm_method'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/hook/comm_method'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Nothing to be done for 'install-data-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/hook/comm_method'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/hook/comm_method'
+Making install in mca/io/ompio
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/io/ompio'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/io/ompio'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/io/ompio'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/io/ompio'
+Making install in mca/io/romio341
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/io/romio341'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/io/romio341'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/io/romio341'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/io/romio341'
+Making install in mca/op/avx
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/op/avx'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/op/avx'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/op/avx'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/op/avx'
+Making install in mca/osc/sm
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/osc/sm'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/osc/sm'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/osc/sm'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/osc/sm'
+Making install in mca/osc/rdma
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/osc/rdma'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/osc/rdma'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/osc/rdma'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/osc/rdma'
+Making install in mca/part/persist
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/part/persist'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/part/persist'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/part/persist'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/part/persist'
+Making install in mca/pml/cm
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/pml/cm'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/pml/cm'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/pml/cm'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/pml/cm'
+Making install in mca/pml/ob1
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/pml/ob1'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/pml/ob1'
+make[3]: Nothing to be done for 'install-exec-am'.
+ /bin/mkdir -p '/opt/hpc/external/ompi/share/openmpi'
+ /bin/install -c -m 644 help-mpi-pml-ob1.txt '/opt/hpc/external/ompi/share/openmpi'
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/pml/ob1'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/pml/ob1'
+Making install in mca/pml/v
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/pml/v'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/pml/v'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/pml/v'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/pml/v'
+Making install in mca/sharedfp/individual
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/individual'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/individual'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/individual'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/individual'
+Making install in mca/sharedfp/lockedfile
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/lockedfile'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/lockedfile'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/lockedfile'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/lockedfile'
+Making install in mca/sharedfp/sm
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/sm'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/sm'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/sm'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/sharedfp/sm'
+Making install in mca/topo/basic
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/topo/basic'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/topo/basic'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/topo/basic'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/topo/basic'
+Making install in mca/topo/treematch
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/topo/treematch'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/topo/treematch'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/topo/treematch'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/topo/treematch'
+Making install in mca/vprotocol/pessimist
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi/mca/vprotocol/pessimist'
+make[3]: Entering directory '/opt/hpc/build/ompi/ompi/mca/vprotocol/pessimist'
+make[3]: Nothing to be done for 'install-exec-am'.
+make[3]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/vprotocol/pessimist'
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi/mca/vprotocol/pessimist'
+Making install in .
+make[2]: Entering directory '/opt/hpc/build/ompi/ompi'
+  CC       instance/instance.lo
+In file included from instance/instance.h:24,
+                 from instance/instance.c:13:
+../ompi/proc/proc.h:388:1: warning: function declaration isn’t a prototype [-Wstrict-prototypes]
+ OMPI_DECLSPEC int ompi_proc_list_sort();
+ ^~~~~~~~~~~~~
+In file included from instance/instance.c:13:
+instance/instance.h:250:1: warning: function declaration isn’t a prototype [-Wstrict-prototypes]
+ pmix_proc_t ompi_intance_get_pmixid();
+ ^~~~~~~~~~~
+instance/instance.h:258:1: warning: data definition has no type or storage class
+ ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, char *pset_name, ompi_rc_op_type_t rc_type, char *result_pset, bool root);
+ ^~~~~~~~~~~~~~~~~~~~~~~~~
+instance/instance.h:258:1: warning: type defaults to ‘int’ in declaration of ‘ompi_mpi_instance_refresh’ [-Wimplicit-int]
+instance/instance.c:158:28: warning: no previous prototype for ‘get_nth_pset_in_list’ [-Wmissing-prototypes]
+ ompi_mpi_instance_pset_t * get_nth_pset_in_list(int n){
+                            ^~~~~~~~~~~~~~~~~~~~
+instance/instance.c:190:6: warning: no previous prototype for ‘opal_is_pset_member’ [-Wmissing-prototypes]
+ bool opal_is_pset_member(opal_process_name_t *procs, size_t nprocs, opal_process_name_t proc){
+      ^~~~~~~~~~~~~~~~~~~
+instance/instance.c:204:6: warning: no previous prototype for ‘opal_is_pset_member_local’ [-Wmissing-prototypes]
+ bool opal_is_pset_member_local(char *pset_name, opal_process_name_t proc){
+      ^~~~~~~~~~~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘pset_define_handler’:
+instance/instance.c:270:12: warning: ‘return’ with a value, in function returning void
+     return rc;
+            ^~
+instance/instance.c:221:13: note: declared here
+ static void pset_define_handler(size_t evhdlr_registration_id, pmix_status_t status,
+             ^~~~~~~~~~~~~~~~~~~
+instance/instance.c:230:18: warning: unused variable ‘members’ [-Wunused-variable]
+     pmix_proc_t *members;
+                  ^~~~~~~
+instance/instance.c:226:15: warning: unused variable ‘sz’ [-Wunused-variable]
+     size_t n, sz, nmembers=0;
+               ^~
+instance/instance.c: In function ‘pset_delete_handler’:
+instance/instance.c:301:12: warning: ‘return’ with a value, in function returning void
+     return rc;
+            ^~
+instance/instance.c:274:13: note: declared here
+ static void pset_delete_handler(size_t evhdlr_registration_id, pmix_status_t status,
+             ^~~~~~~~~~~~~~~~~~~
+instance/instance.c: At top level:
+instance/instance.c:335:28: warning: no previous prototype for ‘get_res_change_by_name’ [-Wmissing-prototypes]
+ ompi_mpi_instance_pset_t * get_res_change_by_name(char *name){
+                            ^~~~~~~~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘get_res_change_by_name’:
+instance/instance.c:341:20: warning: returning ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from a function with incompatible return type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+             return rc_out;
+                    ^~~~~~
+instance/instance.c: At top level:
+instance/instance.c:348:28: warning: no previous prototype for ‘get_res_change_for_bound_name’ [-Wmissing-prototypes]
+ ompi_mpi_instance_pset_t * get_res_change_for_bound_name(char *name){
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘get_res_change_for_bound_name’:
+instance/instance.c:354:20: warning: returning ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from a function with incompatible return type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+             return rc_out;
+                    ^~~~~~
+instance/instance.c: At top level:
+instance/instance.c:362:28: warning: no previous prototype for ‘get_res_change_active_for_bound_name’ [-Wmissing-prototypes]
+ ompi_mpi_instance_pset_t * get_res_change_active_for_bound_name(char *name){
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘get_res_change_active_for_bound_name’:
+instance/instance.c:368:20: warning: returning ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from a function with incompatible return type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+             return rc_out;
+                    ^~~~~~
+instance/instance.c: In function ‘ompi_instance_get_rc_type’:
+instance/instance.c:379:16: warning: assignment to ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+     res_change = get_res_change_by_name(delta_pset);
+                ^
+instance/instance.c: At top level:
+instance/instance.c:385:5: warning: no previous prototype for ‘print_res_change’ [-Wmissing-prototypes]
+ int print_res_change(char *name){
+     ^~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘print_res_change’:
+instance/instance.c:387:49: warning: initialization of ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+     ompi_mpi_instance_resource_change_t *rc_out=get_res_change_by_name(name);
+                                                 ^~~~~~~~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘opal_pmix_proc_array_conv’:
+instance/instance.c:407:15: warning: comparison of integer expressions of different signedness: ‘int’ and ‘size_t’ {aka ‘long unsigned int’} [-Wsign-compare]
+     for(n=0; n<nprocs; n++){
+               ^
+instance/instance.c: In function ‘pmix_opal_proc_array_conv’:
+instance/instance.c:416:15: warning: comparison of integer expressions of different signedness: ‘int’ and ‘size_t’ {aka ‘long unsigned int’} [-Wsign-compare]
+     for(n=0; n<nprocs; n++){
+               ^
+instance/instance.c: In function ‘rc_finalize_handler’:
+instance/instance.c:442:32: warning: assignment to ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+         if(NULL != (res_change = get_res_change_by_name(pset_name))){
+                                ^
+instance/instance.c:452:12: warning: ‘return’ with a value, in function returning void
+     return rc;
+            ^~
+instance/instance.c:422:13: note: declared here
+ static void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
+             ^~~~~~~~~~~~~~~~~~~
+instance/instance.c: At top level:
+instance/instance.c:455:13: warning: function declaration isn’t a prototype [-Wstrict-prototypes]
+ pmix_proc_t ompi_intance_get_pmixid(){
+             ^~~~~~~~~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘ompi_instance_clear_rc_cache’:
+instance/instance.c:471:54: warning: initialization of ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+     ompi_mpi_instance_resource_change_t *rc_remove = get_res_change_by_name(delta_pset);
+                                                      ^~~~~~~~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘ompi_mpi_instance_init_common’:
+instance/instance.c:891:5: warning: ISO C forbids nested functions [-Wpedantic]
+     ompi_rc_op_type_t rc_op MPI_RC_NULL;
+     ^~~~~~~~~~~~~~~~~
+instance/instance.c:891:29: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘MPI_RC_NULL’
+     ompi_rc_op_type_t rc_op MPI_RC_NULL;
+                             ^~~~~~~~~~~
+instance/instance.c:891:29: warning: statement with no effect [-Wunused-value]
+instance/instance.c:897:88: error: ‘rc_op’ undeclared (first use in this function)
+     int res_rc = ompi_instance_get_res_change(ompi_mpi_instance_default, bound_pset,  &rc_op, delta_pset, &incl, &rc_status,  NULL, false);
+                                                                                        ^~~~~
+instance/instance.c:897:88: note: each undeclared identifier is reported only once for each function it appears in
+instance/instance.c:899:25: warning: variable ‘ts’ set but not used [-Wunused-but-set-variable]
+         struct timespec ts;
+                         ^~
+instance/instance.c:897:9: warning: unused variable ‘res_rc’ [-Wunused-variable]
+     int res_rc = ompi_instance_get_res_change(ompi_mpi_instance_default, bound_pset,  &rc_op, delta_pset, &incl, &rc_status,  NULL, false);
+         ^~~~~~
+instance/instance.c: In function ‘ompi_mpi_instance_refresh’:
+instance/instance.c:1381:20: warning: comparison of integer expressions of different signedness: ‘int’ and ‘size_t’ {aka ‘long unsigned int’} [-Wsign-compare]
+         for(i=0; i < nprocs; i++){
+                    ^
+instance/instance.c:1421:18: warning: declaration of ‘i’ shadows a previous local [-Wshadow]
+         for (int i = 0 ; i < nprocs ; ++i ) {
+                  ^
+instance/instance.c:1319:14: note: shadowed declaration is here
+     int ret, i;
+              ^
+instance/instance.c:1421:28: warning: comparison of integer expressions of different signedness: ‘int’ and ‘size_t’ {aka ‘long unsigned int’} [-Wsign-compare]
+         for (int i = 0 ; i < nprocs ; ++i ) {
+                            ^
+instance/instance.c:1328:42: warning: unused variable ‘res_change’ [-Wunused-variable]
+     ompi_mpi_instance_resource_change_t *res_change;
+                                          ^~~~~~~~~~
+instance/instance.c:1320:19: warning: unused variable ‘rc’ [-Wunused-variable]
+     pmix_status_t rc;
+                   ^~
+In file included from instance/instance.h:14,
+                 from instance/instance.c:13:
+instance/instance.c: In function ‘ompi_instance_get_res_change_complete’:
+../opal/class/opal_object.h:331:38: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+             if (0 == opal_obj_update((opal_object_t *) (object), -1)) { \
+                                      ^
+instance/instance.c:1496:13: note: in expansion of macro ‘OBJ_RELEASE’
+             OBJ_RELEASE(res_change->type);
+             ^~~~~~~~~~~
+../opal/class/opal_object.h:332:42: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+                 opal_obj_run_destructors((opal_object_t *) (object));   \
+                                          ^
+instance/instance.c:1496:13: note: in expansion of macro ‘OBJ_RELEASE’
+             OBJ_RELEASE(res_change->type);
+             ^~~~~~~~~~~
+../opal/class/opal_object.h:333:22: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+                 free((void *) object);                                  \
+                      ^
+instance/instance.c:1496:13: note: in expansion of macro ‘OBJ_RELEASE’
+             OBJ_RELEASE(res_change->type);
+             ^~~~~~~~~~~
+../opal/class/opal_object.h:334:24: warning: assignment to ‘ompi_rc_op_type_t’ {aka ‘unsigned char’} from ‘void *’ makes integer from pointer without a cast [-Wint-conversion]
+                 object = NULL;                                          \
+                        ^
+instance/instance.c:1496:13: note: in expansion of macro ‘OBJ_RELEASE’
+             OBJ_RELEASE(res_change->type);
+             ^~~~~~~~~~~
+In file included from ../opal/class/opal_hash_table.h:40,
+                 from instance/instance.h:15,
+                 from instance/instance.c:13:
+instance/instance.c:1499:67: warning: passing argument 2 of ‘_opal_list_append’ from incompatible pointer type [-Wincompatible-pointer-types]
+             opal_list_append(&ompi_mpi_instance_resource_changes, res_change);
+                                                                   ^~~~~~~~~~
+../opal/class/opal_list.h:531:57: note: in definition of macro ‘opal_list_append’
+ #    define opal_list_append(l, i) _opal_list_append(l, i)
+                                                         ^
+../opal/class/opal_list.h:534:75: note: expected ‘opal_list_item_t *’ {aka ‘struct opal_list_item_t *’} but argument is of type ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’}
+ static inline void _opal_list_append(opal_list_t *list, opal_list_item_t *item
+                                                         ~~~~~~~~~~~~~~~~~~^~~~
+instance/instance.c:1462:12: warning: unused variable ‘sz’ [-Wunused-variable]
+     size_t sz;
+            ^~
+instance/instance.c:1461:19: warning: unused variable ‘rc’ [-Wunused-variable]
+     pmix_status_t rc;
+                   ^~
+instance/instance.c: In function ‘ompi_instance_get_res_change’:
+instance/instance.c:1531:28: warning: assignment to ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+     if(NULL == (res_change = get_res_change_active_for_bound_name(pset_name))){
+                            ^
+instance/instance.c:1538:28: warning: assignment to ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+     if(NULL == (res_change = get_res_change_active_for_bound_name(pset_name))){
+                            ^
+instance/instance.c:1570:28: warning: assignment to ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+     if(NULL == (res_change = get_res_change_active_for_bound_name(pset_name)) || NULL == res_change->delta_pset){
+                            ^
+instance/instance.c:1571:32: warning: assignment to ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+         if(NULL == (res_change = get_res_change_for_bound_name(pset_name)) || NULL == res_change->delta_pset){
+                                ^
+instance/instance.c:1512:9: warning: unused variable ‘ret’ [-Wunused-variable]
+     int ret = OPAL_SUCCESS;
+         ^~~
+instance/instance.c: In function ‘ompi_instance_accept_res_change’:
+instance/instance.c:1647:55: warning: initialization of ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+     ompi_mpi_instance_resource_change_t *res_change = get_res_change_by_name(delta_pset);
+                                                       ^~~~~~~~~~~~~~~~~~~~~~
+instance/instance.c:1682:24: warning: assignment to ‘ompi_mpi_instance_resource_change_t *’ {aka ‘struct ompi_resource_change_t *’} from incompatible pointer type ‘ompi_mpi_instance_pset_t *’ {aka ‘struct ompi_pset_t *’} [-Wincompatible-pointer-types]
+             res_change = get_res_change_by_name(delta_pset);
+                        ^
+instance/instance.c:1644:17: warning: unused variable ‘lookup_info’ [-Wunused-variable]
+     pmix_info_t lookup_info;
+                 ^~~~~~~~~~~
+instance/instance.c:1639:22: warning: unused variable ‘confirm_data_type’ [-Wunused-variable]
+     pmix_data_type_t confirm_data_type=PMIX_STRING;
+                      ^~~~~~~~~~~~~~~~~
+instance/instance.c: In function ‘ompi_instance_confirm_res_change’:
+instance/instance.c:1754:9: warning: unused variable ‘counter’ [-Wunused-variable]
+     int counter=0;
+         ^~~~~~~
+instance/instance.c:1737:10: warning: unused variable ‘key’ [-Wunused-variable]
+     char key[PMIX_MAX_KEYLEN];
+          ^~~
+instance/instance.c:1733:11: warning: unused variable ‘pmix_wait’ [-Wunused-variable]
+     char *pmix_wait = PMIX_WAIT;
+           ^~~~~~~~~
+instance/instance.c: In function ‘ompi_instance_get_num_psets_complete’:
+instance/instance.c:1839:23: warning: comparison of integer expressions of different signedness: ‘int’ and ‘size_t’ {aka ‘long unsigned int’} [-Wsign-compare]
+             for(i=0; i<num_names; i++){
+                       ^
+instance/instance.c:1819:12: warning: unused variable ‘pset_names_ptr’ [-Wunused-variable]
+     char **pset_names_ptr=&pset_names;
+            ^~~~~~~~~~~~~~
+instance/instance.c:1815:19: warning: variable ‘rc’ set but not used [-Wunused-but-set-variable]
+     pmix_status_t rc;
+                   ^~
+instance/instance.c: In function ‘ompi_instance_get_nth_pset’:
+instance/instance.c:1905:11: warning: comparison of integer expressions of different signedness: ‘int’ and ‘size_t’ {aka ‘long unsigned int’} [-Wsign-compare]
+     if (n >= ompi_instance_builtin_count + ompi_mpi_instance_num_pmix_psets) {
+           ^~
+instance/instance.c: In function ‘ompi_instance_get_pset_membership’:
+instance/instance.c:1935:22: warning: unused variable ‘lock’ [-Wunused-variable]
+     opal_pmix_lock_t lock;
+                      ^~~~
+instance/instance.c: In function ‘ompi_instance_pset_fence’:
+instance/instance.c:2030:60: warning: passing argument 3 of ‘ompi_instance_get_pset_membership’ from incompatible pointer type [-Wincompatible-pointer-types]
+     ompi_instance_get_pset_membership(instance, pset_name, &procs, &nprocs);
+                                                            ^~~~~~
+instance/instance.c:1931:106: note: expected ‘opal_process_name_t **’ {aka ‘struct <anonymous> **’} but argument is of type ‘pmix_proc_t **’ {aka ‘struct pmix_proc **’}
+ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_name, opal_process_name_t **members, size_t *nmembers){
+                                                                                    ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+instance/instance.c: In function ‘ompi_instance_pset_create_op’:
+instance/instance.c:2051:12: warning: unused variable ‘sz’ [-Wunused-variable]
+     size_t sz, n, ninfo, nresults;
+            ^~
+instance/instance.c: In function ‘ompi_instance_group_pmix_pset’:
+instance/instance.c:2222:74: warning: passing argument 2 of ‘ompi_instance_get_pset_membership’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+     if(OPAL_SUCCESS != (rc = ompi_instance_get_pset_membership(instance, pset_name, &pset_members, &pset_nmembers))){
+                                                                          ^~~~~~~~~
+instance/instance.c:1931:73: note: expected ‘char *’ but argument is of type ‘const char *’
+ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_name, opal_process_name_t **members, size_t *nmembers){
+                                                                   ~~~~~~^~~~~~~~~
+instance/instance.c:2265:40: warning: passing argument 1 of ‘ompi_instance_free_pset_membership’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+     ompi_instance_free_pset_membership(pset_name);
+                                        ^~~~~~~~~
+instance/instance.c:2007:47: note: expected ‘char *’ but argument is of type ‘const char *’
+ int ompi_instance_free_pset_membership (char *pset_name){
+                                         ~~~~~~^~~~~~~~~
+instance/instance.c:2218:21: warning: variable ‘ts’ set but not used [-Wunused-but-set-variable]
+     struct timespec ts;
+                     ^~
+instance/instance.c:2217:9: warning: unused variable ‘timeout’ [-Wunused-variable]
+     int timeout=1000000000;
+         ^~~~~~~
+instance/instance.c:2216:9: warning: unused variable ‘timeout_counter’ [-Wunused-variable]
+     int timeout_counter=0;
+         ^~~~~~~~~~~~~~~
+instance/instance.c:2212:11: warning: unused variable ‘stmp’ [-Wunused-variable]
+     char *stmp = NULL;
+           ^~~~
+instance/instance.c:2211:19: warning: unused variable ‘pval’ [-Wunused-variable]
+     pmix_value_t *pval = NULL;
+                   ^~~~
+instance/instance.c:2209:17: warning: unused variable ‘p’ [-Wunused-variable]
+     pmix_proc_t p;
+                 ^
+instance/instance.c: In function ‘ompi_group_from_pset’:
+instance/instance.c:2308:19: warning: comparison of distinct pointer types lacks a cast
+     if (group_out == MPI_GROUP_NULL) {
+                   ^~
+instance/instance.c: In function ‘print_res_change’:
+instance/instance.c:401:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+instance/instance.c: In function ‘opal_pmix_proc_array_conv’:
+instance/instance.c:410:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+instance/instance.c: In function ‘pmix_opal_proc_array_conv’:
+instance/instance.c:419:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+instance/instance.c: In function ‘ompi_instance_request_res_change’:
+instance/instance.c:1629:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+At top level:
+instance/instance.c:466:33: warning: ‘ompi_mpi_instance_res_change’ defined but not used [-Wunused-variable]
+ static ompi_instance_res_change ompi_mpi_instance_res_change;
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+make[2]: *** [Makefile:2629: instance/instance.lo] Error 1
+make[2]: Leaving directory '/opt/hpc/build/ompi/ompi'
+make[1]: *** [Makefile:2736: install-recursive] Error 1
+make[1]: Leaving directory '/opt/hpc/build/ompi/ompi'
+make: *** [Makefile:1456: install-recursive] Error 1
