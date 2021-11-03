@@ -1331,8 +1331,9 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     opal_mutex_lock (&instance_lock);
 
     ompi_instance_get_pset_membership(instance, pset_name, &pset_procs, &nprocs);
-     opal_mutex_lock(&tracking_structures_lock);   
-
+    
+    
+    opal_mutex_lock(&tracking_structures_lock);   
     
     /* if this process is to be removed don't update the instance as it should finalize anyways */
     if(opal_is_pset_member(pset_procs, nprocs, opal_process_info.my_name) && rc_type == OMPI_RC_SUB){
@@ -1626,7 +1627,9 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, char *pset_name, omp
     if(NULL != (delta_pset_ptr = res_change->delta_pset)){
         opal_process_name_t *procs = NULL;
         size_t nprocs;
+        opal_mutex_unlock(&tracking_structures_lock);
         ompi_instance_get_pset_membership(ompi_mpi_instance_default, delta_pset_ptr->name, &procs, &nprocs);
+        opal_mutex_lock (&tracking_structures_lock);
         printf("got %d members for pset %s\n", nprocs, delta_pset_ptr->name);
         if(NULL == procs)printf("But procs are NULL!!\n");
         strcpy(delta_pset, delta_pset_ptr->name);
@@ -2261,12 +2264,11 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
     struct timespec ts;
     ts.tv_sec = 0;
     ts.tv_nsec = 100000;
-    opal_mutex_lock (&tracking_structures_lock);
+
     if(OPAL_SUCCESS != (rc = ompi_instance_get_pset_membership(instance, pset_name, &pset_members, &pset_nmembers))){
-        opal_mutex_unlock (&tracking_structures_lock);
         return OPAL_ERR_BAD_PARAM;
     }
-
+    opal_mutex_lock (&tracking_structures_lock);
 
     if(PMIX_SUCCESS != rc){
         opal_mutex_unlock (&tracking_structures_lock);
