@@ -17,11 +17,13 @@
 
 static const char FUNC_NAME[] = "MPI_Session_accept_res_change";
 
-int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char delta_pset[], char result_pset[], int root, MPI_Comm *comm){
+int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char delta_pset[], char result_pset[], int root, MPI_Comm *comm, int *terminate){
     int rc;
     int my_rank;
     char d_pset[PMIX_MAX_KEYLEN];
     ompi_rc_op_type_t rc_type;
+
+    *terminate = 0;
 
     MPI_Comm_rank(*comm, &my_rank);
 
@@ -42,13 +44,15 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
         bool is_root = my_rank == root;
 
         MPI_Barrier(*comm);
+        if(rc_type == MPI_RC_SUB){
+            MPI_Comm_disconnect(comm);
+        }
 
         rc = ompi_mpi_instance_refresh (session, info, d_pset, rc_type, result_pset, is_root);
 
         if(MPI_SUCCESS != rc){
             if(OPAL_ERR_BAD_PARAM == rc){
-                MPI_Comm_free(comm);
-                *comm = MPI_COMM_NULL; 
+                *terminate = 1;
                 return MPI_SUCCESS;
             }
             return rc;

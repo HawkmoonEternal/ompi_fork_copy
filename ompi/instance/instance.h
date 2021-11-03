@@ -46,17 +46,24 @@ struct ompi_pset_t{
 typedef struct ompi_pset_t ompi_mpi_instance_pset_t;
 
 static void pset_destructor(ompi_mpi_instance_pset_t *pset){
-    free(pset->members);
+    OBJ_DESTRUCT(&pset->super);
+    if(NULL != pset->members){
+        free(pset->members);
+    }
+}
+static void pset_constructor(ompi_mpi_instance_pset_t *pset){
+    OBJ_CONSTRUCT(&pset->super, opal_list_item_t);
+    pset->members = NULL;
 }
 
 ompi_mpi_instance_pset_t * get_pset_by_name(char *name);
 
-static void pset_define_handler(size_t evhdlr_registration_id, pmix_status_t status,
+void pset_define_handler(size_t evhdlr_registration_id, pmix_status_t status,
                        const pmix_proc_t *source, pmix_info_t info[], size_t ninfo,
                        pmix_info_t results[], size_t nresults,
                        pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata);
 
-static void pset_delete_handler(size_t evhdlr_registration_id, pmix_status_t status,
+void pset_delete_handler(size_t evhdlr_registration_id, pmix_status_t status,
                        const pmix_proc_t *source, pmix_info_t info[], size_t ninfo,
                        pmix_info_t results[], size_t nresults,
                        pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata);
@@ -95,9 +102,13 @@ struct ompi_resource_change_t{
 typedef struct ompi_resource_change_t ompi_mpi_instance_resource_change_t;
 
 static void ompi_resource_change_constructor(ompi_mpi_instance_resource_change_t *rc){
+    OBJ_CONSTRUCT(&rc->super, opal_list_item_t);
     rc->delta_pset = rc->bound_pset=NULL;
     rc->type = OMPI_RC_NULL;
     rc->status = RC_INVALID;
+}
+static void ompi_resource_change_destructor(ompi_mpi_instance_resource_change_t *rc){
+    OBJ_DESTRUCT(&rc->super);
 }
 
 static void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
