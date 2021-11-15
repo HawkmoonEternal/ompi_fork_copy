@@ -1353,13 +1353,8 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
         PMIX_INFO_LOAD(&lookup_info[1], PMIX_TIMEOUT, &timeout, PMIX_INT);
         (void)snprintf(lookup_data.key, PMIX_MAX_KEYLEN, "%s:finalize", pset_name);
         
-        rc = PMIX_ERR_NOT_FOUND;
-        while(rc == PMIX_ERR_NOT_FOUND){
-            rc = PMIx_Lookup(&lookup_data, 1, NULL, 0);
-            if(rc == PMIX_ERR_NOT_FOUND){
-                nanosleep(&ts, NULL);
-            }
-        }
+        rc = PMIx_Lookup(&lookup_data, 1, lookup_info, 2);
+
         PMIX_INFO_FREE(lookup_info, 2);
         PMIX_PDATA_DESTRUCT(&lookup_data);
 
@@ -1502,8 +1497,6 @@ static void ompi_instance_get_res_change_complete (pmix_status_t status,
     opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
 
     ompi_mpi_instance_resource_change_t* res_change = OBJ_NEW(ompi_mpi_instance_resource_change_t);
-
-    //printf("Back in get_res change complete for %d\n", opal_process_info.myprocid.rank);
     
     if(status == PMIX_SUCCESS && ninfo >= 3){
         opal_mutex_lock(&tracking_structures_lock);
@@ -1577,7 +1570,6 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, char *pset_name, omp
     
     /* if we don't find a valid & active res change locally, query the runtime. TODO: MPI Info directive QUERY RUNTIME */
     if(NULL == (res_change = get_res_change_active_for_bound_name(pset_name))){
-        printf("querying for new rc\n");
         PMIX_QUERY_CONSTRUCT(&query);
         PMIX_ARGV_APPEND(rc, query.keys, "PMIX_RC_TYPE");
         PMIX_ARGV_APPEND(rc, query.keys, "PMIX_RC_PSET");
@@ -1615,7 +1607,6 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, char *pset_name, omp
             *incl = false;
             return OPAL_ERR_NOT_FOUND;
         }
-        printf("only found inactive rc\n");
     }
 
     /* lookup props of the resource change */
@@ -1630,8 +1621,6 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, char *pset_name, omp
         opal_mutex_unlock(&tracking_structures_lock);
         ompi_instance_get_pset_membership(ompi_mpi_instance_default, delta_pset_ptr->name, &procs, &nprocs);
         opal_mutex_lock (&tracking_structures_lock);
-        printf("got %d members for pset %s\n", nprocs, delta_pset_ptr->name);
-        if(NULL == procs)printf("But procs are NULL!!\n");
         strcpy(delta_pset, delta_pset_ptr->name);
         *incl = opal_is_pset_member(procs, nprocs, opal_process_info.my_name) ? 1 : 0;
         ompi_instance_free_pset_membership(delta_pset_ptr->name);
@@ -1673,9 +1662,10 @@ int ompi_instance_request_res_change(MPI_Session session, int delta, char *delta
     PMIX_INFO_FREE(pinfo, 3);
 }
 
-int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset){
+int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset, bool blocking){
 
     pmix_status_t rc;
+    int ninfo = 0;
 
     /* define those in OMPI etc. */
     char *OMPI_CONFIRM_VAL="rc_confirmed";
@@ -1686,7 +1676,18 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
     /* publish/lookup data structs */
     pmix_info_t publish_data;
     pmix_pdata_t lookup_data;
-    pmix_info_t lookup_info;
+    pmix_info_t *lookup_info = NULL;
+
+    if(blocking){
+        ninfo = 2;
+
+        PMIX_INFO_CREATE(lookup_info, ninfo);
+        int wait = 0;
+        int timeout = 120;
+        PMIX_INFO_LOAD(&lookup_info[0], PMIX_WAIT, &wait, PMIX_INT);
+        PMIX_INFO_LOAD(&lookup_info[1], PMIX_TIMEOUT, &timeout, PMIX_INT);
+
+    }
     
     opal_mutex_lock (&tracking_structures_lock);
     ompi_mpi_instance_resource_change_t *res_change = get_res_change_by_name(delta_pset);
@@ -1721,7 +1722,12 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
         PMIX_PDATA_CONSTRUCT(&lookup_data);
         (void)snprintf(lookup_data.key, PMIX_MAX_KEYLEN, "%s:confirm", delta_pset);
 
-        rc = PMIx_Lookup(&lookup_data, 1, NULL, 0);
+        rc = PMIx_Lookup(&lookup_data, 1, lookup_info, ninfo);
+
+        if(NULL != lookup_info){
+            PMIX_INFO_FREE(lookup_info, ninfo);
+        }
+
         if(rc == PMIX_ERR_NOT_FOUND){
             opal_mutex_lock(&tracking_structures_lock);
             res_change = get_res_change_by_name(delta_pset);
@@ -1806,16 +1812,11 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
     PMIX_INFO_LOAD(&lookup_info[0], PMIX_WAIT, &wait, PMIX_INT);
     PMIX_INFO_LOAD(&lookup_info[1], PMIX_TIMEOUT, &timeout, PMIX_INT);
     (void)snprintf(lookup_data.key, PMIX_MAX_KEYLEN, "%s:accept", delta_pset);
-    rc = PMIX_ERR_NOT_FOUND;
     
-    //printf("confirm:lookup\n");
-    while(rc == PMIX_ERR_NOT_FOUND){
-        rc = PMIx_Lookup(&lookup_data, 1, NULL, 0);
-        if(rc == PMIX_ERR_NOT_FOUND){
-            nanosleep(&ts, NULL);
-        }
-    }
+    rc = PMIx_Lookup(&lookup_data, 1, lookup_info, 2);
+
     PMIX_INFO_FREE(lookup_info, 2);
+
     if(rc != PMIX_SUCCESS){
         printf("Error in confirm:lookup: %d\n", rc);
         PMIX_PDATA_DESTRUCT(&lookup_data);
@@ -1989,8 +1990,6 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
     ompi_mpi_instance_pset_t *pset = get_pset_by_name(pset_name);
     bool new_pset = (pset == NULL);
 
-    printf("get_pset_membership: %s\n", pset_name);
-
     /* query the runtime */
     if(NULL == pset || NULL == pset->members || 0 == pset->size){ 
         opal_mutex_unlock (&tracking_structures_lock);
@@ -2013,7 +2012,6 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
         opal_mutex_lock (&tracking_structures_lock);
         for(n = 0; n < ninfo; n++){
             if(0 == strcmp(info[n].key, key)){
-                printf("AHA! got membership key in get membership query response\n");
 
                 if(new_pset){
                     pset = OBJ_NEW(ompi_mpi_instance_pset_t);
@@ -2042,7 +2040,6 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
 
     /* do a local lookup */    
     }else{
-        printf("local lookup\n");
         *nmembers = pset->size;
         *members = pset->members;
     }

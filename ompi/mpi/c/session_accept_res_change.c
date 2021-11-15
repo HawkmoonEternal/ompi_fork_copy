@@ -20,6 +20,9 @@ static const char FUNC_NAME[] = "MPI_Session_accept_res_change";
 int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char delta_pset[], char result_pset[], int root, MPI_Comm *comm, int *terminate){
     int rc;
     int my_rank;
+    int flag;
+    bool blocking = false;
+    char val[8];
     char d_pset[PMIX_MAX_KEYLEN];
     ompi_rc_op_type_t rc_type;
 
@@ -28,8 +31,14 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
     MPI_Comm_rank(*comm, &my_rank);
 
     if(my_rank == root){
+        if(NULL != info && MPI_INFO_NULL != *info){
+            MPI_Info_get(*info, "mpi_blocking", 8, val, &flag);
+            if(flag && 1 == atoi(val)){
+                blocking = true;
+            }
+        }
         ompi_instance_get_rc_type(delta_pset,  &rc_type);
-        rc = ompi_instance_accept_res_change(session, (opal_info_t**)info, delta_pset, result_pset);
+        rc = ompi_instance_accept_res_change(session, (opal_info_t**)info, delta_pset, result_pset, blocking);
     }
     MPI_Bcast(&rc, 1, MPI_INT, 0, *comm);
     if(MPI_SUCCESS == rc){
