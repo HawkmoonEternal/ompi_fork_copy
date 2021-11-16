@@ -41,24 +41,31 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
         rc = ompi_instance_accept_res_change(session, (opal_info_t**)info, delta_pset, result_pset, blocking);
     }
     MPI_Bcast(&rc, 1, MPI_INT, 0, *comm);
+    printf("rank: %d, first bcast in accept %d\n", my_rank, rc);
     if(MPI_SUCCESS == rc){
         if(my_rank == root){
             strcpy(d_pset, delta_pset);
         }
         MPI_Bcast(d_pset, PMIX_MAX_KEYLEN, MPI_CHAR, root, *comm);
+        printf("rank: %d, second bcast in accept %s\n", my_rank, d_pset);
         MPI_Bcast(&rc_type, 1, MPI_UINT8_T, root, *comm);
+        printf("rank: %d, third bcast in accept %d\n", my_rank, rc_type);
         MPI_Bcast(result_pset, MPI_MAX_PSET_NAME_LEN, MPI_CHAR, root, *comm);
+        printf("rank: %d, fourth bcast in accept %s\n", my_rank, result_pset);
         /* If we want to continue running we need to refresh the instance */ 
         
         bool is_root = my_rank == root;
+        printf("rank: %d, barrier start\n", my_rank);
+        //MPI_Barrier(*comm);
+        printf("rank: %d, barrier end\n", my_rank);
 
-        MPI_Barrier(*comm);
-        if(rc_type == MPI_RC_SUB){
-            MPI_Comm_disconnect(comm);
-        }
+        //if(rc_type == MPI_RC_SUB){
+        //    MPI_Comm_disconnect(comm);
+        //}
 
+        printf("rank: %d, refresh\n", my_rank);
         rc = ompi_mpi_instance_refresh (session, info, d_pset, rc_type, result_pset, is_root);
-
+        printf("rank: %d, finished refresh %d\n", my_rank, rc);
         if(MPI_SUCCESS != rc){
             if(OPAL_ERR_BAD_PARAM == rc){
                 *terminate = 1;

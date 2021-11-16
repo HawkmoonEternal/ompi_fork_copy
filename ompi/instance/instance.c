@@ -1413,9 +1413,9 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     /* now we need to update the job info */
     opal_mutex_unlock(&tracking_structures_lock);
     opal_mutex_unlock (&instance_lock);
-    //printf("get job data %d\n", opal_process_info.myprocid.rank);
+    printf("get job data %d\n", opal_process_info.myprocid.rank);
     PMIx_Get_job_data();
-    //printf("finished get job data %d\n", opal_process_info.myprocid.rank);
+    printf("finished get job data %d\n", opal_process_info.myprocid.rank);
 
     opal_mutex_lock (&instance_lock);
     opal_mutex_lock(&tracking_structures_lock);
@@ -1597,11 +1597,11 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, char *pset_name, omp
     }
 
     /* if we don't have found an active res change with a delta pset 
-     * search for invalid or finalized ones
+     * search for invalid ones
      * If there arent any resource changes founf return an error 
      */
     if(NULL == (res_change = get_res_change_active_for_bound_name(pset_name)) || NULL == res_change->delta_pset){
-        if(NULL == (res_change = get_res_change_for_bound_name(pset_name)) || NULL == res_change->delta_pset){
+        if(NULL == (res_change = get_res_change_for_bound_name(pset_name)) || NULL == res_change->delta_pset || RC_FINALIZED == res_change->status){
             opal_mutex_unlock (&tracking_structures_lock);
             *type = OMPI_RC_NULL;
             *incl = false;
