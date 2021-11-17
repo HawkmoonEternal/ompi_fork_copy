@@ -330,6 +330,7 @@ int ompi_comm_create_w_info (ompi_communicator_t *comm, ompi_group_t *group, opa
         return OMPI_ERR_BAD_PARAM;
     }
 
+
     if ( OMPI_COMM_IS_INTER(comm) ) {
         int tsize;
         remote_group = &ompi_mpi_group_null.group;
@@ -384,7 +385,7 @@ int ompi_comm_create_w_info (ompi_communicator_t *comm, ompi_group_t *group, opa
         rranks = NULL;
         mode   = OMPI_COMM_CID_INTRA;
     }
-
+    
     rc = ompi_comm_set ( &newcomp,                 /* new comm */
                          comm,                     /* old comm */
                          0,                        /* local array size */
@@ -1311,7 +1312,6 @@ int ompi_comm_create_from_group (ompi_group_t *group, const char *tag, opal_info
 {
     ompi_communicator_t *newcomp = NULL;
     int rc;
-
     *newcomm = MPI_COMM_NULL;
     rc = ompi_comm_set_simple (&newcomp, errhandler, group);
     if (OPAL_UNLIKELY(OMPI_SUCCESS != rc)) {

@@ -189,9 +189,9 @@ bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc
 
 bool opal_is_pset_member(opal_process_name_t *procs, size_t nprocs, opal_process_name_t proc){
     opal_mutex_lock(&tracking_structures_lock);
-
     size_t n;
     for(n = 0; n < nprocs; n++){
+
         if(proc.jobid == procs[n].jobid &&  proc.vpid == procs[n].vpid){
             opal_mutex_unlock(&tracking_structures_lock);
             return true;
@@ -1413,9 +1413,7 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     /* now we need to update the job info */
     opal_mutex_unlock(&tracking_structures_lock);
     opal_mutex_unlock (&instance_lock);
-    printf("get job data %d\n", opal_process_info.myprocid.rank);
     PMIx_Get_job_data();
-    printf("finished get job data %d\n", opal_process_info.myprocid.rank);
 
     opal_mutex_lock (&instance_lock);
     opal_mutex_lock(&tracking_structures_lock);
@@ -1792,9 +1790,10 @@ int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **in
     bool is_leader=false;
     /* define those in OMPI etc. */
     char *OMPI_CONFIRM_VAL="rc_confirmed";
-    opal_mutex_lock(&tracking_structures_lock);
+    
     /* get the members of the delta_pset. These will participate in the fence operation */
     ompi_instance_get_pset_membership (instance, delta_pset, &delta_pset_members_names, &delta_pset_nmembers);
+    opal_mutex_lock(&tracking_structures_lock);
     opal_pmix_proc_array_conv(delta_pset_members_names, &delta_pset_members, delta_pset_nmembers);
     ompi_instance_free_pset_membership(delta_pset);
     opal_mutex_unlock(&tracking_structures_lock);

@@ -87,6 +87,5 @@ int MPI_Comm_create_from_group (MPI_Group group, const char *tag, MPI_Info info,
         return ompi_errhandler_invoke (errhandler, MPI_COMM_NULL, errhandler->eh_mpi_object_type,
                                        rc, FUNC_NAME);
     }
-
     return rc;
 }

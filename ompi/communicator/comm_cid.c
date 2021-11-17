@@ -824,11 +824,8 @@ int ompi_comm_activate_nb (ompi_communicator_t **newcomm, ompi_communicator_t *c
         ompi_comm_request_return (request);
         return ret;
     }
-    
     ompi_comm_request_schedule_append (request, ompi_comm_activate_nb_complete, &subreq, 1);
-    
     ompi_comm_request_start (request);
-
     *req = &request->super;
 
     return ret;
