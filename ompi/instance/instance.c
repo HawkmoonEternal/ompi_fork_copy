@@ -1338,6 +1338,9 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     /* if this process is to be removed don't update the instance as it should finalize anyways */
     if(opal_is_pset_member(pset_procs, nprocs, opal_process_info.my_name) && rc_type == OMPI_RC_SUB){
 
+        ompi_instance_free_pset_membership(pset_name);
+        opal_mutex_unlock(&tracking_structures_lock);
+
         struct timespec ts;
         ts.tv_sec = 0;
         ts.tv_nsec = 1000000;
@@ -1358,8 +1361,8 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
         PMIX_INFO_FREE(lookup_info, 2);
         PMIX_PDATA_DESTRUCT(&lookup_data);
 
-        ompi_instance_free_pset_membership(pset_name);
-        opal_mutex_unlock(&tracking_structures_lock);
+        //ompi_instance_free_pset_membership(pset_name);
+        //opal_mutex_unlock(&tracking_structures_lock);
         opal_mutex_unlock (&instance_lock);
         return OPAL_ERR_BAD_PARAM;
     }
@@ -1413,10 +1416,11 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     /* now we need to update the job info */
     opal_mutex_unlock(&tracking_structures_lock);
     opal_mutex_unlock (&instance_lock);
+    printf("get job data\n");
     PMIx_Get_job_data();
 
     opal_mutex_lock (&instance_lock);
-    opal_mutex_lock(&tracking_structures_lock);
+    //opal_mutex_lock(&tracking_structures_lock);
 
     /* update opal job size and peer information */
     ompi_rte_refresh_job_size();
@@ -1455,7 +1459,7 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     }
 
 
-    opal_mutex_unlock(&tracking_structures_lock);
+    //opal_mutex_unlock(&tracking_structures_lock);
 
     /* 
     *  We need to add the updated endpoint information for the local procs. 
@@ -1677,6 +1681,7 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
     pmix_info_t *lookup_info = NULL;
 
     if(blocking){
+        printf("blocking accept\n");
         ninfo = 2;
 
         PMIX_INFO_CREATE(lookup_info, ninfo);
