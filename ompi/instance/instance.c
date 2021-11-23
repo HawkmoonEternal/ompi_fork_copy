@@ -1418,14 +1418,14 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     /* now we need to update the job info */
     //opal_mutex_unlock(&tracking_structures_lock);
     opal_mutex_unlock (&instance_lock);
-    printf("get job data\n");
+    //printf("get job data\n");
     PMIx_Get_job_data();
 
     opal_mutex_lock (&instance_lock);
-    printf("lock again\n");
+    //printf("lock again\n");
     //opal_mutex_lock(&tracking_structures_lock);
 
-    printf("refresh job size\n");
+    //printf("refresh job size\n");
     /* update opal job size and peer information */
     ompi_rte_refresh_job_size();
     ompi_rte_refresh_peers(rc_type == OMPI_RC_SUB);
@@ -1686,7 +1686,7 @@ int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **inf
     pmix_info_t *lookup_info = NULL;
 
     if(blocking){
-        printf("blocking accept\n");
+        //printf("blocking accept\n");
         ninfo = 2;
 
         PMIX_INFO_CREATE(lookup_info, ninfo);
@@ -1994,7 +1994,7 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
     pmix_query_t query;
     char *key = PMIX_QUERY_PSET_MEMBERSHIP;
 
-    printf("Rank %d: get_pset_membership: %s\n", opal_process_info.my_name.vpid, pset_name);
+    //printf("Rank %d: get_pset_membership: %s\n", opal_process_info.my_name.vpid, pset_name);
 
     opal_mutex_lock (&tracking_structures_lock);
 
@@ -2022,7 +2022,7 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
         /* set pset members in local pset */
         opal_mutex_lock (&tracking_structures_lock);
         for(n = 0; n < ninfo; n++){
-            printf("Rank %d: found key %s\n", opal_process_info.my_name.vpid, info[n].key);
+            //printf("Rank %d: found key %s\n", opal_process_info.my_name.vpid, info[n].key);
             if(0 == strcmp(info[n].key, key)){
                 if(new_pset){
                     pset = OBJ_NEW(ompi_mpi_instance_pset_t);
@@ -2051,7 +2051,7 @@ int ompi_instance_get_pset_membership (ompi_instance_t *instance, char *pset_nam
 
     /* do a local lookup */    
     }else{
-        printf("local lookup\n");
+        //printf("local lookup\n");
         if(NULL == pset->members){
             opal_mutex_unlock (&tracking_structures_lock);
             PMIX_ERR_NOT_FOUND;
@@ -2264,7 +2264,7 @@ static int ompi_instance_group_self (ompi_instance_t *instance, ompi_group_t **g
 
 static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char *pset_name, ompi_group_t **group_out)
 {
-    pmix_status_t rc;
+    pmix_status_t rc = OPAL_ERR_NOT_FOUND;
     pmix_proc_t p;
     ompi_group_t *group;
     pmix_value_t *pval = NULL;
@@ -2273,16 +2273,22 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
     opal_process_name_t *pset_members = NULL;
     size_t pset_nmembers;
     int timeout_counter=0;
-    int timeout=1000000000;
+    int timeout=100000;
     struct timespec ts;
     ts.tv_sec = 0;
     ts.tv_nsec = 100000;
 
-    if(OPAL_SUCCESS != (rc = ompi_instance_get_pset_membership(instance, pset_name, &pset_members, &pset_nmembers))){
-        return OPAL_ERR_BAD_PARAM;
+    while (pset_members == NULL){
+        if(OPAL_SUCCESS != (rc = ompi_instance_get_pset_membership(instance, pset_name, &pset_members, &pset_nmembers))){
+            return OPAL_ERR_BAD_PARAM;
+        }
+        if(pset_members == NULL){
+            //printf("pset_members = NULL\n");
+            nanosleep(&ts, NULL);
+        }
     }
     opal_mutex_lock (&tracking_structures_lock);
-    if(NULL == pset_members)printf("pset_members = NULL\n");
+    //if(NULL == pset_members)printf("pset_members = NULL\n");
     if(PMIX_SUCCESS != rc){
         opal_mutex_unlock (&tracking_structures_lock);
         if(PMIX_ERR_NOT_FOUND == rc){
