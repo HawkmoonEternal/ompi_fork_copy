@@ -31,7 +31,7 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
     *terminate = 0;
 
     /* check if user whishes to disconnect from comm */
-    if(NULL != info){
+    if(NULL != info && MPI_INFO_NULL != *info){
         MPI_Info_get(*info, "mpi_no_disconnect", 8, val2, &flag);
         if(flag && 1 == atoi(val2)){
             disconnect = false;
