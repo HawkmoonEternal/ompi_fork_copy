@@ -1,0 +1,22 @@
+# Copyright (c) 2010      Cisco Systems, Inc.  All rights reserved.
+# Copyright (c) 2016      IBM Corporation.  All rights reserved.
+# Copyright (c) 2018      Research Organization for Information Science
+#                         and Technology (RIST).  All rights reserved.
+#
+Name: Open SHMEM
+Description: Open MPI based Open SHMEM implementation
+Version: 5.1.0a1
+URL: http://www.open-mpi.org/
+#
+prefix=/dss/dssfs02/lwp-dss-0001/pr63qi/pr63qi-dss-0000/ga84kaf2/shared-folder/install/ompi
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+pkgincludedir=${includedir}/openmpi
+#
+# Note that -lopen-pal and all the EXTRA_LIBS are only necessary when
+# static linking, so only list these in Libs.private.
+#
+Libs: -L${libdir} -L/usr/lib64   -Wl,-rpath -Wl,${libdir}  -Wl,-rpath -Wl,/usr/lib64 -Wl,--enable-new-dtags -loshmem -lmpi_mpifh -lmpi
+Libs.private: -lopen-pal -lfabric -ldl -lrt -lgpfs -lpthread -lutil -lm 
+Cflags: -I${includedir}      

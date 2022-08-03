@@ -1,6 +1,9 @@
 /*
  * Copyright (C) Mellanox Technologies Ltd. 2001-2017. ALL RIGHTS RESERVED.
  * Copyright (c) 2018      Amazon.com, Inc. or its affiliates.  All Rights reserved.
+ * Copyright (c) 2021      Triad National Security, LLC. All rights
+ *                         reserved.
+ *
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -392,7 +395,7 @@ select_unlock:
     }
 
     *model = MPI_WIN_UNIFIED;
-    opal_asprintf(&name, "ucx window %d", ompi_comm_get_cid(module->comm));
+    opal_asprintf(&name, "ucx window %s", ompi_comm_print_cid(module->comm));
     ompi_win_set_name(win, name);
     free(name);
 
@@ -671,6 +674,7 @@ int ompi_osc_ucx_win_detach(struct ompi_win_t *win, const void *base) {
 int ompi_osc_ucx_free(struct ompi_win_t *win) {
     ompi_osc_ucx_module_t *module = (ompi_osc_ucx_module_t*) win->w_osc_module;
     int ret;
+    uint64_t i;
 
     assert(module->lock_count == 0);
     assert(opal_list_is_empty(&module->pending_posts) == true);
@@ -686,6 +690,13 @@ int ompi_osc_ucx_free(struct ompi_win_t *win) {
     if (ret != OMPI_SUCCESS) {
         return ret;
     }
+
+   /* MPI_Win_free should detach any memory attached to dynamic windows */
+    for (i = 0; i < module->state.dynamic_win_count; i++) {
+        assert(module->local_dynamic_win_info[i].refcnt == 1);
+        opal_common_ucx_wpmem_free(module->local_dynamic_win_info[i].mem);
+    }
+    module->state.dynamic_win_count = 0;
 
     free(module->addrs);
     free(module->state_addrs);

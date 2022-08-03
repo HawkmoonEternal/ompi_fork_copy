@@ -21,9 +21,9 @@
 
 #include "opal/util/printf.h"
 
-#include "ompi/mca/osc/osc.h"
 #include "ompi/mca/osc/base/base.h"
 #include "ompi/mca/osc/base/osc_base_obj_convert.h"
+#include "ompi/mca/osc/osc.h"
 #include "ompi/request/request.h"
 
 #include "osc_portals4.h"
@@ -413,9 +413,9 @@ component_select(struct ompi_win_t *win, void **base, size_t size, int disp_unit
 
     opal_output_verbose(1, ompi_osc_base_framework.framework_output,
                         "portals4 component creating window with id %d",
-                        ompi_comm_get_cid(module->comm));
+                        ompi_comm_get_local_cid(module->comm));
 
-    opal_asprintf(&name, "portals4 window %d", ompi_comm_get_cid(module->comm));
+    opal_asprintf(&name, "portals4 window %d", ompi_comm_get_local_cid(module->comm));
     ompi_win_set_name(win, name);
     free(name);
 

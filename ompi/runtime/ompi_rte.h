@@ -23,8 +23,8 @@
  * to define when it should be built.
  *
  * Each component must provide a number of types and functions that mimic
- * those provided by ORTE. These include (where flexibility exists, the
- * ORTE data type is shown, but any compatible type is allowed. For example,
+ * those provided by PRTE. These include (where flexibility exists, the
+ * pmix data type is shown, but any compatible type is allowed. For example,
  * the jobid field in ompi_process_name_t could be any type of integer, but
  * cannot be a string):
  *
@@ -69,7 +69,7 @@
  *     1. ompi_rte_collective_t - an OPAL object used during RTE collective operations
  *        such as modex and barrier. It must be an opal_list_item_t and contain the
  *        following fields:
- *           a. id (ORTE type: int32_t)
+ *           a. id (pmix type: int32_t)
  *           b. bool active
  *              flag that user can poll on to know when collective
  *              has completed - set to false just prior to
@@ -257,6 +257,8 @@ OMPI_DECLSPEC void ompi_rte_abort_peers(opal_process_name_t *procs,
 
 /* Init and finalize operations */
 OMPI_DECLSPEC int ompi_rte_init(int *argc, char ***argv);
+OMPI_DECLSPEC int ompi_rte_refresh_job_size(void);
+OMPI_DECLSPEC int ompi_rte_refresh_peers(bool self);
 OMPI_DECLSPEC int ompi_rte_finalize(void);
 OMPI_DECLSPEC void ompi_rte_wait_for_debugger(void);
 OMPI_DECLSPEC extern bool ompi_singleton;

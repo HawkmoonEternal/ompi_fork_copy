@@ -39,6 +39,7 @@
 #include "opal/mca/btl/sm/btl_sm_xpmem.h"
 
 #include <string.h>
+#include <sys/sysinfo.h>
 
 static int sm_del_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
                         struct opal_proc_t **procs, struct mca_btl_base_endpoint_t **peers);
@@ -63,6 +64,7 @@ mca_btl_sm_t mca_btl_sm = {
      .btl_finalize = sm_finalize, .btl_alloc = mca_btl_sm_alloc, .btl_free = mca_btl_sm_free,
      .btl_prepare_src = sm_prepare_src, .btl_send = mca_btl_sm_send, .btl_sendi = mca_btl_sm_sendi,
      .btl_dump = mca_btl_base_dump, .btl_register_error = sm_register_error_cb}};
+
 
 /*
  * Exit function copied from btl_usnic_util.c
@@ -180,7 +182,6 @@ static int init_sm_endpoint(struct mca_btl_base_endpoint_t **ep_out, struct opal
     ino_t my_user_ns_id;
     size_t msg_size;
     int rc;
-
     uint16_t peer_local_rank;
     uint16_t *ptr = &peer_local_rank;
     OPAL_MODEX_RECV_VALUE(rc, PMIX_LOCAL_RANK, &proc->proc_name, &ptr, PMIX_UINT16);
@@ -188,7 +189,6 @@ static int init_sm_endpoint(struct mca_btl_base_endpoint_t **ep_out, struct opal
         BTL_VERBOSE(("could not read the local rank for peer. rc=%d", rc));
         return rc;
     }
-
     mca_btl_base_endpoint_t *ep = component->endpoints + peer_local_rank;
     *ep_out = ep;
 
@@ -313,7 +313,7 @@ static int sm_add_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
     int rc = OPAL_SUCCESS;
 
     /* initializion */
-
+    int n=get_nprocs();
     /* get pointer to my proc structure */
     if (NULL == (my_proc = opal_proc_local_get())) {
         return OPAL_ERR_OUT_OF_RESOURCE;
@@ -325,7 +325,8 @@ static int sm_add_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
     }
 
     if (!sm_btl->btl_inited) {
-        rc = sm_btl_first_time_init(sm_btl, 1 + MCA_BTL_SM_NUM_LOCAL_PEERS);
+        //rc = sm_btl_first_time_init(sm_btl, 1 + MCA_BTL_SM_NUM_LOCAL_PEERS);
+        rc = sm_btl_first_time_init(sm_btl, 1 + 64*n);
         if (rc != OPAL_SUCCESS) {
             return rc;
         }

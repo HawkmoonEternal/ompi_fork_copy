@@ -19,7 +19,7 @@
  * Copyright (c) 2015      Mellanox Technologies, Inc.
  *                         All rights reserved.
  * Copyright (c) 2017      FUJITSU LIMITED.  All rights reserved.
- * Copyright (c) 2019      Triad National Security, LLC. All rights
+ * Copyright (c) 2019-2021 Triad National Security, LLC. All rights
  *                         reserved.
  * $COPYRIGHT$
  *
@@ -189,8 +189,7 @@ ompi_mpi_abort(struct ompi_communicator_t* comm,
     /* We can fall through to here in a few cases:
 
        1. The attempt to kill just a subset of peers via
-          try_kill_peers() failed (e.g., as of July 2014, ORTE does
-          returns NOT_IMPLENTED from orte_rte_abort_peers()).
+          try_kill_peers() failed.
        2. MPI wasn't initialized, was already finalized, or we got a
           NULL communicator.
 
@@ -198,5 +197,6 @@ ompi_mpi_abort(struct ompi_communicator_t* comm,
        kill the entire job.  Wah wah. */
     ompi_rte_abort(errcode, NULL);
 
-    /* Does not return */
+    /* Does not return - but we add a return to keep compiler warnings at bay*/
+    return 0;
 }

@@ -286,8 +286,8 @@ OMPI_DECLSPEC ompi_proc_t * ompi_proc_find_and_add(const ompi_process_name_t * n
  * Pack proc list into portable buffer
  *
  * This function takes a list of ompi_proc_t pointers (e.g. as given
- * in groups) and returns a orte buffer containing all information
- * needed to add the proc to a remote list.  This includes the ORTE
+ * in groups) and returns a pmix buffer containing all information
+ * needed to add the proc to a remote list.  This includes the
  * process name, the architecture, and the hostname.  Ordering is
  * maintained.  The buffer is packed to be sent to a remote node with
  * different architecture (endian or word size).
@@ -384,6 +384,10 @@ OMPI_DECLSPEC opal_proc_t *ompi_proc_for_name (const opal_process_name_t proc_na
 
 
 OMPI_DECLSPEC opal_proc_t *ompi_proc_lookup (const opal_process_name_t proc_name);
+
+OMPI_DECLSPEC int ompi_proc_list_sort();
+
+OMPI_DECLSPEC void ompi_proc_destruct(ompi_proc_t* proc);
 
 /**
  * Check if an ompi_proc_t is a sentinel

@@ -17,6 +17,8 @@ dnl                         and Technology (RIST). All rights reserved.
 dnl Copyright (c) 2016      IBM Corporation.  All rights reserved.
 dnl Copyright (c) 2020      Triad National Security, LLC. All rights
 dnl                         reserved.
+dnl Copyright (c) 2021      Amazon.com, Inc. or its affiliates.
+dnl                         All Rights reserved.
 dnl $COPYRIGHT$
 dnl
 dnl Additional copyrights may follow
@@ -94,10 +96,10 @@ AC_DEFUN([OPAL_SETUP_WRAPPER_INIT],[
     # Get the full path to the wrapper compiler. If it doesn't exist
     # assume that the path is not currently valid.
     wrapper_tmp="$(type -p "$with_wrapper_cc")"
-    WRAPPER_CC="${wrapper_tmp:-$with_wrapper_cc}"
     if test -z "$wrapper_tmp" ; then
 	AC_MSG_WARN([could not find \"$with_wrapper_cc\" in path])
     fi
+    WRAPPER_CC=$with_wrapper_cc
 
     AC_MSG_RESULT([$WRAPPER_CC])
 
@@ -115,19 +117,19 @@ AC_DEFUN([OPAL_SETUP_WRAPPER_INIT],[
     AS_IF([test "$with_wrapper_cflags_prefix" = "yes" || test "$with_wrapper_cflags_prefix" = "no"],
           [AC_MSG_ERROR([--with-wrapper-cflags-prefix must have an argument.])])
 
-    AC_ARG_WITH([wrapper-cxxflags],
-        [AS_HELP_STRING([--with-wrapper-cxxflags],
-                        [Extra flags to add to CXXFLAGS when using mpiCC/mpic++])])
-    AS_IF([test "$with_wrapper_cxxflags" = "yes" || test "$with_wrapper_cxxflags" = "no"],
-          [AC_MSG_ERROR([--with-wrapper-cxxflags must have an argument.])])
-
-    AC_ARG_WITH([wrapper-cxxflags-prefix],
-        [AS_HELP_STRING([--with-wrapper-cxxflags-prefix],
-                        [Extra flags to add to CXXFLAGS when using mpiCC/mpic++])])
-    AS_IF([test "$with_wrapper_cxxflags_prefix" = "yes" || test "$with_wrapper_cxxflags_prefix" = "no"],
-          [AC_MSG_ERROR([--with-wrapper-cxxflags-prefix must have an argument.])])
-
     m4_ifdef([project_ompi], [
+            AC_ARG_WITH([wrapper-cxxflags],
+                [AS_HELP_STRING([--with-wrapper-cxxflags],
+                                [Extra flags to add to CXXFLAGS when using mpiCC/mpic++])])
+            AS_IF([test "$with_wrapper_cxxflags" = "yes" || test "$with_wrapper_cxxflags" = "no"],
+                  [AC_MSG_ERROR([--with-wrapper-cxxflags must have an argument.])])
+
+            AC_ARG_WITH([wrapper-cxxflags-prefix],
+                [AS_HELP_STRING([--with-wrapper-cxxflags-prefix],
+                                [Extra flags to add to CXXFLAGS when using mpiCC/mpic++])])
+            AS_IF([test "$with_wrapper_cxxflags_prefix" = "yes" || test "$with_wrapper_cxxflags_prefix" = "no"],
+                  [AC_MSG_ERROR([--with-wrapper-cxxflags-prefix must have an argument.])])
+
             AC_ARG_WITH([wrapper-fcflags],
                 [AS_HELP_STRING([--with-wrapper-fcflags],
                         [Extra flags to add to FCFLAGS when using mpifort])])
@@ -291,9 +293,11 @@ AC_DEFUN([RPATHIFY_LDFLAGS_INTERNAL],[
                esac
            done
 
-           # Now add in the RPATH args for @{libdir}, and the RUNPATH args
+           # add in the RPATH args for @{libdir}, and the RUNPATH
+           # args.  The install libdir goes first, so that we prefer
+           # our libmpi over any imposter libmpi we might find.
            rpath_tmp=`echo ${$2} | sed -e s/LIBDIR/@{libdir}/`
-           $1="${$1} $rpath_out $rpath_tmp ${$3}"
+           $1="${$1} $rpath_tmp $rpath_out ${$3}"
           ])
     OPAL_VAR_SCOPE_POP
 ])

@@ -14,6 +14,8 @@ dnl Copyright (c) 2010-2016 Cisco Systems, Inc.  All rights reserved.
 dnl Copyright (c) 2013-2017 Intel, Inc. All rights reserved.
 dnl Copyright (c) 2018-2021 Amazon.com, Inc. or its affiliates.
 dnl                         All Rights reserved.
+dnl Copyright (c) 2021      Triad National Security, LLC. All rights
+dnl                         reserved.
 dnl $COPYRIGHT$
 dnl
 dnl Additional copyrights may follow
@@ -103,10 +105,10 @@ AC_DEFUN([OPAL_MCA],[
                 type=$item
             fi
             if test -z $comp ; then
-                AS_VAR_SET([AS_TR_SH([DISABLE_$type])], [1])
+                AS_VAR_SET([AS_TR_SH([DISABLE_${type}])], [1])
                 msg="$item $msg"
             else
-                AS_VAR_SET([AS_TR_SH([DISABLE_$type_$comp])], [1])
+                AS_VAR_SET([AS_TR_SH([DISABLE_${type}_${comp}])], [1])
                 msg="$item $msg"
             fi
         done
@@ -767,12 +769,12 @@ AC_DEFUN([MCA_PROCESS_COMPONENT],[
     else
         if test "$2" = "common"; then
             # Static libraries in "common" frameworks are installed, and
-            # therefore must obey the $FRAMEWORK_LIB_PREFIX that was
+            # therefore must obey the $FRAMEWORK_LIB_NAME that was
             # set.
-            $7="mca/$2/$3/lib${m4_translit([$1], [a-z], [A-Z])_LIB_PREFIX}mca_$2_$3.la $$7"
+            $7="mca/$2/$3/lib${m4_translit([$1], [a-z], [A-Z])_LIB_NAME}mca_$2_$3.la $$7"
         else
             # Other frameworks do not have to obey the
-            # $FRAMEWORK_LIB_PREFIX prefix.
+            # $FRAMEWORK_LIB_NAME prefix.
             $7="mca/$2/$3/libmca_$2_$3.la $$7"
         fi
         echo "extern const mca_base_component_t mca_$2_$3_component;" >> $outfile.extern
@@ -934,7 +936,7 @@ AC_DEFUN([MCA_COMPONENT_BUILD_CHECK],[
 
     # if we were explicitly disabled, don't build :)
     AS_IF([test "$DISABLE_$2" = "1"], [want_component=0])
-    AS_VAR_IF([DISABLE_$2_$3], [1], [want_component = 0])
+    AS_VAR_IF([DISABLE_$2_$3], [1], [want_component=0])
 
     AS_IF([test "$want_component" = "1"], [$4], [$5])
 ])

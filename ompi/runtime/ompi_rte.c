@@ -97,6 +97,7 @@ buffer_cleanup(void *value)
         }
         free (ptr);
     }
+    fns_init = false;
 }
 
 static opal_print_args_buffers_t*
@@ -560,6 +561,35 @@ int ompi_rte_init(int *pargc, char ***pargv)
         goto error;
     }
 
+    /* setup our internal nspace hack */
+    opal_pmix_setup_nspace_tracker();
+
+    /* initialize the selected module */
+    if (!PMIx_Initialized() && (PMIX_SUCCESS != (ret = PMIx_Init(&opal_process_info.myprocid, NULL, 0)))) {
+        /* if we get PMIX_ERR_UNREACH indicating that we cannot reach the
+         * server, then we assume we are operating as a singleton */
+        if (PMIX_ERR_UNREACH == ret) {
+            ompi_singleton = true;
+        } else {
+            /* we cannot run - this could be due to being direct launched
+             * without the required PMI support being built, so print
+             * out a help message indicating it */
+            opal_show_help("help-mpi-runtime.txt", "no-pmi", true, PMIx_Error_string(ret));
+            return OPAL_ERR_SILENT;
+        }
+    }
+
+    /* setup the process name fields - also registers the new nspace */
+    OPAL_PMIX_CONVERT_PROCT(rc, &pname, &opal_process_info.myprocid);
+    if (OPAL_SUCCESS != rc) {
+        return rc;
+    }
+    OPAL_PROC_MY_NAME.jobid = pname.jobid;
+    OPAL_PROC_MY_NAME.vpid = pname.vpid;
+    opal_process_info.my_name.jobid = OPAL_PROC_MY_NAME.jobid;
+    opal_process_info.my_name.vpid = OPAL_PROC_MY_NAME.vpid;
+
+
     /* set our hostname */
     ev1 = NULL;
     OPAL_MODEX_RECV_VALUE_OPTIONAL(ret, PMIX_HOSTNAME, &OPAL_PROC_MY_NAME,
@@ -571,7 +601,6 @@ int ompi_rte_init(int *pargc, char ***pargv)
         opal_process_info.nodename = ev1;  // ev1 is an allocated string
         ev1 = NULL;  // protect the string
     }
-
     /* get our local rank from PMIx */
     OPAL_MODEX_RECV_VALUE_OPTIONAL(rc, PMIX_LOCAL_RANK,
                                    &opal_process_info.my_name, &u16ptr, PMIX_UINT16);
@@ -796,7 +825,7 @@ int ompi_rte_init(int *pargc, char ***pargv)
 
     /* retrieve the local peers - defaults to local node */
     val = NULL;
-    OPAL_MODEX_RECV_VALUE(rc, PMIX_LOCAL_PEERS,
+    OPAL_MODEX_RECV_VALUE_OPTIONAL(rc, PMIX_LOCAL_PEERS,
                           &pname, &val, PMIX_STRING);
     if (PMIX_SUCCESS == rc && NULL != val) {
         peers = opal_argv_split(val, ',');
@@ -871,6 +900,16 @@ int ompi_rte_init(int *pargc, char ***pargv)
         }
     }
 
+#ifdef PMIX_NODE_OVERSUBSCRIBED
+    pname.jobid = opal_process_info.my_name.jobid;
+    pname.vpid = OPAL_VPID_WILDCARD;
+    OPAL_MODEX_RECV_VALUE_OPTIONAL(ret, PMIX_NODE_OVERSUBSCRIBED, &pname,
+                                   NULL, PMIX_BOOL);
+    if (PMIX_SUCCESS == ret) {
+        ompi_mpi_oversubscribed = true;
+    }
+#endif
+
     return OPAL_SUCCESS;
 
   error:
@@ -905,6 +944,195 @@ static bool check_file(const char *root, const char *path)
     }
 
     return true;
+}
+
+int ompi_rte_refresh_job_size(){
+    int ret;
+    pmix_status_t rc;
+    char *error=NULL;
+
+    uint32_t u32, *u32ptr;
+    uint16_t u16, *u16ptr;
+    u32ptr = &u32;
+    u16ptr = &u16;
+    
+    
+    opal_process_name_t pname;
+    /*
+    size_t sz;
+    pmix_proc_t proc_name;
+    strcpy(proc_name.nspace,opal_process_info.myprocid.nspace);
+    proc_name.rank=PMIX_RANK_WILDCARD;
+    bool refresh=true;
+    pmix_info_t info;
+    pmix_value_t *value;
+    PMIX_INFO_CONSTRUCT(&info);
+    PMIX_INFO_LOAD(&info, PMIX_GET_REFRESH_CACHE, &refresh, PMIX_BOOL);
+    rc = PMIx_Get(&proc_name, PMIX_JOB_SIZE, &info, 1, &value);
+    u32=value->data.uint32;
+    */
+    /* get job size */
+    pname.jobid = opal_process_info.my_name.jobid;
+    pname.vpid = OPAL_VPID_WILDCARD;
+    OPAL_MODEX_RECV_VALUE(rc, PMIX_JOB_SIZE,
+                                   &pname, &u32ptr, PMIX_UINT32);
+    if (PMIX_SUCCESS != rc) {
+        printf("job size no success: %d\n", u32);
+        if (ompi_singleton) {
+            /* just assume 1 */
+            u32 = 1;
+        } else {
+            ret = opal_pmix_convert_status(rc);
+            error = "job size";
+            goto error;
+        }
+    }
+    opal_process_info.num_procs = u32;
+
+    /* get universe size */
+    OPAL_MODEX_RECV_VALUE(rc, PMIX_UNIV_SIZE,
+                                   &pname, &u32ptr, PMIX_UINT32);
+    if (PMIX_SUCCESS != rc) {
+        if (ompi_singleton) {
+            /* just assume 1 */
+            u32 = 1;
+        } else {
+            /* default to job size */
+            u32 = opal_process_info.num_procs;
+        }
+    }
+    opal_process_info.univ_size = u32;
+    return OPAL_SUCCESS;
+
+    error:
+    if (OPAL_ERR_SILENT != ret ) {
+        opal_show_help("help-mpi-runtime.txt",
+                       "mpi_init:startup:internal-failure",
+                       true, "MPI runtime init", "RTE init",
+                       error, opal_strerror(ret), ret);
+    }
+    return ret;
+}
+
+int ompi_rte_refresh_peers(bool self){
+    int ret;
+    pmix_status_t rc;
+    char *error=NULL;
+    
+    char **peers;
+    uint16_t u16, *u16ptr;
+    u16ptr = &u16;
+    char *val;
+    size_t i;
+    pmix_value_t pval;
+    
+    opal_process_name_t pname;
+    pmix_proc_t rproc;
+
+    pname.jobid = opal_process_info.my_name.jobid;
+    pname.vpid = OPAL_VPID_WILDCARD;
+
+    if(self){
+        /* get our local rank from PMIx */
+        OPAL_MODEX_RECV_VALUE(rc, PMIX_LOCAL_RANK,
+                                       &opal_process_info.my_name, &u16ptr, PMIX_UINT16);
+        if (PMIX_SUCCESS != rc) {
+            if (ompi_singleton) {
+                /* just assume 0 */
+                u16 = 0;
+            } else {
+                ret = opal_pmix_convert_status(rc);
+                error = "local rank";
+                goto error;
+            }
+        }
+        opal_process_info.my_local_rank = u16;
+
+        /* get our node rank from PMIx */
+        OPAL_MODEX_RECV_VALUE(rc, PMIX_NODE_RANK,
+                                       &opal_process_info.my_name, &u16ptr, PMIX_UINT16);
+        if (PMIX_SUCCESS != rc) {
+            if (ompi_singleton) {
+                /* just assume 0 */
+                u16 = 0;
+            } else {
+                /* we may be in an environment that doesn't quite adhere
+                 * to the Standard - we can safely assume it is the same
+                 * as the local rank as such environments probably aren't
+                 * going to care */
+                u16 = opal_process_info.my_local_rank;
+            }
+        }
+        opal_process_info.my_node_rank = u16;
+    }
+
+     /* retrieve the local peers - defaults to local node */
+    val = NULL;
+    OPAL_MODEX_RECV_VALUE(rc, PMIX_LOCAL_PEERS,
+                          &pname, &val, PMIX_STRING);
+    if (PMIX_SUCCESS == rc && NULL != val) {
+        peers = opal_argv_split(val, ',');
+        free(val);
+    } else {
+        ret = opal_pmix_convert_status(rc);
+        error = "local peers";
+        goto error;
+    }
+    /* if we were unable to retrieve the #local peers, set it here */
+    
+    opal_process_info.num_local_peers = opal_argv_count(peers) - 1;
+    
+    /* if my local rank if too high, then that's an error */
+    if (opal_process_info.num_local_peers < opal_process_info.my_local_rank) {
+        ret = OPAL_ERR_BAD_PARAM;
+        error = "num local peers";
+        goto error;
+    }
+
+    /* set the locality */
+    if (NULL != peers) {
+        pname.jobid = opal_process_info.my_name.jobid;
+        for (i=0; NULL != peers[i]; i++) {
+            pname.vpid = strtoul(peers[i], NULL, 10);
+            if (pname.vpid == opal_process_info.my_name.vpid) {
+                /* we are fully local to ourselves */
+                u16 = OPAL_PROC_ALL_LOCAL;
+            } else {
+                val = NULL;
+                OPAL_MODEX_RECV_VALUE(rc, PMIX_LOCALITY_STRING,
+                                               &pname, &val, PMIX_STRING);
+                if (PMIX_SUCCESS == rc && NULL != val) {
+                    u16 = opal_hwloc_compute_relative_locality(opal_process_info.locality, val);
+                    free(val);
+                } else {
+                    /* all we can say is that it shares our node */
+                    u16 = OPAL_PROC_ON_CLUSTER | OPAL_PROC_ON_CU | OPAL_PROC_ON_NODE;
+                }
+            }
+            pval.type = PMIX_UINT16;
+            pval.data.uint16 = u16;
+            OPAL_PMIX_CONVERT_NAME(&rproc, &pname);
+            rc = PMIx_Store_internal(&rproc, PMIX_LOCALITY, &pval);
+            if (PMIX_SUCCESS != rc) {
+                ret = opal_pmix_convert_status(rc);
+                error = "local store of locality";
+                opal_argv_free(peers);
+                goto error;
+            }
+        }
+        opal_argv_free(peers);
+    }
+
+    return OPAL_SUCCESS;
+
+    error:
+    if (OPAL_ERR_SILENT != ret ) {
+        opal_show_help("help-mpi-runtime.txt",
+                       "mpi_init:startup:internal-failure",
+                       true, "MPI runtime init", "RTE init",
+                       error, opal_strerror(ret), ret);
+    }
+    return ret;
 }
 
 int ompi_rte_finalize(void)
@@ -967,6 +1195,8 @@ int ompi_rte_finalize(void)
     /* cleanup our internal nspace hack */
     opal_pmix_finalize_nspace_tracker();
 
+
+    opal_finalize ();
 
     return OMPI_SUCCESS;
 }

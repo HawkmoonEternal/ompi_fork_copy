@@ -9,13 +9,13 @@
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c) 2007-2015 Cisco Systems, Inc.  All rights reserved.
+ * Copyright (c) 2007-2021 Cisco Systems, Inc.  All rights reserved
  * Copyright (c) 2007-2013 Los Alamos National Security, LLC.  All rights
  *                         reserved.
  * Copyright (c) 2010      Oracle and/or its affiliates.  All rights reserved.
  * Copyright (c) 2015      Research Organization for Information Science
  *                         and Technology (RIST). All rights reserved.
- * Copyright (c) 2018      Amazon.com, Inc. or its affiliates.  All Rights reserved.
+ * Copyright (c) 2018-2021 Amazon.com, Inc. or its affiliates.  All Rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -359,7 +359,7 @@ static void data_callback(const char *key, const char *value)
                 char *line;
                 opal_asprintf(&line, OPAL_INCLUDE_FLAG "%s",
                               options_data[parse_options_idx].path_includedir);
-                opal_argv_append_nosize(&options_data[parse_options_idx].preproc_flags, line);
+                opal_argv_prepend_nosize(&options_data[parse_options_idx].preproc_flags, line);
                 free(line);
             }
         }
@@ -371,7 +371,7 @@ static void data_callback(const char *key, const char *value)
             char *line;
             opal_asprintf(&line, OPAL_LIBDIR_FLAG "%s",
                           options_data[parse_options_idx].path_libdir);
-            opal_argv_append_nosize(&options_data[parse_options_idx].link_flags, line);
+            opal_argv_prepend_nosize(&options_data[parse_options_idx].link_flags, line);
             free(line);
         }
     } else if (0 == strcmp(key, "opalincludedir")) {
@@ -744,18 +744,18 @@ int main(int argc, char *argv[])
                switch.  It should only be used by Open MPI developers
                -- not end users.  It will cause mpicc to use the
                static library list, even if we're compiling
-               dynamically (i.e., it'll specifically -lopen-rte and
-               -lopen-pal (and all their dependent libs)).  We provide
+               dynamically (i.e., it'll specifically -l@OPAL_LIB_NAME@
+               (and all their dependent libs)).  We provide
                this flag for test MPI applications that also invoke
-               ORTE and/or OPAL function calls.
+               OPAL function calls.
 
                On some systems (e.g., OS X), if the top-level
-               application calls ORTE/OPAL functions and you don't -l
-               ORTE and OPAL, then the functions won't be resolved at
+               application calls OPAL functions and you don't -l
+               OPAL, then the functions won't be resolved at
                link time (i.e., the implicit library dependencies of
                libmpi won't be pulled in at link time), and therefore
                the link will fail.  This flag will cause the wrapper
-               to explicitly list the ORTE and OPAL libs on the
+               to explicitly list the OPAL libs on the
                underlying compiler command line, so the application
                will therefore link properly. */
             flags |= COMP_WANT_LINKALL;
@@ -940,14 +940,9 @@ int main(int argc, char *argv[])
     if (flags & COMP_DRY_RUN) {
         exec_command = opal_argv_join(exec_argv, ' ');
         printf("%s\n", exec_command);
+        free(exec_command);
     } else {
         char *tmp;
-
-#if 0
-        exec_command = opal_argv_join(exec_argv, ' ');
-        printf("command: %s\n", exec_command);
-#endif
-
         tmp = opal_path_findv(exec_argv[0], 0, environ, NULL);
         if (NULL == tmp) {
             opal_show_help("help-opal-wrapper.txt", "no-compiler-found", true, exec_argv[0], NULL);
@@ -964,17 +959,12 @@ int main(int argc, char *argv[])
                                                    ? WTERMSIG(status)
                                                    : (WIFSTOPPED(status) ? WSTOPSIG(status) : 255));
             if ((OPAL_SUCCESS != ret) || ((0 != exit_status) && (flags & COMP_SHOW_ERROR))) {
-                char* exec_cmd = opal_argv_join(exec_argv, ' ');
                 if (OPAL_SUCCESS != ret) {
+                    exec_command = opal_argv_join(exec_argv, ' ');
                     opal_show_help("help-opal-wrapper.txt", "spawn-failed", true, exec_argv[0],
                                    strerror(status), exec_command, NULL);
-                } else {
-#if 0
-                    opal_show_help("help-opal-wrapper.txt", "compiler-failed", true,
-                                   exec_argv[0], exit_status, exec_cmd, NULL);
-#endif
+                    free(exec_command);
                 }
-                free(exec_cmd);
             }
         }
     }

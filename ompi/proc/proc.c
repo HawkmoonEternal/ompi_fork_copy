@@ -47,6 +47,8 @@
 #include "ompi/runtime/params.h"
 #include "ompi/mca/pml/pml.h"
 
+#define OPAL_JOBID_CONTINUOUS 0
+
 opal_list_t  ompi_proc_list = {{0}};
 static opal_mutex_t ompi_proc_lock;
 static opal_hash_table_t ompi_proc_hash;
@@ -54,7 +56,7 @@ static opal_hash_table_t ompi_proc_hash;
 ompi_proc_t* ompi_proc_local_proc = NULL;
 
 static void ompi_proc_construct(ompi_proc_t* proc);
-static void ompi_proc_destruct(ompi_proc_t* proc);
+//static void ompi_proc_destruct(ompi_proc_t* proc);
 static ompi_proc_t *ompi_proc_for_name_nolock (const opal_process_name_t proc_name);
 
 OBJ_CLASS_INSTANCE(
@@ -302,17 +304,20 @@ static int ompi_proc_compare_vid (opal_list_item_t **a, opal_list_item_t **b)
 int ompi_proc_complete_init(void)
 {
     opal_process_name_t wildcard_rank;
+    opal_process_name_t opal_proc;
     ompi_proc_t *proc;
     int ret, errcode = OMPI_SUCCESS;
     char *val = NULL;
 
     opal_mutex_lock (&ompi_proc_lock);
 
+    opal_proc.jobid = OMPI_PROC_MY_NAME->jobid;
+
     /* Add all local peers first */
     wildcard_rank.jobid = OMPI_PROC_MY_NAME->jobid;
     wildcard_rank.vpid = OMPI_NAME_WILDCARD->vpid;
     /* retrieve the local peers */
-    OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCAL_PEERS,
+    OPAL_MODEX_RECV_VALUE_OPTIONAL(ret, PMIX_LOCAL_PEERS,
                           &wildcard_rank, &val, PMIX_STRING);
     if (OPAL_SUCCESS == ret && NULL != val) {
         char **peers = opal_argv_split(val, ',');
@@ -322,6 +327,10 @@ int ompi_proc_complete_init(void)
             ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
             uint16_t u16, *u16ptr = &u16;
             if (OMPI_PROC_MY_NAME->vpid == local_rank) {
+                continue;
+            }
+            opal_proc.vpid=local_rank;
+            if( NULL!= ompi_proc_lookup(opal_proc)){
                 continue;
             }
             ret = ompi_proc_allocate (OMPI_PROC_MY_NAME->jobid, local_rank, &proc);
@@ -357,13 +366,18 @@ int ompi_proc_complete_init(void)
          */
         opal_mutex_unlock (&ompi_proc_lock);
 
+#if OPAL_JOBID_CONTINUOUS 
         for (ompi_vpid_t i = 0 ; i < ompi_process_info.num_procs ; ++i ) {
             opal_process_name_t proc_name;
             proc_name.jobid = OMPI_PROC_MY_NAME->jobid;
             proc_name.vpid = i;
             (void) ompi_proc_for_name (proc_name);
         }
+#else 
 
+        //Retrieve the proc_map and insert the procs 
+
+#endif
         /* acquire lock back for the next step - sort */
         opal_mutex_lock (&ompi_proc_lock);
     }
@@ -374,6 +388,18 @@ int ompi_proc_complete_init(void)
 
     return errcode;
 }
+
+int ompi_proc_list_sort(){
+    int ret;
+
+    opal_mutex_lock (&ompi_proc_lock);
+    ret=opal_list_sort (&ompi_proc_list, ompi_proc_compare_vid);
+    opal_mutex_unlock (&ompi_proc_lock);
+
+    return ret;
+}
+
+
 
 int ompi_proc_finalize (void)
 {
