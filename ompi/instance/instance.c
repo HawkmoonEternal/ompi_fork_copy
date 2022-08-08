@@ -2329,7 +2329,7 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
     //procs = ompi_proc_get_allocated (&nprocs);
     //int ret;
     //ret = MCA_PML_CALL(add_procs(procs, nprocs));
-    //ompi_set_group_rank (group, ompi_proc_local());
+    ompi_set_group_rank (group, ompi_proc_local());
 
     group->grp_instance = instance;
 

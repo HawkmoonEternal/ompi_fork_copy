@@ -100,8 +100,8 @@ SUBDIRS = \
         mpi/fortran/mpiext-use-mpi-f08 \
         $(MCA_ompi_FRAMEWORK_COMPONENT_DSO_SUBDIRS) \
         $(OMPI_CONTRIB_SUBDIRS) \
-        mpi/man/man3 \
-        mpi/man/man5
+        mpi/man/man3 
+#        mpi/man/man5
 
 if OMPI_WANT_JAVA_BINDINGS
 SUBDIRS += \
@@ -136,8 +136,8 @@ DIST_SUBDIRS = \
         $(MCA_ompi_FRAMEWORKS_SUBDIRS) \
         $(MCA_ompi_FRAMEWORK_COMPONENT_ALL_SUBDIRS) \
         $(OMPI_CONTRIB_DIST_SUBDIRS) \
-        mpi/man/man3 \
-        mpi/man/man5
+        mpi/man/man3 
+#        mpi/man/man5
 
 # Build the main MPI library
 

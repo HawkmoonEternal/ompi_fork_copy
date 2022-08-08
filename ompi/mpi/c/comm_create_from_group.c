@@ -76,6 +76,7 @@ int MPI_Comm_create_from_group (MPI_Group group, const char *tag, MPI_Info info,
     }
 
     if (MPI_GROUP_NULL == group || MPI_UNDEFINED == ompi_group_rank (group)) {
+        printf("ompi_group_rank == MPI_UNDEFINED\n");
         *newcomm = MPI_COMM_NULL;
         return MPI_SUCCESS;
     }
