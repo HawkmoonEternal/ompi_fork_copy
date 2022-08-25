@@ -18,8 +18,11 @@
  * Copyright (c) 2013-2019 Intel, Inc.  All rights reserved.
  * Copyright (c) 2015      Mellanox Technologies, Inc.
  *                         All rights reserved.
- * Copyright (c) 2016-2019 Research Organization for Information Science
- *                         and Technology (RIST). All rights reserved.
+ * Copyright (c) 2016-2021 Research Organization for Information Science
+ *                         and Technology (RIST).  All rights reserved.
+ * Copyright (c) 2018-2021 Triad National Security, LLC. All rights
+ *                         reserved.
+ * Copyright (c) 2021      Nanook Consulting.  All rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -51,7 +54,7 @@
  *
  * As a deviation from the norm, ompi_mpi_param_check is also
  * extern'ed in src/mpi/interface/c/bindings.h because it is already
- * included in all MPI function imlementation files
+ * included in all MPI function implementation files
  *
  * The values below are the default values.
  */
@@ -83,12 +86,15 @@ bool ompi_mpi_compat_mpi3 = false;
 
 char *ompi_mpi_spc_attach_string = NULL;
 bool ompi_mpi_spc_dump_enabled = false;
+uint32_t ompi_pmix_connect_timeout = 0;
+
+bool ompi_enable_timing = false;
 
 static bool show_default_mca_params = false;
 static bool show_file_mca_params = false;
 static bool show_enviro_mca_params = false;
 static bool show_override_mca_params = false;
-static bool ompi_mpi_oversubscribe = false;
+bool ompi_mpi_oversubscribed = false;
 
 #if OPAL_ENABLE_FT_MPI
 int ompi_ftmpi_output_handle = 0;
@@ -144,20 +150,7 @@ int ompi_mpi_register_params(void)
         ompi_mpi_param_check = false;
     }
 
-    /*
-     * opal_progress: decide whether to yield and the event library
-     * tick rate
-     */
-    ompi_mpi_oversubscribe = false;
-    (void) mca_base_var_register("ompi", "mpi", NULL, "oversubscribe",
-                                 "Internal MCA parameter set by the runtime environment when oversubscribing nodes",
-                                 MCA_BASE_VAR_TYPE_BOOL, NULL, 0, 0,
-                                 OPAL_INFO_LVL_9,
-                                 MCA_BASE_VAR_SCOPE_READONLY,
-                                 &ompi_mpi_oversubscribe);
-
     /* yield if the node is oversubscribed and allow users to override */
-    ompi_mpi_yield_when_idle |= ompi_mpi_oversubscribe;
     (void) mca_base_var_register("ompi", "mpi", NULL, "yield_when_idle",
                                  "Yield the processor when waiting for MPI communication (for MPI processes, will default to 1 when oversubscribing nodes)",
                                  MCA_BASE_VAR_TYPE_BOOL, NULL, 0, 0,
@@ -196,7 +189,7 @@ int ompi_mpi_register_params(void)
         ompi_mpi_param_check = true;
         if (!MPI_PARAM_CHECK) {
             opal_output(0, "WARNING: MCA parameter mpi_no_free_handles set to true, but MPI");
-            opal_output(0, "WARNING: parameter checking has been compiled out of Open MPI.");
+            opal_output(0, "WARNING: parameter checking has been compiled out of " OMPI_IDENT_STRING ".");
             opal_output(0, "WARNING: mpi_no_free_handles is therefore only partially effective!");
         }
     }
@@ -213,7 +206,7 @@ int ompi_mpi_register_params(void)
     /* Whether or not to print all MCA parameters in MPI_INIT */
     ompi_mpi_show_mca_params_string = NULL;
     (void) mca_base_var_register("ompi", "mpi", NULL, "show_mca_params",
-                                 "Whether to show all MCA parameter values during MPI_INIT or not (good for reproducability of MPI jobs "
+                                 "Whether to show all MCA parameter values during MPI_INIT or not (good for reproducibility of MPI jobs "
                                  "for debug purposes). Accepted values are all, default, file, api, and enviro - or a comma "
                                  "delimited combination of them",
                                  MCA_BASE_VAR_TYPE_STRING, NULL, 0, 0,
@@ -255,7 +248,8 @@ int ompi_mpi_register_params(void)
 
     /* File to use when dumping the parameters */
     (void) mca_base_var_register("ompi", "mpi", NULL, "show_mca_params_file",
-                                 "If mpi_show_mca_params is true, setting this string to a valid filename tells Open MPI to dump all the MCA parameter values into a file suitable for reading via the mca_param_files parameter (good for reproducability of MPI jobs)",
+                                 "If mpi_show_mca_params is true, setting this string to a valid filename tells "
+                                 OMPI_IDENT_STRING " to dump all the MCA parameter values into a file suitable for reading via the mca_param_files parameter (good for reproducibility of MPI jobs)",
                                  MCA_BASE_VAR_TYPE_STRING, NULL, 0, 0,
                                  OPAL_INFO_LVL_9,
                                  MCA_BASE_VAR_SCOPE_READONLY,
@@ -281,7 +275,7 @@ int ompi_mpi_register_params(void)
 
     /* Sparse group storage support */
     (void) mca_base_var_register("ompi", "mpi", NULL, "have_sparse_group_storage",
-                                 "Whether this Open MPI installation supports storing of data in MPI groups in \"sparse\" formats (good for extremely large process count MPI jobs that create many communicators/groups)",
+                                 "Whether this " OMPI_IDENT_STRING " installation supports storing of data in MPI groups in \"sparse\" formats (good for extremely large process count MPI jobs that create many communicators/groups)",
                                  MCA_BASE_VAR_TYPE_BOOL, NULL, 0,
                                  MCA_BASE_VAR_FLAG_DEFAULT_ONLY,
                                  OPAL_INFO_LVL_9,
@@ -390,6 +384,37 @@ int ompi_mpi_register_params(void)
                                  MCA_BASE_VAR_SCOPE_READONLY,
                                  &ompi_mpi_spc_dump_enabled);
 #endif // SPC_ENABLE
+
+    ompi_pmix_connect_timeout = 0; /* infinite timeout - see PMIx standard */
+    (void) mca_base_var_register ("ompi", "mpi", NULL, "pmix_connect_timeout",
+                                  "Timeout(secs) for calls to PMIx_Connect. Default is no timeout.",
+                                  MCA_BASE_VAR_TYPE_UNSIGNED_INT, NULL,
+                                  0, 0, OPAL_INFO_LVL_3, MCA_BASE_VAR_SCOPE_LOCAL,
+                                  &ompi_pmix_connect_timeout);
+
+    /* check to see if we want timing information */
+    /* TODO: enable OMPI init and OMPI finalize timings if
+     * this variable was set to 1!
+     */
+    ompi_enable_timing = false;
+    (void) mca_base_var_register("ompi", "ompi", NULL, "timing",
+                                 "Request that critical timing loops be measured",
+                                 MCA_BASE_VAR_TYPE_BOOL, NULL, 0, 0,
+                                 OPAL_INFO_LVL_9,
+                                 MCA_BASE_VAR_SCOPE_READONLY,
+                                 &ompi_enable_timing);
+
+#if OPAL_ENABLE_FT_MPI
+    /* Before loading any other part of the MPI library, we need to load
+ *      * the ft-mpi tune file to override default component selection when
+ *           * FT is desired ON; this does override openmpi-params.conf, but not
+ *                * command line or env.
+ *                     */
+    if( ompi_ftmpi_enabled ) {
+        mca_base_var_load_extra_files("ft-mpi", false);
+    }
+#endif /* OPAL_ENABLE_FT_MPI */
+
 
     return OMPI_SUCCESS;
 }

@@ -52,9 +52,9 @@ orte_init_finalize_DEPENDENCIES = $(orte_init_finalize_LDADD)
 opal_init_finalize_SOURCES = \
     opal_init_finalize.c
 opal_init_finalize_LDADD = \
-	$(top_builddir)/opal/lib@OPAL_LIB_PREFIX@open-pal.la \
+	$(top_builddir)/opal/lib@OPAL_LIB_NAME@.la \
 	$(top_builddir)/test/support/libsupport.a
 opal_init_finalize_DEPENDENCIES = $(opal_init_finalize_LDADD)
 
-distclean:
+distclean-local:
 	rm -rf *.dSYM .deps *.log *.o *.trs $(check_PROGRAMS) Makefile

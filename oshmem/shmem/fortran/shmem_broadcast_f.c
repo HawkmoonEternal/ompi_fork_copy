@@ -18,12 +18,12 @@
 #include "oshmem/op/op.h"
 
 #if OSHMEM_PROFILING
-#include "oshmem/shmem/fortran/profile/pbindings.h"
+#include "oshmem/shmem/fortran/pbindings.h"
 SHMEM_GENERATE_WEAK_BINDINGS(SHMEM_BROADCAST4, shmem_broadcast4)
 SHMEM_GENERATE_WEAK_BINDINGS(SHMEM_BROADCAST8, shmem_broadcast8)
 SHMEM_GENERATE_WEAK_BINDINGS(SHMEM_BROADCAST32, shmem_broadcast32)
 SHMEM_GENERATE_WEAK_BINDINGS(SHMEM_BROADCAST64, shmem_broadcast64)
-#include "oshmem/shmem/fortran/profile/defines.h"
+#include "oshmem/shmem/fortran/profile-defines.h"
 #endif
 
 SHMEM_GENERATE_FORTRAN_BINDINGS_SUB (void,
@@ -85,7 +85,7 @@ SHMEM_GENERATE_FORTRAN_BINDINGS_SUB (void,
         }\
         \
         /* Define actual PE using relative in active set */\
-        rel_PE_root = oshmem_proc_pe(group->proc_array[OMPI_FINT_2_INT(*PE_root)]);\
+        rel_PE_root = oshmem_proc_pe_vpid(group, OMPI_FINT_2_INT(*PE_root));\
         \
         /* Call collective broadcast operation */\
         rc = group->g_scoll.scoll_broadcast( group, \

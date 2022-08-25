@@ -3,7 +3,7 @@
  * Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
  *                         Corporation.  All rights reserved.
- * Copyright (c) 2004-2020 The University of Tennessee and The University
+ * Copyright (c) 2004-2021 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart,
@@ -16,6 +16,9 @@
  * Copyright (c) 2015-2017 Los Alamos National Security, LLC.  All rights
  *                         reserved.
  * Copyright (c) 2018      FUJITSU LIMITED.  All rights reserved.
+ * Copyright (c) 2018      Triad National Security, LLC. All rights
+ *                         reserved.
+ * Copyright (c) 2022      IBM Corporation.  All rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -127,7 +130,7 @@ struct ompi_request_t {
     opal_free_list_item_t super;                /**< Base type */
     ompi_request_type_t req_type;               /**< Enum indicating the type of the request */
     ompi_status_public_t req_status;            /**< Completion status */
-    volatile void *req_complete;                /**< Flag indicating wether request has completed */
+    volatile void *req_complete;                /**< Flag indicating whether request has completed */
     volatile ompi_request_state_t req_state;    /**< enum indicate state of the request */
     bool req_persistent;                        /**< flag indicating if the this is a persistent request */
     int req_f_to_c_index;                       /**< Index in Fortran <-> C translation array */
@@ -146,7 +149,7 @@ typedef struct ompi_request_t ompi_request_t;
 
 
 /**
- * Padded struct to maintain back compatibiltiy.
+ * Padded struct to maintain back compatibility.
  * See ompi/communicator/communicator.h comments with struct ompi_communicator_t
  * for full explanation why we chose the following padding construct for predefines.
  */
@@ -193,7 +196,7 @@ typedef struct ompi_predefined_request_t ompi_predefined_request_t;
  * This function should be called only from the MPI layer. It should
  * never be called from the PML. It take care of the upper level clean-up.
  * When the user call MPI_Request_free we should release all MPI level
- * ressources, so we have to call this function too.
+ * resources, so we have to call this function too.
  */
 #define OMPI_REQUEST_FINI(request)                                      \
 do {                                                                    \
@@ -204,6 +207,28 @@ do {                                                                    \
         (request)->req_f_to_c_index = MPI_UNDEFINED;                    \
     }                                                                   \
 } while (0);
+
+/*
+ * Except in procedures that return MPI_ERR_IN_STATUS, the MPI_ERROR
+ * field of a status object shall never be modified
+ * See MPI-1.1 doc, sec 3.2.5, p.22
+ *
+ * Add a small macro that helps setting the status appropriately
+ * depending on the use case
+ */
+#define OMPI_COPY_STATUS(pdst, src, is_err_in_status)                   \
+do {                                                                    \
+    if (is_err_in_status) {                                             \
+        *(pdst) = (src);                                                \
+    }                                                                   \
+    else {                                                              \
+        (pdst)->MPI_TAG = (src).MPI_TAG;                                \
+        (pdst)->MPI_SOURCE = (src).MPI_SOURCE;                          \
+        (pdst)->_ucount = (src)._ucount;                                \
+        (pdst)->_cancelled = (src)._cancelled;                          \
+    }                                                                   \
+} while(0);
+
 
 /**
  * Non-blocking test for request completion.
@@ -242,7 +267,7 @@ typedef int (*ompi_request_test_any_fn_t)(size_t count,
  *
  * @param count (IN)      Number of requests
  * @param requests (IN)   Array of requests
- * @param completed (OUT) Flag indicating wether all requests completed.
+ * @param completed (OUT) Flag indicating whether all requests completed.
  * @param statuses (OUT)  Array of completion statuses.
  * @return                OMPI_SUCCESS or failure status.
  *
@@ -359,16 +384,14 @@ OMPI_DECLSPEC extern ompi_predefined_request_t        *ompi_request_null_addr;
 OMPI_DECLSPEC extern ompi_request_t         ompi_request_empty;
 OMPI_DECLSPEC extern ompi_status_public_t   ompi_status_empty;
 OMPI_DECLSPEC extern ompi_request_fns_t     ompi_request_functions;
+#if MPI_VERSION >= 4
+OMPI_DECLSPEC extern ompi_request_t         ompi_request_empty_send;
+#endif
 
 /**
  * Initialize the MPI_Request subsystem; invoked during MPI_INIT.
  */
 int ompi_request_init(void);
-
-/**
- * Shut down the MPI_Request subsystem; invoked during MPI_FINALIZE.
- */
-int ompi_request_finalize(void);
 
 /**
  * Create a persistent request that does nothing (e.g., to MPI_PROC_NULL).
@@ -426,39 +449,44 @@ static inline bool ompi_request_tag_is_collective(int tag) {
 
 static inline void ompi_request_wait_completion(ompi_request_t *req)
 {
-    if (opal_using_threads () && !REQUEST_COMPLETE(req)) {
-        void *_tmp_ptr;
-        ompi_wait_sync_t sync;
-#if OPAL_ENABLE_FT_MPI
-redo:
-        if(OPAL_UNLIKELY( ompi_request_is_failed(req) )) {
-            return;
-        }
-#endif /* OPAL_ENABLE_FT_MPI */
-        _tmp_ptr = REQUEST_PENDING;
+    if (opal_using_threads ()) {
+        if(!REQUEST_COMPLETE(req)) {
+            void *_tmp_ptr;
+            ompi_wait_sync_t sync;
 
-        WAIT_SYNC_INIT(&sync, 1);
-
-        if (OPAL_ATOMIC_COMPARE_EXCHANGE_STRONG_PTR(&req->req_complete, &_tmp_ptr, &sync)) {
-            SYNC_WAIT(&sync);
-        } else {
-            /* completed before we had a chance to swap in the sync object */
-            WAIT_SYNC_SIGNALLED(&sync);
-        }
 
 #if OPAL_ENABLE_FT_MPI
-        if (OPAL_UNLIKELY(OMPI_SUCCESS != sync.status)) {
-            OPAL_OUTPUT_VERBOSE((50, ompi_ftmpi_output_handle, "Status %d reported for sync %p rearming req %p", sync.status, (void*)&sync, (void*)req));
-            _tmp_ptr = &sync;
-            if (OPAL_ATOMIC_COMPARE_EXCHANGE_STRONG_PTR(&req->req_complete, &_tmp_ptr, REQUEST_PENDING)) {
-                opal_output_verbose(10, ompi_ftmpi_output_handle, "Status %d reported for sync %p rearmed req %p", sync.status, (void*)&sync, (void*)req);
-                WAIT_SYNC_RELEASE(&sync);
-                goto redo;
+    redo:
+            if(OPAL_UNLIKELY( ompi_request_is_failed(req) )) {
+                return;
             }
-        }
 #endif /* OPAL_ENABLE_FT_MPI */
-        assert(REQUEST_COMPLETE(req));
-        WAIT_SYNC_RELEASE(&sync);
+            _tmp_ptr = REQUEST_PENDING;
+
+            WAIT_SYNC_INIT(&sync, 1);
+
+            if (OPAL_ATOMIC_COMPARE_EXCHANGE_STRONG_PTR(&req->req_complete, &_tmp_ptr, &sync)) {
+                SYNC_WAIT(&sync);
+            } else {
+                /* completed before we had a chance to swap in the sync object */
+                WAIT_SYNC_SIGNALLED(&sync);
+            }
+
+#if OPAL_ENABLE_FT_MPI
+            if (OPAL_UNLIKELY(OMPI_SUCCESS != sync.status)) {
+                OPAL_OUTPUT_VERBOSE((50, ompi_ftmpi_output_handle, "Status %d reported for sync %p rearming req %p", sync.status, (void*)&sync, (void*)req));
+                _tmp_ptr = &sync;
+                if (OPAL_ATOMIC_COMPARE_EXCHANGE_STRONG_PTR(&req->req_complete, &_tmp_ptr, REQUEST_PENDING)) {
+                    opal_output_verbose(10, ompi_ftmpi_output_handle, "Status %d reported for sync %p rearmed req %p", sync.status, (void*)&sync, (void*)req);
+                    WAIT_SYNC_RELEASE(&sync);
+                    goto redo;
+                }
+            }
+#endif /* OPAL_ENABLE_FT_MPI */
+            assert(REQUEST_COMPLETE(req));
+            WAIT_SYNC_RELEASE(&sync);
+     }
+     opal_atomic_rmb();
     } else {
         while(!REQUEST_COMPLETE(req)) {
             opal_progress();
@@ -498,18 +526,16 @@ static inline int ompi_request_complete(ompi_request_t* request, bool with_signa
     }
 
     if (0 == rc) {
-        if( OPAL_LIKELY(with_signal) ) {
-            void *_tmp_ptr = REQUEST_PENDING;
+        if (OPAL_LIKELY(with_signal)) {
 
-            if(!OPAL_ATOMIC_COMPARE_EXCHANGE_STRONG_PTR(&request->req_complete, &_tmp_ptr, REQUEST_COMPLETED)) {
-                ompi_wait_sync_t *tmp_sync = (ompi_wait_sync_t *) OPAL_ATOMIC_SWAP_PTR(&request->req_complete,
-                                                                                       REQUEST_COMPLETED);
-                /* In the case where another thread concurrently changed the request to REQUEST_PENDING */
-                if( REQUEST_PENDING != tmp_sync )
-                    wait_sync_update(tmp_sync, 1, request->req_status.MPI_ERROR);
+            ompi_wait_sync_t *tmp_sync = (ompi_wait_sync_t *) OPAL_ATOMIC_SWAP_PTR(&request->req_complete,
+                                                                                    REQUEST_COMPLETED);
+            if( REQUEST_PENDING != tmp_sync ) {
+                wait_sync_update(tmp_sync, 1, request->req_status.MPI_ERROR);
             }
-        } else
+        } else {
             request->req_complete = REQUEST_COMPLETED;
+        }
     }
 
     return OMPI_SUCCESS;

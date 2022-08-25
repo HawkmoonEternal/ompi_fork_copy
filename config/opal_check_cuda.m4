@@ -1,4 +1,4 @@
-dnl -*- shell-script -*-
+dnl -*- autoconf -*-
 dnl
 dnl Copyright (c) 2004-2010 The Trustees of Indiana University and Indiana
 dnl                         University Research and Technology
@@ -19,7 +19,7 @@ dnl Copyright (c) 2009-2011 Oak Ridge National Labs.  All rights reserved.
 dnl Copyright (c) 2011-2015 NVIDIA Corporation.  All rights reserved.
 dnl Copyright (c) 2015      Research Organization for Information Science
 dnl                         and Technology (RIST). All rights reserved.
-dnl
+dnl Copyright (c) 2022      Amazon.com, Inc. or its affiliates.  All Rights reserved.
 dnl $COPYRIGHT$
 dnl
 dnl Additional copyrights may follow
@@ -90,7 +90,7 @@ AS_IF([test "$opal_check_cuda_happy" = "yes"],
 
 # If we have CUDA support, check to see if we have support for SYNC_MEMOPS
 # which was first introduced in CUDA 6.0.
-AS_IF([test "$opal_check_cuda_happy"="yes"],
+AS_IF([test "$opal_check_cuda_happy" = "yes"],
     [AC_CHECK_DECL([CU_POINTER_ATTRIBUTE_SYNC_MEMOPS], [CUDA_SYNC_MEMOPS=1], [CUDA_SYNC_MEMOPS=0],
         [#include <$opal_cuda_incdir/cuda.h>])],
     [])
@@ -108,9 +108,9 @@ AC_COMPILE_IFELSE(
 
 # If we have CUDA support, check to see if we have support for cuPointerGetAttributes
 # which was first introduced in CUDA 7.0.
-AS_IF([test "$opal_check_cuda_happy"="yes"],
-    AC_CHECK_DECL([cuPointerGetAttributes], [CUDA_GET_ATTRIBUTES=1], [CUDA_GET_ATTRIBUTES=0],
-        [#include <$opal_cuda_incdir/cuda.h>]),
+AS_IF([test "$opal_check_cuda_happy" = "yes"],
+    [AC_CHECK_DECL([cuPointerGetAttributes], [CUDA_GET_ATTRIBUTES=1], [CUDA_GET_ATTRIBUTES=0],
+        [#include <$opal_cuda_incdir/cuda.h>])],
     [])
 
 AC_MSG_CHECKING([if have cuda support])
@@ -124,7 +124,7 @@ else
     CUDA_SUPPORT=0
 fi
 
-OPAL_SUMMARY_ADD([[Miscellaneous]],[[CUDA support]],[opal_cuda], [$opal_check_cuda_happy])
+OPAL_SUMMARY_ADD([Miscellaneous], [CUDA support], [], [$opal_check_cuda_happy])
 
 AM_CONDITIONAL([OPAL_cuda_support], [test "x$CUDA_SUPPORT" = "x1"])
 AC_DEFINE_UNQUOTED([OPAL_CUDA_SUPPORT],$CUDA_SUPPORT,

@@ -3,14 +3,14 @@
  * Copyright (c) 2004-2008 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
  *                         Corporation.  All rights reserved.
- * Copyright (c) 2004-2012 The University of Tennessee and The University
+ * Copyright (c) 2004-2021 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart,
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c) 2008-2018 Cisco Systems, Inc.  All rights reserved
+ * Copyright (c) 2008-2021 Cisco Systems, Inc.  All rights reserved
  * Copyright (c) 2012-2018 Los Alamos National Security, LLC. All rights
  *                         reserved.
  * Copyright (c) 2014-2020 Intel, Inc.  All rights reserved.
@@ -566,7 +566,7 @@ int mca_base_var_get_value(int vari, const void *value, mca_base_var_source_t *s
     }
 
     if (NULL != value) {
-        /* Return a poiner to our backing store (either a char **, int *,
+        /* Return a pointer to our backing store (either a char **, int *,
            or bool *) */
         *tmp = var->mbv_storage;
     }
@@ -1543,12 +1543,12 @@ int mca_base_var_register(const char *project_name, const char *framework_name,
     }
 
     OPAL_LIST_FOREACH_DECL(alias_item, &alias->component_aliases, mca_base_alias_item_t) {
-        mca_base_var_syn_flag_t flags_tmp = 0;
+        mca_base_var_syn_flag_t flags_derived = flags;
         if (alias_item->alias_flags & MCA_BASE_ALIAS_FLAG_DEPRECATED) {
-            flags_tmp = MCA_BASE_VAR_SYN_FLAG_DEPRECATED;
+            flags_derived = MCA_BASE_VAR_SYN_FLAG_DEPRECATED;
         }
         (void) mca_base_var_register_synonym(ret, project_name, framework_name,
-                                             alias_item->component_alias, variable_name, flags);
+                                             alias_item->component_alias, variable_name, flags_derived);
     }
 
     return ret;
@@ -2143,7 +2143,7 @@ int mca_base_var_dump(int vari, char ***out, mca_base_var_dump_type_t output_typ
         opal_asprintf(out[0] + line++, "%sstatus:%s", tmp,
                       VAR_IS_SETTABLE(var[0]) ? "writeable" : "read-only");
 
-        /* Output the info level of this parametere */
+        /* Output the info level of this parameter */
         opal_asprintf(out[0] + line++, "%slevel:%d", tmp, var->mbv_info_lvl + 1);
 
         /* If it has a help message, output the help message */

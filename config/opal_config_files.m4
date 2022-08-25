@@ -4,6 +4,7 @@
 # Copyright (c) 2020      The University of Tennessee and The University
 #                         of Tennessee Research Foundation.  All rights
 #                         reserved.
+# Copyright (c) 2022      Amazon.com, Inc. or its affiliates.  All Rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -16,6 +17,8 @@
 AC_DEFUN([OPAL_CONFIG_FILES],[
     AC_CONFIG_FILES([
         opal/Makefile
+        opal/cuda/Makefile
+        opal/rocm/Makefile
         opal/etc/Makefile
         opal/include/Makefile
         opal/datatype/Makefile
@@ -24,7 +27,6 @@ AC_DEFUN([OPAL_CONFIG_FILES],[
         opal/mca/base/Makefile
         opal/tools/wrappers/Makefile
         opal/tools/wrappers/opalcc-wrapper-data.txt
-        opal/tools/wrappers/opalc++-wrapper-data.txt
         opal/tools/wrappers/opal.pc
     ])
 ])

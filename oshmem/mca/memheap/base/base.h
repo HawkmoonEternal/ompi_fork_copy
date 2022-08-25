@@ -176,13 +176,35 @@ static inline int memheap_is_va_in_segment(void *va, int segno)
     return map_segment_is_va_in(&memheap_find_seg(segno)->super, va);
 }
 
-static inline int memheap_find_segnum(void *va)
+static inline int memheap_find_segnum(void *va, int pe)
 {
     int i;
+    int my_pe = oshmem_my_proc_id();
 
-    for (i = 0; i < mca_memheap_base_map.n_segments; i++) {
-        if (memheap_is_va_in_segment(va, i)) {
-            return i;
+    if (pe == my_pe) {
+        /* Find segment number for local segment using va_base
+         * TODO: Merge local and remote segment information in mkeys_cache
+         */
+        for (i = 0; i < mca_memheap_base_map.n_segments; i++) {
+            if (memheap_is_va_in_segment(va, i)) {
+                return i;
+            }
+        }
+    } else {
+        /* Find segment number for remote segments using va_base */
+        for (i = 0; i < mca_memheap_base_map.n_segments; i++) {
+            map_segment_t *seg = memheap_find_seg(i);
+            if (seg) {
+                sshmem_mkey_t **mkeys_cache = seg->mkeys_cache;
+                if (mkeys_cache) {
+                    if (mkeys_cache[pe]) {
+                        if ((va >= mkeys_cache[pe]->va_base) &&
+                            ((char*)va < (char*)mkeys_cache[pe]->va_base + mkeys_cache[pe]->len)) {
+                            return i;
+                        }
+                    }
+                }
+            }
         }
     }
     return MEMHEAP_SEG_INVALID;
@@ -198,22 +220,6 @@ static inline void* memheap_va2rva(void* va, void* local_base, void* remote_base
 static inline void *map_segment_va2rva(mkey_segment_t *seg, void *va)
 {
     return memheap_va2rva(va, seg->super.va_base, seg->rva_base);
-}
-
-static inline map_base_segment_t *map_segment_find_va(map_base_segment_t *segs,
-                                                      size_t elem_size, void *va)
-{
-    map_base_segment_t *rseg;
-    int i;
-
-    for (i = 0; i < MCA_MEMHEAP_MAX_SEGMENTS; i++) {
-        rseg = (map_base_segment_t *)((char *)segs + elem_size * i);
-        if (OPAL_LIKELY(map_segment_is_va_in(rseg, va))) {
-            return rseg;
-        }
-    }
-
-    return NULL;
 }
 
 void mkey_segment_init(mkey_segment_t *seg, sshmem_mkey_t *mkey, uint32_t segno);

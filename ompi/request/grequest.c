@@ -9,8 +9,9 @@
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c) 2006-2012 Cisco Systems, Inc.  All rights reserved.
+ * Copyright (c) 2006-2021 Cisco Systems, Inc.  All rights reserved
  * Copyright (c) 2009      Sun Microsystems, Inc.  All rights reserved.
+ * Copyright (c) 2021      IBM Corporation.  All rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -85,7 +86,7 @@ static void ompi_grequest_construct(ompi_grequest_t* greq)
  *
  * 1. Call to MPI_GREQUEST_COMPLETE and then a corresponding call to
  * some flavor of MPI_TEST* or MPI_WAIT*.  This will both complete the
- * requests and destroy the coresponding MPI generalized request
+ * requests and destroy the corresponding MPI generalized request
  * object.
  *
  * 2. Call MPI_REQUEST_FREE and then (!) -- with some other
@@ -110,7 +111,7 @@ static void ompi_grequest_construct(ompi_grequest_t* greq)
  * TEST* / WAIT* notified the user as such, and this function is also
  * invoked by REQUEST_FREE).  Hence, these two functions will *always*
  * be invoked, but the order in which they are invoked is up to the
- * user.  So this is a perfect opprotunity for the OBJ_* reference
+ * user.  So this is a perfect opportunity for the OBJ_* reference
  * count system.  When we create an ompi_grequest_t in
  * ompi_grequest_start(), we both OBJ_NEW and OBJ_RETAIN it so that
  * its reference count goes to 0.  Then in ompi_grequest_complete()
@@ -121,13 +122,20 @@ static void ompi_grequest_construct(ompi_grequest_t* greq)
  */
 static void ompi_grequest_destruct(ompi_grequest_t* greq)
 {
-    MPI_Fint ierr;
-
     if (greq->greq_free.c_free != NULL) {
+        /* We were already putting query_fn()'s return value into
+         * status.MPI_ERROR but for MPI_{Wait,Test}*.  If there's a
+         * free callback to invoke, the standard says to use the
+         * return value from free_fn() callback, too.
+         */
         if (greq->greq_funcs_are_c) {
-            greq->greq_free.c_free(greq->greq_state);
+            greq->greq_base.req_status.MPI_ERROR =
+                greq->greq_free.c_free(greq->greq_state);
         } else {
+            MPI_Fint ierr;
             greq->greq_free.f_free((MPI_Aint*)greq->greq_state, &ierr);
+            greq->greq_base.req_status.MPI_ERROR =
+                OMPI_FINT_2_INT(ierr);
         }
     }
 
@@ -214,8 +222,21 @@ int ompi_grequest_invoke_query(ompi_request_t *request,
         if (g->greq_funcs_are_c) {
             rc = g->greq_query.c_query(g->greq_state, status);
         } else {
+            /* request->req_status.MPI_ERROR was initialized to success
+             * and it's meant to be unmodified in the case of callback
+             * success, and set when callbacks return a failure.  But
+             * if we leave fstatus uninitialized this sets
+             * req_status.MPI_ERROR to whatever happened to be on the
+             * stack at fstatus (f_query isn't supposed to directly set
+             * its status.MPI_ERROR, according to the standard)
+             *
+             * So the Status_c2f below only really cares about transferring
+             * the MPI_ERROR setting into fstatus so that when it's transferred
+             * back in the f2c call, it has the starting value.
+             */
             MPI_Fint ierr;
             MPI_Fint fstatus[sizeof(MPI_Status) / sizeof(int)];
+            MPI_Status_c2f(status, fstatus);
             g->greq_query.f_query((MPI_Aint*)g->greq_state, fstatus, &ierr);
             MPI_Status_f2c(fstatus, status);
             rc = OMPI_FINT_2_INT(ierr);

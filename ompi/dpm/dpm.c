@@ -3,14 +3,14 @@
  * Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
  *                         Corporation.  All rights reserved.
- * Copyright (c) 2004-2020 The University of Tennessee and The University
+ * Copyright (c) 2004-2021 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart,
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c) 2007-2020 Cisco Systems, Inc.  All rights reserved.
+ * Copyright (c) 2007-2022 Cisco Systems, Inc.  All rights reserved.
  * Copyright (c) 2006-2009 University of Houston.  All rights reserved.
  * Copyright (c) 2009      Sun Microsystems, Inc.  All rights reserved.
  * Copyright (c) 2011-2015 Los Alamos National Security, LLC.  All rights
@@ -21,6 +21,8 @@
  *                         and Technology (RIST). All rights reserved.
  * Copyright (c) 2018      Amazon.com, Inc. or its affiliates.  All Rights reserved.
  * Copyright (c) 2021      Nanook Consulting.  All rights reserved.
+ * Copyright (c) 2018-2022 Triad National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -95,6 +97,18 @@ int ompi_dpm_init(void)
     return OMPI_SUCCESS;
 }
 
+static int compare_pmix_proc(const void *a, const void *b)
+{
+    const pmix_proc_t *proc_a = (pmix_proc_t *)a;
+    const pmix_proc_t *proc_b = (pmix_proc_t *)b;
+
+    int nspace_dif = strncmp(proc_a->nspace, proc_b->nspace, PMIX_MAX_NSLEN);
+    if (nspace_dif != 0)
+        return nspace_dif;
+
+    return proc_a->rank - proc_b->rank;
+}
+
 int ompi_dpm_connect_accept(ompi_communicator_t *comm, int root,
                             const char *port_string, bool send_first,
                             ompi_communicator_t **newcomm)
@@ -104,7 +118,7 @@ int ompi_dpm_connect_accept(ompi_communicator_t *comm, int root,
     bool dense, isnew;
     opal_process_name_t pname;
     opal_list_t ilist, mlist, rlist;
-    pmix_info_t info;
+    pmix_info_t info, tinfo;
     pmix_value_t pval;
     pmix_pdata_t pdat;
     pmix_proc_t *procs, pxproc;
@@ -266,6 +280,7 @@ bcast_rportlen:
     /* initiate a list of participants for the connect,
      * starting with our own members */
     OBJ_CONSTRUCT(&mlist, opal_list_t);
+    assert(NULL != members /* would mean comm had 0-sized group! */);
     for (i=0; NULL != members[i]; i++) {
         OPAL_PMIX_CONVERT_STRING_TO_PROCT(&pxproc, members[i]);
         plt = OBJ_NEW(opal_proclist_t);
@@ -373,7 +388,15 @@ bcast_rportlen:
     /* tell the host RTE to connect us - this will download
      * all known data for the nspace's of participating procs
      * so that add_procs will not result in a slew of lookups */
-    pret = PMIx_Connect(procs, nprocs, NULL, 0);
+    PMIX_INFO_CONSTRUCT(&tinfo);
+    PMIX_INFO_LOAD(&tinfo, PMIX_TIMEOUT, &ompi_pmix_connect_timeout, PMIX_UINT32);
+
+    /*
+     * sort procs so that all ranks call PMIx_Connect() with the processes in same order
+     */
+    qsort(procs, nprocs, sizeof(pmix_proc_t), compare_pmix_proc);
+    pret = PMIx_Connect(procs, nprocs, &tinfo, 1);
+    PMIX_INFO_DESTRUCT(&tinfo);
     PMIX_PROC_FREE(procs, nprocs);
     rc = opal_pmix_convert_status(pret);
     if (OPAL_SUCCESS != rc) {
@@ -462,7 +485,7 @@ bcast_rportlen:
 
     /* now deal with the remote group */
     rsize = opal_list_get_size(&rlist);
-    new_group_pointer=ompi_group_allocate(rsize);
+    new_group_pointer=ompi_group_allocate(NULL, rsize);
     if (NULL == new_group_pointer) {
         rc = OMPI_ERR_OUT_OF_RESOURCE;
         OPAL_LIST_DESTRUCT(&rlist);
@@ -486,10 +509,9 @@ bcast_rportlen:
                          NULL  ,                   /* remote_procs */
                          NULL,                     /* attrs */
                          comm->error_handler,      /* error handler */
-                         NULL,                     /* topo component */
                          group,                    /* local group */
-                         new_group_pointer         /* remote group */
-                         );
+                         new_group_pointer,        /* remote group */
+                         0);                       /* flags */
     if (OMPI_SUCCESS != rc) {
         goto exit;
     }
@@ -684,7 +706,7 @@ static int dpm_convert(opal_list_t *infos,
     char *ck, *ptr, *help_str = NULL;
     int rc;
     char **tmp;
-    dpm_conflicts_t *modifiers;
+    dpm_conflicts_t *modifiers = NULL;
     const char *attr;
 
     /* pick the modifiers to be checked */
@@ -777,8 +799,9 @@ static int dpm_convert(opal_list_t *infos,
     /**** Get here if the specified option is not found in the
      **** current list - add it
      ****/
-
-    if (NULL == directive) {
+    if (NULL == directive && NULL == modifier) {
+        return OMPI_ERR_BAD_PARAM;
+    } else if (NULL == directive) {
         opal_asprintf(&ptr, ":%s", modifier);
     } else if (NULL == modifier) {
         ptr = strdup(directive);
@@ -1143,7 +1166,7 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
 #endif
 
             /* check for 'ompi_prefix' (OMPI-specific -- to effect the same
-             * behavior as --prefix option to orterun)
+             * behavior as --prefix option to prun)
              *
              * This is a job-level key
              */
@@ -1207,12 +1230,11 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
             /* check for 'display_map' - a job-level key */
             ompi_info_get_bool(array_of_info[i], "display_map", &local_spawn, &flag);
             if ( flag ) {
-                rc = dpm_convert(&job_info, "display_map", PMIX_MAPBY, NULL, "DISPLAYMAP", true);
+                rc = dpm_convert(&job_info, "display_map", PMIX_MAPBY, NULL, "DISPLAY", true);
                 if (OMPI_SUCCESS != rc) {
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     if (NULL != hostfiles) {
                         opal_argv_free(hostfiles);
                     }
@@ -1234,7 +1256,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     if (NULL != hostfiles) {
                         opal_argv_free(hostfiles);
                     }
@@ -1252,7 +1273,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     if (NULL != hostfiles) {
                         opal_argv_free(hostfiles);
                     }
@@ -1270,7 +1290,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     if (NULL != hostfiles) {
                         opal_argv_free(hostfiles);
                     }
@@ -1286,7 +1305,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     if (NULL != hostfiles) {
                         opal_argv_free(hostfiles);
                     }
@@ -1302,7 +1320,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     if (NULL != hostfiles) {
                         opal_argv_free(hostfiles);
                     }
@@ -1322,7 +1339,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     if (NULL != hostfiles) {
                         opal_argv_free(hostfiles);
                     }
@@ -1359,7 +1375,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     return MPI_ERR_SPAWN;
                 }
             }
@@ -1390,7 +1405,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                     OPAL_LIST_DESTRUCT(&job_info);
                     OPAL_LIST_DESTRUCT(&app_info);
                     PMIX_APP_FREE(apps, scount);
-                    opal_progress_event_users_decrement();
                     return MPI_ERR_SPAWN;
                 }
             }
@@ -1467,7 +1481,7 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
             }
 #endif
 
-            /* see if this is a non-mpi job - if so, then set the flag so ORTE
+            /* see if this is a non-mpi job - if so, then set the flag so PRTE
              * knows what to do - job-level key
              */
             ompi_info_get_bool(array_of_info[i], "ompi_non_mpi", &non_mpi, &flag);
@@ -1546,7 +1560,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
             if (OMPI_SUCCESS != (rc = opal_getcwd(cwd, OPAL_PATH_MAX))) {
                 OMPI_ERROR_LOG(rc);
                 PMIX_APP_FREE(apps, (size_t)count);
-                opal_progress_event_users_decrement();
                 if (NULL != hostfiles) {
                     opal_argv_free(hostfiles);
                 }
@@ -1603,7 +1616,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
                 PMIX_INFO_FREE(pinfo, ninfo);
             }
             PMIX_APP_FREE(apps, scount);
-            opal_progress_event_users_decrement();
             if (NULL != hostfiles) {
                 opal_argv_free(hostfiles);
             }
@@ -1628,7 +1640,6 @@ int ompi_dpm_spawn(int count, const char *array_of_commands[],
     PMIX_APP_FREE(apps, scount);
 
     if (OPAL_SUCCESS != rc) {
-        opal_progress_event_users_decrement();
         return MPI_ERR_SPAWN;
     }
 
@@ -1681,6 +1692,9 @@ int ompi_dpm_dyn_init(void)
         ptr = &tmp[0];
     }
     port_name = strdup(ptr);
+    if (NULL == port_name) {
+        return OMPI_ERR_OUT_OF_RESOURCE;
+    }
 
     rc = ompi_dpm_connect_accept(MPI_COMM_WORLD, root, port_name, send_first, &newcomm);
     free(port_name);
@@ -1703,15 +1717,6 @@ int ompi_dpm_dyn_init(void)
     snprintf(newcomm->c_name, MPI_MAX_OBJECT_NAME, "MPI_COMM_PARENT");
     newcomm->c_flags |= OMPI_COMM_NAMEISSET;
 
-    return OMPI_SUCCESS;
-}
-
-
-/*
- * finalize the module
- */
-int ompi_dpm_finalize(void)
-{
     return OMPI_SUCCESS;
 }
 
@@ -2052,7 +2057,7 @@ static int start_dvm(char **hostfiles, char **dash_host)
          will) reset them.  If we don't do this, the event
          library may have left some set that, at least on some
          OS's, don't get reset via fork() or exec().  Hence, the
-         orted could be unkillable (for example). */
+         prted could be unkillable (for example). */
         set_handler_default(SIGTERM);
         set_handler_default(SIGINT);
         set_handler_default(SIGHUP);
@@ -2060,11 +2065,11 @@ static int start_dvm(char **hostfiles, char **dash_host)
         set_handler_default(SIGCHLD);
 
         /* Unblock all signals, for many of the same reasons that
-         we set the default handlers, above.  This is noticable
+         we set the default handlers, above.  This is noticeable
          on Linux where the event library blocks SIGTERM, but we
-         don't want that blocked by the orted (or, more
+         don't want that blocked by the prted (or, more
          specifically, we don't want it to be blocked by the
-         orted and then inherited by the ORTE processes that it
+         prted and then inherited by the PRTE processes that it
          forks, making them unkillable by SIGTERM). */
         sigprocmask(0, 0, &sigs);
         sigprocmask(SIG_UNBLOCK, &sigs, 0);
@@ -2072,7 +2077,7 @@ static int start_dvm(char **hostfiles, char **dash_host)
         execv(cmd, args);
 
         /* if I get here, the execv failed! */
-        opal_show_help("help-ess-base.txt", "ess-base:execv-error",
+        opal_show_help("help-dpm.txt", "execv-error",
                        true, cmd, strerror(errno));
         exit(1);
 
@@ -2125,7 +2130,6 @@ static int start_dvm(char **hostfiles, char **dash_host)
     pret = PMIx_Init(NULL, &info, 1);
     rc = opal_pmix_convert_status(pret);
     if (OPAL_SUCCESS != rc) {
-        opal_progress_event_users_decrement();
         return MPI_ERR_SPAWN;
     }
     /* decrement the PMIx init refcount */
@@ -2140,7 +2144,7 @@ static int start_dvm(char **hostfiles, char **dash_host)
     return OMPI_SUCCESS;
 }
 #else
-static int start_dvm(char *hostfile, char *dash_host)
+static int start_dvm(char **hostfiles, char **dash_host)
 {
     return OMPI_ERROR;
 }

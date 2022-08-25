@@ -12,21 +12,21 @@
  */
 
 #include "ompi_config.h"
+
+#include "opal/util/bit_ops.h"
+
+#include "ompi/constants.h"
+#include "ompi/datatype/ompi_datatype.h"
+#include "ompi/datatype/ompi_datatype_internal.h"
+#include "ompi/mca/coll/base/base.h"
+#include "ompi/mca/coll/coll.h"
+#include "ompi/mca/pml/pml.h"
+#include "ompi/op/op.h"
+
 #include "coll_portals4.h"
 #include "coll_portals4_request.h"
 
 #include <stdio.h>
-
-#include "mpi.h"
-#include "ompi/constants.h"
-#include "ompi/datatype/ompi_datatype.h"
-#include "ompi/datatype/ompi_datatype_internal.h"
-#include "ompi/op/op.h"
-#include "opal/util/bit_ops.h"
-#include "ompi/mca/pml/pml.h"
-#include "ompi/mca/coll/coll.h"
-#include "ompi/mca/coll/base/base.h"
-
 
 #define COLL_PORTALS4_ALLREDUCE_MAX_SEGMENT	128
 #define COLL_PORTALS4_ALLREDUCE_MAX_CHILDREN	2
@@ -96,13 +96,13 @@ allreduce_kary_tree_top(const void *sendbuf, void *recvbuf, int count,
          */
 
         /* Compute match bits */
-        COLL_PORTALS4_SET_BITS(match_bits_ack, ompi_comm_get_cid(comm), 1, 0,
+        COLL_PORTALS4_SET_BITS(match_bits_ack, ompi_comm_get_local_cid(comm), 1, 0,
                 COLL_PORTALS4_ALLREDUCE, 0, internal_count);
 
-        COLL_PORTALS4_SET_BITS(match_bits_rtr, ompi_comm_get_cid(comm), 0, 1,
+        COLL_PORTALS4_SET_BITS(match_bits_rtr, ompi_comm_get_local_cid(comm), 0, 1,
                 COLL_PORTALS4_ALLREDUCE, 0, internal_count);
 
-        COLL_PORTALS4_SET_BITS(match_bits, ompi_comm_get_cid(comm), 0, 0,
+        COLL_PORTALS4_SET_BITS(match_bits, ompi_comm_get_local_cid(comm), 0, 0,
                 COLL_PORTALS4_ALLREDUCE, 0, internal_count);
 
         if ((ret = PtlCTAlloc(mca_coll_portals4_component.ni_h, &request->u.allreduce.trig_ct_h)) != 0) {
@@ -219,7 +219,7 @@ allreduce_kary_tree_top(const void *sendbuf, void *recvbuf, int count,
             }
 
             /*
-             ** Prepare ME for receving RTR
+             ** Prepare ME for receiving RTR
              ** Priority List, match also with "Overflow list Me" in coll_portals4_component
              */
 

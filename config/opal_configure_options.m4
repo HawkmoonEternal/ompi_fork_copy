@@ -20,6 +20,9 @@ dnl Copyright (c) 2011-2013 NVIDIA Corporation.  All rights reserved.
 dnl Copyright (c) 2013-2017 Intel, Inc.  All rights reserved.
 dnl Copyright (c) 2015      Research Organization for Information Science
 dnl                         and Technology (RIST). All rights reserved.
+dnl Copyright (c) 2020      Amazon.com, Inc. or its affiliates.  All Rights
+dnl Copyright (c) 2019-2021 Triad National Security, LLC. All rights
+dnl                         reserved.
 dnl
 dnl $COPYRIGHT$
 dnl
@@ -29,7 +32,7 @@ dnl $HEADER$
 dnl
 
 AC_DEFUN([OPAL_CONFIGURE_OPTIONS],[
-opal_show_subtitle "OPAL Configuration options"
+opal_show_subtitle "General configuration options"
 
 
 #
@@ -84,13 +87,6 @@ else
     WANT_BRANCH_PROBABILITIES=0
 fi
 
-AC_ARG_ENABLE([builtin-atomics-for-ppc],[AS_HELP_STRING([--enable-builtin-atomics-for-ppc],
-                  [POWER architectures only: Force use of builtin atomics if available. This could either be gcc builtins or C11 atomics, depending on what is available on your system. Enabling this is known to cause poor performance in atomic operations on Power machines. (default: disabled)])])
-if test "x$enable_builtin_atomics_for_ppc" = "xyes" ; then
-force_gcc_atomics_ppc=1
-else
-force_gcc_atomics_ppc=0
-fi
 
 #
 # Memory debugging
@@ -185,10 +181,47 @@ AC_DEFINE_UNQUOTED(OPAL_ENABLE_TIMING, $WANT_TIMING,
 AM_CONDITIONAL([OPAL_COMPILE_TIMING], [test "$WANT_TIMING" = "1"])
 AM_CONDITIONAL([OPAL_INSTALL_TIMING_BINARIES], [test "$WANT_TIMING" = "1" && test "$enable_binaries" != "no"])
 
+# Later calls to AC_PROG_CC/CXX/FC can
+# inject things like -O2 into compile flags if they are
+# not defined, which we don't want. Make sure these flags
+# are at least set to an empty string now.
+#
+# Complicating matters is that autogen can re-order
+# these calls toward the top of configure. This block should
+# be at/near the top, so do it now.
+#
 if test "$WANT_DEBUG" = "0"; then
     CFLAGS="-DNDEBUG $CFLAGS"
     CXXFLAGS="-DNDEBUG $CXXFLAGS"
+
+    # NDEBUG doesn't exist in fortran, so just make sure it's defined.
+    if [ test -z "$FCFLAGS" ]; then
+      FCFLAGS=""
+    fi
+else
+    # Do we want debugging symbols?
+    if test "$enable_debug_symbols" != "no" ; then
+        CFLAGS="$CFLAGS -g"
+        CXXFLAGS="$CXXFLAGS -g"
+        FCFLAGS="$FCFLAGS -g"
+        AC_MSG_WARN([-g has been added to compiler (--enable-debug)])
+    else
+        # If not set, define compile flags to an empty string
+        # to prevent AC_PROG_CC/FC/CXX from modifying compiler flags.
+        # See: https://www.gnu.org/software/autoconf/manual/autoconf-2.69/html_node/C-Compiler.html
+        # for more info.
+        if [ test -z "$CFLAGS" ]; then
+            CFLAGS=""
+        fi
+        if [ test -z "$CXXFLAGS" ]; then
+            CXXFLAGS=""
+        fi
+        if [ test -z "$FCFLAGS" ]; then
+            FCFLAGS=""
+        fi
+    fi
 fi
+
 AC_DEFINE_UNQUOTED(OPAL_ENABLE_DEBUG, $WANT_DEBUG,
     [Whether we want developer-level debugging code or not])
 
@@ -212,7 +245,6 @@ else
     WANT_INSTALL_HEADERS=0
 fi
 AM_CONDITIONAL(WANT_INSTALL_HEADERS, test "$WANT_INSTALL_HEADERS" = 1)
-
 
 #
 # Do we want the pretty-print stack trace feature?
@@ -288,8 +320,6 @@ else
     OPAL_ENABLE_DLOPEN_SUPPORT=1
     AC_MSG_RESULT([yes])
 fi
-AC_DEFINE_UNQUOTED(OPAL_ENABLE_DLOPEN_SUPPORT, $OPAL_ENABLE_DLOPEN_SUPPORT,
-    [Whether we want to enable dlopen support])
 
 
 #
@@ -340,29 +370,6 @@ AC_DEFINE_UNQUOTED([OPAL_ENABLE_HETEROGENEOUS_SUPPORT],
                    [Enable features required for heterogeneous support])
 
 
-if test "$opal_want_heterogeneous" = 1; then
-    ompi_cv_c_word_size_align=yes
-else
-    AC_CACHE_CHECK([if word-sized integers must be word-size aligned],
-        [ompi_cv_c_word_size_align],
-        [AC_LANG_PUSH(C)
-         AC_RUN_IFELSE([AC_LANG_PROGRAM([dnl
-#include <stdlib.h>], [[    long data[2] = {0, 0};
-    long *lp;
-    int *ip;
-    ip = (int*) data;
-    ip++;
-    lp = (long*) ip;
-    return lp[0]; ]])],
-            [ompi_cv_c_word_size_align=no],
-            [ompi_cv_c_word_size_align=yes],
-            [ompi_cv_c_word_size_align=yes])])
-fi
-AS_IF([test $ompi_cv_c_word_size_align = yes], [results=1], [results=0])
-AC_DEFINE_UNQUOTED([OPAL_ALIGN_WORD_SIZE_INTEGERS], [$results],
-    [set to 1 if word-size integers must be aligned to word-size padding to prevent bus errors])
-
-
 #
 # Cross-compile data
 #
@@ -405,6 +412,7 @@ AM_CONDITIONAL([OPAL_WANT_SCRIPT_WRAPPER_COMPILERS], [test "$enable_script_wrapp
 #
 # Support per-user config files?
 #
+OPAL_VAR_SCOPE_PUSH([result])
 AC_ARG_ENABLE([per-user-config-files],
    [AS_HELP_STRING([--enable-per-user-config-files],
       [Disable per-user configuration files, to save disk accesses during job start-up.  This is likely desirable for large jobs.  Note that this can also be achieved by environment variables at run-time.  (default: enabled)])])
@@ -415,6 +423,7 @@ else
 fi
 AC_DEFINE_UNQUOTED([OPAL_WANT_HOME_CONFIG_FILES], [$result],
      [Enable per-user config files])
+OPAL_VAR_SCOPE_POP
 
 #
 # Do we want to enable IPv6 support?
@@ -516,6 +525,10 @@ OPAL_WITH_OPTION_MIN_MAX_VALUE(port_name,      1024, 255, 2048)
 
 # Min length accroding to MPI-2.1, p. 418
 OPAL_WITH_OPTION_MIN_MAX_VALUE(datarep_string,  128,  64,  256)
+
+OPAL_WITH_OPTION_MIN_MAX_VALUE(pset_name_len,  512,  512, 4096)
+
+OPAL_WITH_OPTION_MIN_MAX_VALUE(stringtag_len,     1024, 256, 2048)
 
 # some systems don't want/like getpwuid
 AC_MSG_CHECKING([if want getpwuid support])

@@ -118,14 +118,22 @@ mpi_api_files = \
         aint_add_f08.F90 \
         aint_diff_f08.F90 \
         allgather_f08.F90 \
+        allgather_init_f08.F90 \
         allgatherv_f08.F90 \
+        allgatherv_init_f08.F90 \
         alloc_mem_f08.F90 \
         allreduce_f08.F90 \
+        allreduce_init_f08.F90 \
         alltoall_f08.F90 \
+        alltoall_init_f08.F90 \
         alltoallv_f08.F90 \
+        alltoallv_init_f08.F90 \
         alltoallw_f08.F90 \
+        alltoallw_init_f08.F90 \
         barrier_f08.F90 \
+        barrier_init_f08.F90 \
         bcast_f08.F90 \
+        bcast_init_f08.F90 \
         bsend_f08.F90 \
         bsend_init_f08.F90 \
         buffer_attach_f08.F90 \
@@ -146,6 +154,7 @@ mpi_api_files = \
         comm_connect_f08.F90 \
         comm_create_errhandler_f08.F90 \
         comm_create_f08.F90 \
+        comm_create_from_group_f08.F90 \
         comm_create_group_f08.F90 \
         comm_create_keyval_f08.F90 \
         comm_delete_attr_f08.F90 \
@@ -153,6 +162,7 @@ mpi_api_files = \
         comm_dup_f08.F90 \
         comm_dup_with_info_f08.F90 \
         comm_idup_f08.F90 \
+        comm_idup_with_info_f08.F90 \
         comm_free_f08.F90 \
         comm_free_keyval_f08.F90 \
         comm_get_attr_f08.F90 \
@@ -185,6 +195,7 @@ mpi_api_files = \
         error_class_f08.F90 \
         error_string_f08.F90 \
         exscan_f08.F90 \
+        exscan_init_f08.F90 \
         f_sync_reg_f08.F90 \
         fetch_and_op_f08.F90 \
         file_call_errhandler_f08.F90 \
@@ -250,7 +261,9 @@ mpi_api_files = \
         finalize_f08.F90 \
         free_mem_f08.F90 \
         gather_f08.F90 \
+        gather_init_f08.F90 \
         gatherv_f08.F90 \
+        gatherv_init_f08.F90 \
         get_accumulate_f08.F90 \
         get_address_f08.F90 \
         get_count_f08.F90 \
@@ -272,6 +285,7 @@ mpi_api_files = \
         group_difference_f08.F90 \
         group_excl_f08.F90 \
         group_free_f08.F90 \
+        group_from_session_pset_f08.F90 \
         group_incl_f08.F90 \
         group_intersection_f08.F90 \
         group_range_excl_f08.F90 \
@@ -307,11 +321,13 @@ mpi_api_files = \
         info_get_nkeys_f08.F90 \
         info_get_nthkey_f08.F90 \
         info_get_valuelen_f08.F90 \
+        info_get_string_f08.F90 \
         info_set_f08.F90 \
         init_f08.F90 \
         initialized_f08.F90 \
         init_thread_f08.F90 \
         intercomm_create_f08.F90 \
+        intercomm_create_from_groups_f08.F90 \
         intercomm_merge_f08.F90 \
         iprobe_f08.F90 \
         irecv_f08.F90 \
@@ -323,16 +339,23 @@ mpi_api_files = \
         iscatter_f08.F90 \
         iscatterv_f08.F90 \
         isend_f08.F90 \
+        isendrecv_f08.F90 \
+        isendrecv_replace_f08.F90 \
         issend_f08.F90 \
         is_thread_main_f08.F90 \
         lookup_name_f08.F90 \
         mprobe_f08.F90 \
         mrecv_f08.F90 \
         neighbor_allgather_f08.F90 \
+        neighbor_allgather_init_f08.F90 \
         neighbor_allgatherv_f08.F90 \
+        neighbor_allgatherv_init_f08.F90 \
         neighbor_alltoall_f08.F90 \
+        neighbor_alltoall_init_f08.F90 \
         neighbor_alltoallv_f08.F90 \
+        neighbor_alltoallv_init_f08.F90 \
         neighbor_alltoallw_f08.F90 \
+        neighbor_alltoallw_init_f08.F90 \
         op_commutative_f08.F90 \
         op_create_f08.F90 \
         open_port_f08.F90 \
@@ -356,9 +379,12 @@ mpi_api_files = \
         recv_f08.F90 \
         recv_init_f08.F90 \
         reduce_f08.F90 \
+        reduce_init_f08.F90 \
         reduce_local_f08.F90 \
         reduce_scatter_f08.F90 \
+        reduce_scatter_init_f08.F90 \
         reduce_scatter_block_f08.F90 \
+        reduce_scatter_block_init_f08.F90 \
         register_datarep_f08.F90 \
         request_free_f08.F90 \
         request_get_status_f08.F90 \
@@ -368,12 +394,25 @@ mpi_api_files = \
         rsend_f08.F90 \
         rsend_init_f08.F90 \
         scan_f08.F90 \
+        scan_init_f08.F90 \
         scatter_f08.F90 \
+        scatter_init_f08.F90 \
         scatterv_f08.F90 \
+        scatterv_init_f08.F90 \
         send_f08.F90 \
         send_init_f08.F90 \
         sendrecv_f08.F90 \
         sendrecv_replace_f08.F90 \
+        session_call_errhandler_f08.F90\
+        session_create_errhandler_f08.F90\
+        session_get_errhandler_f08.F90\
+	session_get_info_f08.F90 \
+	session_get_nth_pset_f08.F90 \
+	session_get_num_psets_f08.F90 \
+	session_get_pset_info_f08.F90 \
+	session_init_f08.F90 \
+	session_finalize_f08.F90 \
+        session_set_errhandler_f08.F90\
         ssend_f08.F90 \
         ssend_init_f08.F90 \
         startall_f08.F90 \

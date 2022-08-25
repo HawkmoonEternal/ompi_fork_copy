@@ -85,7 +85,7 @@ struct ompi_cmd_line_param_t {
     opal_list_item_t super;
 
     /* Note that clp_arg points to storage "owned" by someone else; it
-       has the original option string by referene, not by value.
+       has the original option string by reference, not by value.
        Hence, it should not be free()'ed. */
 
     char *clp_arg;
@@ -269,7 +269,7 @@ int opal_cmd_line_parse(opal_cmd_line_t *cmd, bool ignore_unknown, bool ignore_u
     }
 
     /* Now traverse the easy-to-parse sequence of tokens.  Note that
-       incrementing i must happen elsehwere; it can't be the third
+       incrementing i must happen elsewhere; it can't be the third
        clause in the "if" statement. */
 
     param = NULL;
@@ -499,7 +499,7 @@ char *opal_cmd_line_get_usage_msg(opal_cmd_line_t *cmd)
     int argc;
     size_t j;
     char **argv;
-    char *ret, temp[MAX_WIDTH * 2], line[MAX_WIDTH * 2];
+    char *ret, line[(MAX_WIDTH * 2) + 1];
     char *start, *desc, *ptr;
     opal_list_item_t *item;
     ompi_cmd_line_option_t *option, **sorted;
@@ -559,27 +559,27 @@ char *opal_cmd_line_get_usage_msg(opal_cmd_line_t *cmd)
                 }
                 if (NULL != option->clo_single_dash_name) {
                     line[2] = (filled) ? '|' : ' ';
-                    strncat(line, "-", sizeof(line) - 1);
-                    strncat(line, option->clo_single_dash_name, sizeof(line) - 1);
+                    strncat(line, "-", sizeof(line) - strlen(line) - 1);
+                    strncat(line, option->clo_single_dash_name, sizeof(line) - strlen(line) - 1);
                     filled = true;
                 }
                 if (NULL != option->clo_long_name) {
                     if (filled) {
-                        strncat(line, "|", sizeof(line) - 1);
+                        strncat(line, "|", sizeof(line) - strlen(line) - 1);
                     } else {
-                        strncat(line, " ", sizeof(line) - 1);
+                        strncat(line, " ", sizeof(line) - strlen(line) - 1);
                     }
-                    strncat(line, "--", sizeof(line) - 1);
-                    strncat(line, option->clo_long_name, sizeof(line) - 1);
+                    strncat(line, "--", sizeof(line) - strlen(line) - 1);
+                    strncat(line, option->clo_long_name, sizeof(line) - strlen(line) - 1);
                 }
-                strncat(line, " ", sizeof(line) - 1);
+                strncat(line, " ", sizeof(line) - strlen(line) - 1);
                 for (i = 0; (int) i < option->clo_num_params; ++i) {
-                    len = sizeof(temp);
-                    snprintf(temp, len, "<arg%d> ", (int) i);
-                    strncat(line, temp, sizeof(line) - 1);
+                    char temp[MAX_WIDTH * 2];
+                    snprintf(temp, MAX_WIDTH * 2, "<arg%d> ", (int) i);
+                    strncat(line, temp, sizeof(line) - strlen(line) - 1);
                 }
                 if (option->clo_num_params > 0) {
-                    strncat(line, " ", sizeof(line) - 1);
+                    strncat(line, " ", sizeof(line) - strlen(line) - 1);
                 }
 
                 /* If we're less than param width, then start adding the
@@ -608,7 +608,7 @@ char *opal_cmd_line_get_usage_msg(opal_cmd_line_t *cmd)
 
                 /* Loop over adding the description to the array, breaking
                    the string at most at MAX_WIDTH characters.  We need a
-                   modifyable description (for simplicity), so strdup the
+                   modifiable description (for simplicity), so strdup the
                    clo_description (because it's likely a compiler
                    constant, and may barf if we write temporary \0's in
                    the middle). */
@@ -635,7 +635,7 @@ char *opal_cmd_line_get_usage_msg(opal_cmd_line_t *cmd)
                     /* Last line */
 
                     if (strlen(start) < (MAX_WIDTH - PARAM_WIDTH)) {
-                        strncat(line, start, sizeof(line) - 1);
+                        strncat(line, start, sizeof(line) - strlen(line) - 1);
                         opal_argv_append(&argc, &argv, line);
                         break;
                     }
@@ -647,7 +647,7 @@ char *opal_cmd_line_get_usage_msg(opal_cmd_line_t *cmd)
                     for (ptr = start + (MAX_WIDTH - PARAM_WIDTH); ptr > start; --ptr) {
                         if (isspace(*ptr)) {
                             *ptr = '\0';
-                            strncat(line, start, sizeof(line) - 1);
+                            strncat(line, start, sizeof(line) - strlen(line) - 1);
                             opal_argv_append(&argc, &argv, line);
 
                             start = ptr + 1;
@@ -666,7 +666,7 @@ char *opal_cmd_line_get_usage_msg(opal_cmd_line_t *cmd)
                             if (isspace(*ptr)) {
                                 *ptr = '\0';
 
-                                strncat(line, start, sizeof(line) - 1);
+                                strncat(line, start, sizeof(line) - strlen(line) - 1);
                                 opal_argv_append(&argc, &argv, line);
 
                                 start = ptr + 1;
@@ -680,7 +680,7 @@ char *opal_cmd_line_get_usage_msg(opal_cmd_line_t *cmd)
                            whitespace, then just add it on and be done */
 
                         if (ptr >= start + len) {
-                            strncat(line, start, sizeof(line) - 1);
+                            strncat(line, start, sizeof(line) - strlen(line) - 1);
                             opal_argv_append(&argc, &argv, line);
                             start = desc + len + 1;
                         }
@@ -1073,7 +1073,7 @@ static int split_shorts(opal_cmd_line_t *cmd, char *token, char **args, int *out
         }
 
         /* If we do find the option, copy it and all of its parameters
-           to the output args.  If we run out of paramters (i.e., no
+           to the output args.  If we run out of parameters (i.e., no
            more tokens in the original argv), that error will be
            handled at a higher level) */
 

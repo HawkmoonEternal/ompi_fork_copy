@@ -1,3 +1,4 @@
+/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil -*- */
 /*
  * Copyright (c) 2004-2007 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
@@ -13,6 +14,8 @@
  * Copyright (c) 2015      Research Organization for Information Science
  *                         and Technology (RIST). All rights reserved.
  * Copyright (c) 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018      Triad National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -56,8 +59,8 @@ static const char FUNC_NAME[] = "MPI_Info_set";
  *   @retval MPI_ERR_NO_MEM
  *
  *   MPI_Info_set adds the (key,value) pair to info, and overrides
- *   the value if for the same key a previsou value was set. key and
- *   value must be NULL terminated strings in C. In Fortan, leading
+ *   the value if for the same key a previous value was set. key and
+ *   value must be NULL terminated strings in C. In Fortran, leading
  *   and trailing spaces in key and value are stripped. If either
  *   key or value is greater than the allowed maxima, MPI_ERR_INFO_KEY
  *   and MPI_ERR_INFO_VALUE are raised
@@ -77,7 +80,6 @@ int MPI_Info_set(MPI_Info info, const char *key, const char *value)
      */
 
     if (MPI_PARAM_CHECK) {
-        OMPI_ERR_INIT_FINALIZE(FUNC_NAME);
         if (NULL == info || MPI_INFO_NULL == info ||
             ompi_info_is_freed(info)) {
             return OMPI_ERRHANDLER_INVOKE (MPI_COMM_WORLD, MPI_ERR_INFO,
@@ -97,17 +99,6 @@ int MPI_Info_set(MPI_Info info, const char *key, const char *value)
             return OMPI_ERRHANDLER_INVOKE (MPI_COMM_WORLD, MPI_ERR_INFO_VALUE,
                                            FUNC_NAME);
         }
-    }
-
-// An extra warning condition is a key that uses our reserved prefix "__IN_".
-// That one is used internally to deal with the dynamic nature the key/val
-// pairs where we have callbacks that modify the val, and the MPI standard
-// wants the get_info call to give back the original setting rather than
-// the callback-modified setting. So if a user directly used a key __IN_foo
-// it would confuse our accounting slightly.
-    if (0 == strncmp(key, OPAL_INFO_SAVE_PREFIX, strlen(OPAL_INFO_SAVE_PREFIX))) {
-        opal_show_help("help-mpi-api.txt", "info-set-with-reserved-prefix", true,
-            key, OPAL_INFO_SAVE_PREFIX);
     }
 
     /*

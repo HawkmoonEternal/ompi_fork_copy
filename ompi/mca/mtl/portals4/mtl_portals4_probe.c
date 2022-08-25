@@ -2,14 +2,14 @@
  * Copyright (c) 2004-2006 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
  *                         Corporation.  All rights reserved.
- * Copyright (c) 2004-2010 The University of Tennessee and The University
+ * Copyright (c) 2004-2021 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart,
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c) 2010-2012 Sandia National Laboratories.  All rights reserved.
+ * Copyright (c) 2010-2022 Sandia National Laboratories.  All rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -82,7 +82,8 @@ ompi_mtl_portals4_iprobe(struct mca_mtl_base_module_t* mtl,
         remote_proc = *((ptl_process_t*) ompi_mtl_portals4_get_endpoint (mtl, ompi_proc));
     }
 
-    MTL_PORTALS4_SET_RECV_BITS(match_bits, ignore_bits, comm->c_contextid,
+    MTL_PORTALS4_SET_RECV_BITS(match_bits, ignore_bits,
+                               ompi_comm_get_local_cid(comm),
                                src, tag);
 
     me.start = NULL;
@@ -120,7 +121,9 @@ ompi_mtl_portals4_iprobe(struct mca_mtl_base_module_t* mtl,
 
     *flag = request.found_match;
     if (1 == *flag) {
-        *status = request.status;
+        if (MPI_STATUS_IGNORE != status) {
+            OMPI_COPY_STATUS(status, request.status, false);
+        }
     }
 
     return OMPI_SUCCESS;
@@ -144,7 +147,7 @@ ompi_mtl_portals4_improbe(struct mca_mtl_base_module_t *mtl,
 
     opal_output_verbose(1, ompi_mtl_base_framework.framework_output,
                         "%s:%d: improbe %d %d %d",
-                        __FILE__, __LINE__, comm->c_contextid, src, tag);
+                        __FILE__, __LINE__, ompi_comm_get_local_cid(comm), src, tag);
 
     if  (MPI_ANY_SOURCE == src) {
         if (ompi_mtl_portals4.use_logical) {
@@ -160,7 +163,8 @@ ompi_mtl_portals4_improbe(struct mca_mtl_base_module_t *mtl,
         remote_proc = *((ptl_process_t*) ompi_mtl_portals4_get_endpoint (mtl, ompi_proc));
     }
 
-    MTL_PORTALS4_SET_RECV_BITS(match_bits, ignore_bits, comm->c_contextid,
+    MTL_PORTALS4_SET_RECV_BITS(match_bits, ignore_bits,
+                               ompi_comm_get_local_cid(comm),
                                src, tag);
 
     me.start = NULL;
@@ -198,7 +202,9 @@ ompi_mtl_portals4_improbe(struct mca_mtl_base_module_t *mtl,
 
     *matched = request.found_match;
     if (1 == *matched) {
-        *status = request.status;
+        if (MPI_STATUS_IGNORE != status) {
+            OMPI_COPY_STATUS(status, request.status, false);
+        }
 
         (*message) = ompi_message_alloc();
         if (NULL == (*message)) {

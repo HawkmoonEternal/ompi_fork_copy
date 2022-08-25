@@ -12,6 +12,7 @@
 # Copyright (c) 2010-2014 Cisco Systems, Inc.  All rights reserved.
 # Copyright (c) 2012      NVIDIA Corporation.  All rights reserved.
 # Copyright (c) 2017      IBM Corporation.  All rights reserved.
+# Copyright (c) 2022      Amazon.com, Inc. or its affiliates.  All Rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -46,12 +47,8 @@ mcacomponentdir = $(opallibdir)
 mcacomponent_LTLIBRARIES = $(component_install)
 mca_rcache_rgpusm_la_SOURCES = $(sources)
 mca_rcache_rgpusm_la_LDFLAGS = -module -avoid-version
-mca_rcache_rgpusm_la_LIBADD = $(top_builddir)/opal/lib@OPAL_LIB_PREFIX@open-pal.la \
+mca_rcache_rgpusm_la_LIBADD = $(top_builddir)/opal/lib@OPAL_LIB_NAME@.la \
 	$(rcache_rgpusm_LIBS)
-if OPAL_cuda_support
-mca_rcache_rgpusm_la_LIBADD += \
-    $(OPAL_TOP_BUILDDIR)/opal/mca/common/cuda/lib@OPAL_LIB_PREFIX@mca_common_cuda.la
-endif
 
 noinst_LTLIBRARIES = $(component_noinst)
 libmca_rcache_rgpusm_la_SOURCES = $(sources)

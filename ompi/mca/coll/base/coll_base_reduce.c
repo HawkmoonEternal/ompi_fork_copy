@@ -98,7 +98,7 @@ int ompi_coll_base_reduce_generic( const void* sendbuf, void* recvbuf, int origi
     if( tree->tree_nextsize > 0 ) {
         ptrdiff_t real_segment_size;
 
-        /* handle non existant recv buffer (i.e. its NULL) and
+        /* handle non existent recv buffer (i.e. its NULL) and
            protect the recv buffer on non-root nodes */
         accumbuf = (char*)recvbuf;
         if( (NULL == accumbuf) || (root != rank) ) {
@@ -112,7 +112,7 @@ int ompi_coll_base_reduce_generic( const void* sendbuf, void* recvbuf, int origi
         }
 
         /* If this is a non-commutative operation we must copy
-           sendbuf to the accumbuf, in order to simplfy the loops */
+           sendbuf to the accumbuf, in order to simplify the loops */
         
         if (!ompi_op_is_commute(op) && MPI_IN_PLACE != sendbuf) {
             ompi_datatype_copy_content_same_ddt(datatype, original_count,
@@ -250,14 +250,14 @@ int ompi_coll_base_reduce_generic( const void* sendbuf, void* recvbuf, int origi
        the number of segments we have two options:
        - send all segments using blocking send to the parent, or
        - avoid overflooding the parent nodes by limiting the number of
-       outstanding requests to max_oustanding_reqs.
+       outstanding requests to max_outstanding_reqs.
        TODO/POSSIBLE IMPROVEMENT: If there is a way to determine the eager size
        for the current communication, synchronization should be used only
        when the message/segment size is smaller than the eager size.
     */
     else {
 
-        /* If the number of segments is less than a maximum number of oustanding
+        /* If the number of segments is less than a maximum number of outstanding
            requests or there is no limit on the maximum number of outstanding
            requests, we send data to the parent using blocking send */
         if ((0 == max_outstanding_reqs) ||
@@ -343,8 +343,10 @@ int ompi_coll_base_reduce_generic( const void* sendbuf, void* recvbuf, int origi
         for( i = 0; i < 2; i++ ) {
             if (MPI_REQUEST_NULL == reqs[i]) continue;
             if (MPI_ERR_PENDING == reqs[i]->req_status.MPI_ERROR) continue;
-            ret = reqs[i]->req_status.MPI_ERROR;
-            break;
+            if (reqs[i]->req_status.MPI_ERROR != MPI_SUCCESS) {
+                ret = reqs[i]->req_status.MPI_ERROR;
+                break;
+            }
         }
     }
     ompi_coll_base_free_reqs(reqs, 2);
@@ -353,8 +355,10 @@ int ompi_coll_base_reduce_generic( const void* sendbuf, void* recvbuf, int origi
             for( i = 0; i < max_outstanding_reqs; i++ ) {
                 if (MPI_REQUEST_NULL == sreq[i]) continue;
                 if (MPI_ERR_PENDING == sreq[i]->req_status.MPI_ERROR) continue;
-                ret = sreq[i]->req_status.MPI_ERROR;
-                break;
+                if (sreq[i]->req_status.MPI_ERROR != MPI_SUCCESS) {
+                    ret = sreq[i]->req_status.MPI_ERROR;
+                    break;
+                }
             }
         }
         ompi_coll_base_free_reqs(sreq, max_outstanding_reqs);
@@ -961,7 +965,7 @@ int ompi_coll_base_reduce_intra_redscat_gather(
 
         for (int mask = 1; mask < nprocs_pof2; mask <<= 1) {
             /*
-             * On each iteration: rindex[step] = sindex[step] -- begining of the
+             * On each iteration: rindex[step] = sindex[step] -- beginning of the
              * current window. Length of the current window is storded in wsize.
              */
             int vdest = vrank ^ mask;

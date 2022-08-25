@@ -16,6 +16,8 @@ dnl Copyright (c) 2009-2020 Cisco Systems, Inc.  All rights reserved.
 dnl Copyright (c) 2014      Intel, Inc. All rights reserved.
 dnl Copyright (c) 2015-2017 Research Organization for Information Science
 dnl                         and Technology (RIST). All rights reserved.
+dnl Copyright (c) 2021      Amazon.com, Inc. or its affiliates.  All Rights
+dnl                         reserved.
 dnl
 dnl $COPYRIGHT$
 dnl
@@ -260,29 +262,29 @@ for val in ${$1}; do
     opal_done="`expr $opal_i \> $opal_count`"
     while test "$opal_found" = "0" && test "$opal_done" = "0"; do
 
-	# Have we seen this token already?  Prefix the comparison with
-	# "x" so that "-Lfoo" values won't be cause an error.
+        # Have we seen this token already?  Prefix the comparison with
+        # "x" so that "-Lfoo" values won't be cause an error.
 
-	opal_eval="expr x$val = x\$opal_array_$opal_i"
-	opal_found=`eval $opal_eval`
+        opal_eval="expr x$val = x\$opal_array_$opal_i"
+        opal_found=`eval $opal_eval`
 
-	# Check the ending condition
+        # Check the ending condition
 
-	opal_done="`expr $opal_i \>= $opal_count`"
+        opal_done="`expr $opal_i \>= $opal_count`"
 
-	# Increment the counter
+        # Increment the counter
 
-	opal_i="`expr $opal_i + 1`"
+        opal_i="`expr $opal_i + 1`"
     done
 
     # If we didn't find the token, add it to the "array"
 
     if test "$opal_found" = "0"; then
-	opal_eval="opal_array_$opal_i=$val"
-	eval $opal_eval
-	opal_count="`expr $opal_count + 1`"
+        opal_eval="opal_array_$opal_i=$val"
+        eval $opal_eval
+        opal_count="`expr $opal_count + 1`"
     else
-	opal_i="`expr $opal_i - 1`"
+        opal_i="`expr $opal_i - 1`"
     fi
 done
 
@@ -317,6 +319,18 @@ dnl #######################################################################
 dnl #######################################################################
 dnl #######################################################################
 
+# OPAL_APPEND(variable, new_argument)
+# ----------------------------------------
+# Append new_argument to variable, assuming a space separated list.
+#
+AC_DEFUN([OPAL_APPEND], [
+  AS_IF([test -z "$$1"], [$1="$2"], [$1="$$1 $2"])
+])
+
+dnl #######################################################################
+dnl #######################################################################
+dnl #######################################################################
+
 # OPAL_APPEND_UNIQ(variable, new_argument)
 # ----------------------------------------
 # Append new_argument to variable if not already in variable.  This assumes a
@@ -333,112 +347,11 @@ for arg in $2; do
         fi
     done
     if test "$opal_found" = "0" ; then
-        if test -z "$$1"; then
-            $1="$arg"
-        else
-            $1="$$1 $arg"
-        fi
+        OPAL_APPEND([$1], [$arg])
     fi
 done
 unset opal_found
 ])
-
-dnl #######################################################################
-dnl #######################################################################
-dnl #######################################################################
-
-# Remove all duplicate -I, -L, and -l flags from the variable named $1
-AC_DEFUN([OPAL_FLAGS_UNIQ],[
-    # 1 is the variable name to be uniq-ized
-    opal_name=$1
-
-    # Go through each item in the variable and only keep the unique ones
-
-    opal_count=0
-    for val in ${$1}; do
-        opal_done=0
-        opal_i=1
-        opal_found=0
-
-        # Loop over every token we've seen so far
-
-        opal_done="`expr $opal_i \> $opal_count`"
-        while test "$opal_found" = "0" && test "$opal_done" = "0"; do
-
-            # Have we seen this token already?  Prefix the comparison
-            # with "x" so that "-Lfoo" values won't be cause an error.
-
-	    opal_eval="expr x$val = x\$opal_array_$opal_i"
-	    opal_found=`eval $opal_eval`
-
-            # Check the ending condition
-
-	    opal_done="`expr $opal_i \>= $opal_count`"
-
-            # Increment the counter
-
-	    opal_i="`expr $opal_i + 1`"
-        done
-
-        # Check for special cases where we do want to allow repeated
-        # arguments (per
-        # https://www.open-mpi.org/community/lists/devel/2012/08/11362.php
-        # and
-        # https://github.com/open-mpi/ompi/issues/324).
-
-        case $val in
-        -Xclang)
-                opal_found=0
-                opal_i=`expr $opal_count + 1`
-                ;;
-        -framework)
-                opal_found=0
-                opal_i=`expr $opal_count + 1`
-                ;;
-        --param)
-                opal_found=0
-                opal_i=`expr $opal_count + 1`
-                ;;
-        esac
-
-        # If we didn't find the token, add it to the "array"
-
-        if test "$opal_found" = "0"; then
-	    opal_eval="opal_array_$opal_i=$val"
-	    eval $opal_eval
-	    opal_count="`expr $opal_count + 1`"
-        else
-	    opal_i="`expr $opal_i - 1`"
-        fi
-    done
-
-    # Take all the items in the "array" and assemble them back into a
-    # single variable
-
-    opal_i=1
-    opal_done="`expr $opal_i \> $opal_count`"
-    opal_newval=
-    while test "$opal_done" = "0"; do
-        opal_eval="opal_newval=\"$opal_newval \$opal_array_$opal_i\""
-        eval $opal_eval
-
-        opal_eval="unset opal_array_$opal_i"
-        eval $opal_eval
-
-        opal_done="`expr $opal_i \>= $opal_count`"
-        opal_i="`expr $opal_i + 1`"
-    done
-
-    # Done; do the assignment
-
-    opal_newval="`echo $opal_newval`"
-    opal_eval="$opal_name=\"$opal_newval\""
-    eval $opal_eval
-
-    # Clean up
-
-    unset opal_name opal_i opal_done opal_newval opal_eval opal_count
-])dnl
 
 dnl #######################################################################
 dnl #######################################################################
@@ -463,7 +376,51 @@ AC_DEFUN([OPAL_FLAGS_APPEND_UNIQ], [
                    AS_IF([test "x$val" = "x$arg"], [opal_append=0])
                done])
         AS_IF([test "$opal_append" = "1"],
-              [AS_IF([test -z "$$1"], [$1=$arg], [$1="$$1 $arg"])])
+              [OPAL_APPEND([$1], [$arg])])
+    done
+
+    OPAL_VAR_SCOPE_POP
+])
+
+dnl #######################################################################
+dnl #######################################################################
+dnl #######################################################################
+
+# OPAL_FLAGS_APPEND_MOVE(variable, new_argument)
+# ----------------------------------------------
+# add new_arguments to the end of variable.
+#
+# If an argument in new_arguments does not begin with -I, -L, or -l OR
+# the argument begins with -I, -L, or -l and it is not already in
+# variable, it is appended to variable.
+#
+# If an argument in new_argument begins with a -l and is already in
+# variable, the existing occurances of the argument are removed from
+# variable and the argument is appended to variable.  This behavior
+# is most useful in LIBS, where ordering matters and being rightmost
+# is usually the right behavior.
+#
+# This macro assumes a space separated list.
+AC_DEFUN([OPAL_FLAGS_APPEND_MOVE], [
+    OPAL_VAR_SCOPE_PUSH([opal_tmp_variable opal_tmp opal_append])
+
+    for arg in $2; do
+        AS_CASE([$arg],
+                [-I*|-L*],
+                [opal_append=1
+                 for val in ${$1} ; do
+                     AS_IF([test "x$val" = "x$arg"], [opal_append=0])
+                 done
+                 AS_IF([test $opal_append -eq 1], [OPAL_APPEND([$1], [$arg])])],
+                [-l*],
+                [opal_tmp_variable=
+                 for val in ${$1}; do
+                     AS_IF([test "x$val" != "x$arg"],
+                           [OPAL_APPEND([opal_tmp_variable], [$val])])
+                 done
+                 OPAL_APPEND([opal_tmp_variable], [$arg])
+                 $1="$opal_tmp_variable"],
+                [OPAL_APPEND([$1], [$arg])])
     done
 
     OPAL_VAR_SCOPE_POP
@@ -480,24 +437,59 @@ dnl #######################################################################
 # of the assignment in foo=`which <prog>`). This macro ensures that we
 # get a sane executable value.
 AC_DEFUN([OPAL_WHICH],[
-# 1 is the variable name to do "which" on
-# 2 is the variable name to assign the return value to
+    # 1 is the variable name to do "which" on
+    # 2 is the variable name to assign the return value to
 
-OPAL_VAR_SCOPE_PUSH([opal_prog opal_file opal_dir opal_sentinel])
+    OPAL_VAR_SCOPE_PUSH([opal_prog opal_file opal_dir opal_sentinel])
 
-opal_prog=$1
+    opal_prog=$1
 
-IFS_SAVE=$IFS
-IFS="$PATH_SEPARATOR"
-for opal_dir in $PATH; do
-    if test -x "$opal_dir/$opal_prog"; then
-        $2="$opal_dir/$opal_prog"
-        break
-    fi
-done
-IFS=$IFS_SAVE
+    # There are 3 cases:
 
-OPAL_VAR_SCOPE_POP
+    # 1. opal_prog is an absolute filename.  If that absolute filename
+    # exists and is executable, return $2 with that name.  Otherwise,
+    # $2 is unchanged.
+
+    # 2. opal_prog is a relative filename (i.e., it contains one or
+    # more /, but does not begin with a /).  If that file exists
+    # relative to where we are right now in the filesystem and is
+    # executable, return the absolute path of that value in $2.
+    # Otherwise, $2 is unchanged.
+
+    # 3. opal_prog contains no /.  Search the PATH for an excutable
+    # with the appropriate name.  If found, return the absolute path
+    # in $2.  Otherwise, $2 is unchanged.
+
+    # Note that these three cases are exactly what which(1) does.
+
+    # Note the double square brackets around the case expressions for
+    # m4 escaping.
+    case $opal_prog in
+        [[\\/]]* | ?:[[\\/]]* )
+            # Case 1: absolute
+            AS_IF([test -x "$opal_prog"],
+                  [$2=$opal_prog])
+            ;;
+
+        *[[\\/]]*)
+            # Case 2: relative with 1 or more /
+            AS_IF([test -x "$opal_prog"],
+                  [$2="$cwd/$opal_prog"])
+            ;;
+
+        *)
+            # Case 3: no / at all
+            IFS_SAVE=$IFS
+            IFS=$PATH_SEPARATOR
+            for opal_dir in $PATH; do
+               AS_IF([test -x "$opal_dir/$opal_prog"],
+                     [$2="$opal_dir/$opal_prog"])
+            done
+            IFS=$IFS_SAVE
+            ;;
+    esac
+
+    OPAL_VAR_SCOPE_POP
 ])dnl
 
 dnl #######################################################################

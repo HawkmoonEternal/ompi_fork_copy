@@ -11,7 +11,7 @@ dnl                         University of Stuttgart.  All rights reserved.
 dnl Copyright (c) 2004-2006 The Regents of the University of California.
 dnl                         All rights reserved.
 dnl Copyright (c) 2007-2009 Sun Microsystems, Inc.  All rights reserved.
-dnl Copyright (c) 2008-2015 Cisco Systems, Inc.  All rights reserved.
+dnl Copyright (c) 2008-2021 Cisco Systems, Inc.  All rights reserved.
 dnl Copyright (c) 2012-2017 Los Alamos National Security, LLC. All rights
 dnl                         reserved.
 dnl Copyright (c) 2015-2019 Research Organization for Information Science
@@ -106,7 +106,7 @@ AC_DEFUN([OPAL_PROG_CC_C11],[
             for flag in $(echo $opal_prog_cc_c11_flags | tr ' ' '\n') ; do
                 OPAL_PROG_CC_C11_HELPER([$flag],[opal_cv_c11_flag=$flag],[])
                 if test "x$opal_cv_c11_flag" != "x" ; then
-                    CFLAGS="$CFLAGS $opal_cv_c11_flag"
+                    OPAL_FLAGS_APPEND_UNIQ([CFLAGS], ["$opal_cv_c11_flag"])
                     AC_MSG_NOTICE([using $flag to enable C11 support])
                     opal_cv_c11_supported=yes
                     break
@@ -135,12 +135,27 @@ AC_DEFUN([OPAL_CHECK_CC_IQUOTE],[
     CFLAGS="${CFLAGS} -iquote ."
     AC_MSG_CHECKING([for $CC option to add a directory only to the search path for the quote form of include])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[])],
-		      [opal_cc_iquote="-iquote"],
-		      [opal_cc_iquote="-I"])
+                      [opal_cc_iquote="-iquote"],
+                      [opal_cc_iquote="-I"])
     CFLAGS=${opal_check_cc_iquote_CFLAGS_save}
     OPAL_VAR_SCOPE_POP
     AC_MSG_RESULT([$opal_cc_iquote])
 ])
+
+
+# OPAL_SETUP_CC_WERROR_HANDLER()
+# ------------------------------
+# Runs right before config.status, to possibly
+# add -Werror to CFLAGS.  Can't do this earlier
+# in configure, as many built-in tests generate
+# harmless warnings which would cause the wrong
+# answer.
+AC_DEFUN([OPAL_SETUP_CC_WERROR_HANDLER], [
+    AS_IF([test "$enable_werror" = "yes"],
+          [AC_MSG_NOTICE([Adding -Werror to CFLAGS])
+           CFLAGS="$CFLAGS -Werror"])
+])
+
 
 # OPAL_SETUP_CC()
 # ---------------
@@ -211,10 +226,11 @@ AC_DEFUN([OPAL_SETUP_CC],[
     AC_DEFINE_UNQUOTED([OPAL_C_HAVE___THREAD], [$opal_prog_cc__thread_available],
                        [Whether C compiler supports __thread])
 
-
     # Check for standard headers, needed here because needed before
-    # the types checks.
-    AC_HEADER_STDC
+    # the types checks.  This is only necessary for Autoconf < v2.70.
+    m4_version_prereq([2.70],
+                      [],
+                      [AC_HEADER_STDC])
 
     # GNU C and autotools are inconsistent about whether this is
     # defined so let's make it true everywhere for now...  However, IBM
@@ -252,7 +268,7 @@ AC_DEFUN([OPAL_SETUP_CC],[
         # compiling and linking to circumvent trouble with
         # libgcov.
         LDFLAGS_orig="$LDFLAGS"
-        LDFLAGS="$LDFLAGS_orig --coverage"
+        OPAL_FLAGS_APPEND_UNIQ([LDFLAGS], ["--coverage"])
         OPAL_COVERAGE_FLAGS=
 
         _OPAL_CHECK_SPECIFIC_CFLAGS(--coverage, coverage)
@@ -271,19 +287,8 @@ AC_DEFUN([OPAL_SETUP_CC],[
             CLEANFILES="*.bb *.bbg ${CLEANFILES}"
             OPAL_COVERAGE_FLAGS="-ftest-coverage -fprofile-arcs"
         fi
-        OPAL_FLAGS_UNIQ(CFLAGS)
-        OPAL_FLAGS_UNIQ(LDFLAGS)
         WANT_DEBUG=1
    fi
-    
-
-    # Do we want debugging?
-    if test "$WANT_DEBUG" = "1" && test "$enable_debug_symbols" != "no" ; then
-        CFLAGS="$CFLAGS -g"
-
-        OPAL_FLAGS_UNIQ(CFLAGS)
-        AC_MSG_WARN([-g has been added to CFLAGS (--enable-debug)])
-    fi
 
     # These flags are generally gcc-specific; even the
     # gcc-impersonating compilers won't accept them.
@@ -302,6 +307,11 @@ AC_DEFUN([OPAL_SETUP_CC],[
         _OPAL_CHECK_SPECIFIC_CFLAGS(-fno-strict-aliasing, fno_strict_aliasing, int main() { long double x; })
         _OPAL_CHECK_SPECIFIC_CFLAGS(-pedantic, pedantic)
         _OPAL_CHECK_SPECIFIC_CFLAGS(-Wall, Wall)
+
+        # There are some warnings that we specifically do not care
+        # about / do not agree that gcc emits warnings about them.  So
+        # we turn them off.
+        _OPAL_CHECK_SPECIFIC_CFLAGS(-Wformat-truncation=0, format_truncation)
     fi
 
     # Note: Some versions of clang (at least >= 3.5 -- perhaps
@@ -314,6 +324,11 @@ AC_DEFUN([OPAL_SETUP_CC],[
     # the xlc warning looks like this:
     # warning: "-qinline" is not compatible with "-g". "-qnoinline" is being set.
     _OPAL_CHECK_SPECIFIC_CFLAGS(-finline-functions, finline_functions)
+
+    AC_ARG_ENABLE([werror],
+         [AS_HELP_STRING([--enable-werror],
+                         [Enable -Werror to convert warnings to errors.  Note that 3rd-party packages will not be built with -Werror (unless they also support the --enable-werror configure option)])])
+    AC_CONFIG_COMMANDS_PRE([OPAL_SETUP_CC_WERROR_HANDLER])
 
     # Try to enable restrict keyword
     RESTRICT_CFLAGS=
@@ -332,9 +347,9 @@ AC_DEFUN([OPAL_SETUP_CC],[
     # see if the C compiler supports __builtin_expect
     AC_CACHE_CHECK([if $CC supports __builtin_expect],
         [opal_cv_cc_supports___builtin_expect],
-        [AC_TRY_LINK([],
+        [AC_LINK_IFELSE([AC_LANG_PROGRAM([],
           [void *ptr = (void*) 0;
-           if (__builtin_expect (ptr != (void*) 0, 1)) return 0;],
+           if (__builtin_expect (ptr != (void*) 0, 1)) return 0;])],
           [opal_cv_cc_supports___builtin_expect="yes"],
           [opal_cv_cc_supports___builtin_expect="no"])])
     if test "$opal_cv_cc_supports___builtin_expect" = "yes" ; then
@@ -348,9 +363,9 @@ AC_DEFUN([OPAL_SETUP_CC],[
     # see if the C compiler supports __builtin_prefetch
     AC_CACHE_CHECK([if $CC supports __builtin_prefetch],
         [opal_cv_cc_supports___builtin_prefetch],
-        [AC_TRY_LINK([],
+        [AC_LINK_IFELSE([AC_LANG_PROGRAM([],
           [int ptr;
-           __builtin_prefetch(&ptr,0,0);],
+           __builtin_prefetch(&ptr,0,0);])],
           [opal_cv_cc_supports___builtin_prefetch="yes"],
           [opal_cv_cc_supports___builtin_prefetch="no"])])
     if test "$opal_cv_cc_supports___builtin_prefetch" = "yes" ; then
@@ -364,9 +379,9 @@ AC_DEFUN([OPAL_SETUP_CC],[
     # see if the C compiler supports __builtin_clz
     AC_CACHE_CHECK([if $CC supports __builtin_clz],
         [opal_cv_cc_supports___builtin_clz],
-        [AC_TRY_LINK([],
+        [AC_LINK_IFELSE([AC_LANG_PROGRAM([],
             [int value = 0xffff; /* we know we have 16 bits set */
-             if ((8*sizeof(int)-16) != __builtin_clz(value)) return 0;],
+             if ((8*sizeof(int)-16) != __builtin_clz(value)) return 0;])],
             [opal_cv_cc_supports___builtin_clz="yes"],
             [opal_cv_cc_supports___builtin_clz="no"])])
     if test "$opal_cv_cc_supports___builtin_clz" = "yes" ; then
@@ -402,7 +417,6 @@ AC_DEFUN([OPAL_SETUP_CC],[
     OPAL_ENSURE_CONTAINS_OPTFLAGS(["$CFLAGS"])
     AC_MSG_RESULT([$co_result])
     CFLAGS="$co_result"
-    OPAL_FLAGS_UNIQ([CFLAGS])
     AC_MSG_RESULT(CFLAGS result: $CFLAGS)
     OPAL_VAR_SCOPE_POP
 ])
@@ -410,26 +424,30 @@ AC_DEFUN([OPAL_SETUP_CC],[
 
 AC_DEFUN([_OPAL_START_SETUP_CC],[
     opal_show_subtitle "C compiler and preprocessor"
-
-	# $%@#!@#% AIX!!  This has to be called before anything invokes the C
-    # compiler.
-    dnl AC_AIX
 ])
 
 
 AC_DEFUN([_OPAL_PROG_CC],[
+    dnl It is really easy to accidently call AC_PROG_CC implicitly through
+    dnl some other test run before OPAL_SETUP_CC.  Try to make that harder.
+    m4_provide_if([AC_PROG_CC],
+                  [m4_fatal([AC_PROG_CC called before OPAL_SETUP_CC])])
+
     #
     # Check for the compiler
     #
-    OPAL_VAR_SCOPE_PUSH([opal_cflags_save dummy opal_cc_arvgv0])
-    opal_cflags_save="$CFLAGS"
+    OPAL_VAR_SCOPE_PUSH([dummy opal_cc_arvgv0])
+
+    AC_USE_SYSTEM_EXTENSIONS
+
     AC_PROG_CC
     BASECC="`basename $CC`"
-    CFLAGS="$opal_cflags_save"
-    AC_DEFINE_UNQUOTED(OPAL_CC, "$CC", [OMPI underlying C compiler])
+    OPAL_CC="$CC"
+    AC_DEFINE_UNQUOTED(OPAL_CC, "$OPAL_CC", [OMPI underlying C compiler])
     set dummy $CC
     opal_cc_argv0=[$]2
     OPAL_WHICH([$opal_cc_argv0], [OPAL_CC_ABSOLUTE])
     AC_SUBST(OPAL_CC_ABSOLUTE)
+
     OPAL_VAR_SCOPE_POP
 ])

@@ -13,7 +13,10 @@
 #ifndef COLL_PORTALS4_REQUEST_H
 #define COLL_PORTALS4_REQUEST_H
 
+#include "ompi_config.h"
+
 #include "ompi/request/request.h"
+
 #include "coll_portals4.h"
 
 
@@ -176,7 +179,6 @@ OBJ_CLASS_DECLARATION(ompi_coll_portals4_request_t);
                 req = (ompi_coll_portals4_request_t*) item;               \
                 OMPI_REQUEST_INIT(&req->super, false);                    \
                 req->super.req_mpi_object.comm = comm;                    \
-                req->super.req_complete = false;                          \
                 req->super.req_state = OMPI_REQUEST_ACTIVE;               \
     } while (0)
 

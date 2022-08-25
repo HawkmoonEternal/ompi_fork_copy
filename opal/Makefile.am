@@ -13,8 +13,8 @@
 # Copyright (c) 2015-2016 Intel, Inc. All rights reserved.
 # Copyright (c) 2016      Research Organization for Information Science
 #                         and Technology (RIST). All rights reserved.
-# Copyright (c) 2020      Amazon.com, Inc. or its affiliates.
-#                         All Rights reserved.
+# Copyright (c) 2020-2022 Amazon.com, Inc. or its affiliates.  All Rights reserved.
+# Copyright (c) 2022      Advanced Micro Devices, Inc. All rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -23,79 +23,60 @@
 #
 
 if OPAL_cuda_support
-SUBDIRS = \
-	include \
-        mca/common/cuda \
-        datatype \
-        etc \
-        util \
-	mca/base \
-	$(MCA_opal_FRAMEWORKS_SUBDIRS) \
-	$(MCA_opal_FRAMEWORK_COMPONENT_STATIC_SUBDIRS) \
-        . \
-	$(MCA_opal_FRAMEWORK_COMPONENT_DSO_SUBDIRS)
-# libltdl is included by variable because if --disable-dlopen was
-# used, there will be no generated Makefile in that directory (and
-# therefore make distclean will fail).
-DIST_SUBDIRS = \
-	include \
-        mca/common/cuda \
-        datatype \
-        etc \
-	util \
-	mca/base \
-	$(MCA_opal_FRAMEWORKS_SUBDIRS) \
-	$(MCA_opal_FRAMEWORK_COMPONENT_ALL_SUBDIRS)
+LIBOPAL_GPU_SUBDIR = cuda
+LIBOPAL_GPU_LA = cuda/libopalcuda.la
 else
-SUBDIRS = \
-	include \
-        datatype \
-        etc \
-        util \
-	mca/base \
-	$(MCA_opal_FRAMEWORKS_SUBDIRS) \
-	$(MCA_opal_FRAMEWORK_COMPONENT_STATIC_SUBDIRS) \
-        . \
-	$(MCA_opal_FRAMEWORK_COMPONENT_DSO_SUBDIRS)
-# libltdl is included by variable because if --disable-dlopen was
-# used, there will be no generated Makefile in that directory (and
-# therefore make distclean will fail).
-DIST_SUBDIRS = \
-	include \
-        datatype \
-        etc \
-	util \
-	mca/base \
-	$(MCA_opal_FRAMEWORKS_SUBDIRS) \
-	$(MCA_opal_FRAMEWORK_COMPONENT_ALL_SUBDIRS)
+if OPAL_rocm_support
+LIBOPAL_GPU_SUBDIR = rocm
+LIBOPAL_GPU_LA = rocm/libopalrocm.la
+endif
 endif
 
+
+SUBDIRS = \
+	include \
+        datatype \
+        etc \
+        util \
+	mca/base \
+	$(LIBOPAL_GPU_SUBDIR) \
+	$(MCA_opal_FRAMEWORKS_SUBDIRS) \
+	$(MCA_opal_FRAMEWORK_COMPONENT_STATIC_SUBDIRS) \
+        . \
+	$(MCA_opal_FRAMEWORK_COMPONENT_DSO_SUBDIRS)
+DIST_SUBDIRS = \
+	include \
+	cuda \
+	rocm \
+        datatype \
+        etc \
+	util \
+	mca/base \
+	$(MCA_opal_FRAMEWORKS_SUBDIRS) \
+	$(MCA_opal_FRAMEWORK_COMPONENT_ALL_SUBDIRS)
+
 # Build the main OPAL library
-lib_LTLIBRARIES = lib@OPAL_LIB_PREFIX@open-pal.la
-lib@OPAL_LIB_PREFIX@open_pal_la_SOURCES =
-lib@OPAL_LIB_PREFIX@open_pal_la_LIBADD = \
+lib_LTLIBRARIES = lib@OPAL_LIB_NAME@.la
+lib@OPAL_LIB_NAME@_la_SOURCES =
+lib@OPAL_LIB_NAME@_la_LIBADD = \
         datatype/libdatatype.la \
         mca/base/libmca_base.la \
         util/libopalutil.la \
-	$(MCA_opal_FRAMEWORK_LIBS) \
-	$(opal_libevent_LIBS) \
-	$(opal_hwloc_LIBS) \
-	$(opal_pmix_LIBS)
-lib@OPAL_LIB_PREFIX@open_pal_la_DEPENDENCIES = \
+	$(LIBOPAL_GPU_LA) \
+	$(MCA_opal_FRAMEWORK_LIBS)
+lib@OPAL_LIB_NAME@_la_DEPENDENCIES = \
         datatype/libdatatype.la \
         mca/base/libmca_base.la \
         util/libopalutil.la \
+        $(LIBOPAL_GPU_LA)  \
         $(MCA_opal_FRAMEWORK_LIBS)
-lib@OPAL_LIB_PREFIX@open_pal_la_LDFLAGS = -version-info $(libopen_pal_so_version) \
-	$(opal_libevent_LDFLAGS) \
-	$(opal_hwloc_LDFLAGS) \
-	$(opal_pmix_LDFLAGS)
+lib@OPAL_LIB_NAME@_la_LDFLAGS = -version-info @libopen_pal_so_version@
 
 # included subdirectory Makefile.am's and appended-to variables
 headers =
 noinst_LTLIBRARIES =
 dist_opaldata_DATA =
-lib@OPAL_LIB_PREFIX@open_pal_la_SOURCES += $(headers)
+lib@OPAL_LIB_NAME@_la_SOURCES += $(headers)
 
 # Conditionally install the header files
 

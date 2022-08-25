@@ -286,8 +286,8 @@ OMPI_DECLSPEC ompi_proc_t * ompi_proc_find_and_add(const ompi_process_name_t * n
  * Pack proc list into portable buffer
  *
  * This function takes a list of ompi_proc_t pointers (e.g. as given
- * in groups) and returns a orte buffer containing all information
- * needed to add the proc to a remote list.  This includes the ORTE
+ * in groups) and returns a pmix buffer containing all information
+ * needed to add the proc to a remote list.  This includes the
  * process name, the architecture, and the hostname.  Ordering is
  * maintained.  The buffer is packed to be sent to a remote node with
  * different architecture (endian or word size).
@@ -355,7 +355,7 @@ OMPI_DECLSPEC int ompi_proc_unpack(pmix_data_buffer_t *buf,
  *
  * Refresh the Open MPI process subsystem. This function will update
  * the list of proc instances in the current MPI_COMM_WORLD with
- * data from the run-time environemnt.
+ * data from the run-time environment.
  *
  * @note This is primarily used when restarting a process and thus
  * need to update the jobid and node name.

@@ -3,6 +3,7 @@
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2014-2015 NVIDIA Corporation.  All rights reserved.
+ * Copyright (c) 2022      Amazon.com, Inc. or its affiliates.  All Rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -17,7 +18,7 @@
 
 #include "ompi/op/op.h"
 #include "opal/datatype/opal_convertor.h"
-#include "opal/mca/common/cuda/common_cuda.h"
+#include "opal/cuda/common_cuda.h"
 
 /*
  *	reduce_log_inter
@@ -34,6 +35,7 @@ mca_coll_cuda_reduce(const void *sbuf, void *rbuf, int count,
                      mca_coll_base_module_t *module)
 {
     mca_coll_cuda_module_t *s = (mca_coll_cuda_module_t*) module;
+    int rank = ompi_comm_rank(comm);
     ptrdiff_t gap;
     char *rbuf1 = NULL, *sbuf1 = NULL, *rbuf2 = NULL;
     const char *sbuf2;
@@ -53,7 +55,7 @@ mca_coll_cuda_reduce(const void *sbuf, void *rbuf, int count,
         sbuf = sbuf1 - gap;
     }
 
-    if (opal_cuda_check_bufs(rbuf, NULL)) {
+    if ((rank == root) && (opal_cuda_check_bufs((char *)rbuf, NULL))) {
         rbuf1 = (char*)malloc(bufsize);
         if (NULL == rbuf1) {
             if (NULL != sbuf1) free(sbuf1);

@@ -141,7 +141,7 @@ mca_pml_cm_component_init(int* priority,
 
     opal_output_verbose( 10, 0,
                          "in cm pml priority is %d\n", *priority);
-    /* find a useable MTL */
+    /* find a usable MTL */
     ret = ompi_mtl_base_select(enable_progress_threads, enable_mpi_threads, priority);
     if (OMPI_SUCCESS != ret) {
         return NULL;
@@ -151,8 +151,10 @@ mca_pml_cm_component_init(int* priority,
         ompi_pml_cm.super.pml_flags |= MCA_PML_BASE_FLAG_REQUIRE_WORLD;
     }
 
-    /* update our tag / context id max values based on MTL
-       information */
+    if (ompi_mtl->mtl_flags & MCA_MTL_BASE_FLAG_SUPPORTS_EXT_CID) {
+        ompi_pml_cm.super.pml_flags |= MCA_PML_BASE_FLAG_SUPPORTS_EXT_CID;
+    }
+
     ompi_pml_cm.super.pml_max_contextid = ompi_mtl->mtl_max_contextid;
     ompi_pml_cm.super.pml_max_tag = ompi_mtl->mtl_max_tag;
 

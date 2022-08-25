@@ -14,16 +14,15 @@
 
 #include "ompi_config.h"
 
+#include "opal/util/bit_ops.h"
+
+#include "ompi/constants.h"
+#include "ompi/mca/coll/base/base.h"
+#include "ompi/mca/coll/coll.h"
+#include "ompi/mca/pml/pml.h"
+
 #include "coll_portals4.h"
 #include "coll_portals4_request.h"
-
-#include "mpi.h"
-#include "ompi/constants.h"
-#include "opal/util/bit_ops.h"
-#include "ompi/mca/pml/pml.h"
-#include "ompi/mca/coll/coll.h"
-#include "ompi/mca/coll/base/base.h"
-
 
 static int
 barrier_hypercube_top(struct ompi_communicator_t *comm,
@@ -55,10 +54,10 @@ barrier_hypercube_top(struct ompi_communicator_t *comm,
         return OMPI_ERR_TEMP_OUT_OF_RESOURCE;
     }
 
-    COLL_PORTALS4_SET_BITS(match_bits_rtr, ompi_comm_get_cid(comm),
+    COLL_PORTALS4_SET_BITS(match_bits_rtr, ompi_comm_get_local_cid(comm),
             0, 1, COLL_PORTALS4_BARRIER, 0, count);
 
-    COLL_PORTALS4_SET_BITS(match_bits, ompi_comm_get_cid(comm),
+    COLL_PORTALS4_SET_BITS(match_bits, ompi_comm_get_local_cid(comm),
             0, 0, COLL_PORTALS4_BARRIER, 0, count);
 
     /* Build "tree" out of hypercube */

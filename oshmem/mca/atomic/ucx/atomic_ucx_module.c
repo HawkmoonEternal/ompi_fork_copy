@@ -55,36 +55,38 @@ int mca_atomic_ucx_op(shmem_ctx_t ctx,
                       ucp_atomic_post_op_t op)
 #endif
 {
-    ucs_status_t status;
     spml_ucx_mkey_t *ucx_mkey;
     uint64_t rva;
     mca_spml_ucx_ctx_t *ucx_ctx = (mca_spml_ucx_ctx_t *)ctx;
 #if HAVE_DECL_UCP_ATOMIC_OP_NBX
     ucs_status_ptr_t status_ptr;
+#else
+    ucs_status_t status;
 #endif
+    int res;
 
     assert((8 == size) || (4 == size));
 
-    ucx_mkey = mca_spml_ucx_get_mkey(ctx, pe, target, (void *)&rva, mca_spml_self);
-
+    ucx_mkey = mca_spml_ucx_ctx_mkey_by_va(ctx, pe, target, (void *)&rva, mca_spml_self);
+    assert(NULL != ucx_mkey);
 #if HAVE_DECL_UCP_ATOMIC_OP_NBX
     status_ptr = ucp_atomic_op_nbx(ucx_ctx->ucp_peers[pe].ucp_conn,
                                    op, &value, 1, rva, ucx_mkey->rkey,
                                    &mca_spml_ucp_request_params[size >> 3]);
-    if (OPAL_LIKELY(!UCS_PTR_IS_ERR(status_ptr))) {
-        mca_spml_ucx_remote_op_posted(ucx_ctx, pe);
-    }
-    status = UCS_PTR_STATUS(status_ptr);
+    res = opal_common_ucx_wait_request(status_ptr, ucx_ctx->ucp_worker[0],
+                                       "ucp_atomic_op_nbx post");
 #else
     status = ucp_atomic_post(ucx_ctx->ucp_peers[pe].ucp_conn,
                              op, value, size, rva,
                              ucx_mkey->rkey);
+    res = ucx_status_to_oshmem(status);
 #endif
-    if (OPAL_LIKELY(UCS_OK == status)) {
+
+    if (OPAL_LIKELY(OSHMEM_SUCCESS == res)) {
         mca_spml_ucx_remote_op_posted(ucx_ctx, pe);
     }
 
-    return ucx_status_to_oshmem(status);
+    return res;
 }
 
 static inline
@@ -115,7 +117,8 @@ int mca_atomic_ucx_fop(shmem_ctx_t ctx,
 
     assert((8 == size) || (4 == size));
 
-    ucx_mkey = mca_spml_ucx_get_mkey(ctx, pe, target, (void *)&rva, mca_spml_self);
+    ucx_mkey = mca_spml_ucx_ctx_mkey_by_va(ctx, pe, target, (void *)&rva, mca_spml_self);
+    assert(NULL != ucx_mkey);
 #if HAVE_DECL_UCP_ATOMIC_OP_NBX
     status_ptr = ucp_atomic_op_nbx(ucx_ctx->ucp_peers[pe].ucp_conn, op, &value, 1,
                                    rva, ucx_mkey->rkey, &param);
@@ -265,6 +268,77 @@ static int mca_atomic_ucx_swap(shmem_ctx_t ctx,
 #endif
 }
 
+static int mca_atomic_ucx_fadd_nb(shmem_ctx_t ctx,
+                               void *fetch,
+                               void *target,
+                               void *prev,
+                               uint64_t value,
+                               size_t size,
+                               int pe)
+{
+    return OSHMEM_ERR_NOT_IMPLEMENTED;
+}
+
+static int mca_atomic_ucx_fand_nb(shmem_ctx_t ctx,
+                               void *fetch,
+                               void *target,
+                               void *prev,
+                               uint64_t value,
+                               size_t size,
+                               int pe)
+{
+    return OSHMEM_ERR_NOT_IMPLEMENTED;
+}
+
+static int mca_atomic_ucx_for_nb(shmem_ctx_t ctx,
+                               void *fetch,
+                               void *target,
+                               void *prev,
+                               uint64_t value,
+                               size_t size,
+                               int pe)
+{
+    return OSHMEM_ERR_NOT_IMPLEMENTED;
+}
+
+static int mca_atomic_ucx_fxor_nb(shmem_ctx_t ctx,
+                               void *fetch,
+                               void *target,
+                               void *prev,
+                               uint64_t value,
+                               size_t size,
+                               int pe)
+{
+    return OSHMEM_ERR_NOT_IMPLEMENTED;
+}
+
+static int mca_atomic_ucx_swap_nb(shmem_ctx_t ctx,
+                               void *fetch,
+                               void *target,
+                               void *prev,
+                               uint64_t value,
+                               size_t size,
+                               int pe)
+{
+    return OSHMEM_ERR_NOT_IMPLEMENTED;
+}
+
+
+static int mca_atomic_ucx_cswap_nb(shmem_ctx_t ctx,
+                                   void *fetch,
+                                   void *target,
+                                   uint64_t *prev,
+                                   uint64_t cond,
+                                   uint64_t value,
+                                   size_t size,
+                                   int pe)
+{
+    return OSHMEM_ERR_NOT_IMPLEMENTED;
+}
+
+
+
+
 
 mca_atomic_base_module_t *
 mca_atomic_ucx_query(int *priority)
@@ -285,6 +359,12 @@ mca_atomic_ucx_query(int *priority)
         module->super.atomic_fxor  = mca_atomic_ucx_fxor;
         module->super.atomic_swap  = mca_atomic_ucx_swap;
         module->super.atomic_cswap = mca_atomic_ucx_cswap;
+        module->super.atomic_fadd_nb  = mca_atomic_ucx_fadd_nb;
+        module->super.atomic_fand_nb  = mca_atomic_ucx_fand_nb;
+        module->super.atomic_for_nb   = mca_atomic_ucx_for_nb;
+        module->super.atomic_fxor_nb  = mca_atomic_ucx_fxor_nb;
+        module->super.atomic_swap_nb  = mca_atomic_ucx_swap_nb;
+        module->super.atomic_cswap_nb = mca_atomic_ucx_cswap_nb;
         return &(module->super);
     }
 

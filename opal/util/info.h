@@ -65,6 +65,8 @@ struct opal_info_entry_t {
     opal_list_item_t super;   /**< required for opal_list_t type */
     opal_cstring_t *ie_value; /**< value part of the (key, value) pair. */
     opal_cstring_t *ie_key;   /**< "key" part of the (key, value) pair */
+    uint32_t ie_referenced;   /**< number of times this entry was internally
+                                   referenced */
 };
 
 /**
@@ -87,8 +89,6 @@ OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_info_t);
  */
 OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_info_entry_t);
 
-int opal_mpiinfo_init(void *);
-
 /**
  *   opal_info_dup - Duplicate an 'MPI_Info' object
  *
@@ -105,40 +105,8 @@ int opal_mpiinfo_init(void *);
  */
 int opal_info_dup(opal_info_t *info, opal_info_t **newinfo);
 
-// Comments might still say __IN_<key>, but the code should be using the
-// below macro instead.
-#define OPAL_INFO_SAVE_PREFIX "_OMPI_IN_"
-
 /**
- *   opal_info_dup_mpistandard - Duplicate an 'MPI_Info' object
- *
- *   @param info source info object (handle)
- *   @param newinfo pointer to the new info object (handle)
- *
- *   @retval OPAL_SUCCESS upon success
- *   @retval OPAL_ERR_OUT_OF_RESOURCE if out of memory
- *
- *   The user sets an info object with key/value pairs and once processed,
- *   we keep key/val pairs that might have been modified vs what the user
- *   provided, and some user inputs might have been ignored too.  The original
- *   user inpust are kept as __IN_<key>/<val>.
- *
- *   This routine then outputs key/value pairs as:
- *
- *   if <key> and __IN_<key> both exist:
- *       This means the user set a k/v pair and it was used.
- *       output: <key> / value(__IN_<key>), the original user input
- *   if <key> exists but __IN_<key> doesn't:
- *       This is a system-provided setting.
- *       output: <key>/value(<key>)
- *   if __IN_<key> exists but <key> doesn't:
- *       The user provided a setting that was rejected (ignored) by the system
- *       output: nothing for this key
- */
-int opal_info_dup_mpistandard(opal_info_t *info, opal_info_t **newinfo);
-
-/**
- * Set a new key,value pair on info.
+ * Set a new key,value pair on info and mark it as referenced.
  *
  * @param info pointer to opal_info_t object
  * @param key pointer to the new key object
@@ -195,7 +163,9 @@ int opal_info_free(opal_info_t **info);
 
 /**
  *   Get a (key, value) pair from an 'MPI_Info' object and assign it
- *   into a boolen output.
+ *   into a boolean output.
+ *
+ *   This call marks the entry referenced.
  *
  *   @param info Pointer to opal_info_t object
  *   @param key null-terminated character string of the index key
@@ -205,7 +175,7 @@ int opal_info_free(opal_info_t **info);
  *
  *   @retval OPAL_SUCCESS
  *
- *   If found, the string value will be cast to the boolen output in
+ *   If found, the string value will be cast to the boolean output in
  *   the following manner:
  *
  *   - If the string value is digits, the return value is "(bool)
@@ -239,7 +209,8 @@ OPAL_DECLSPEC int opal_info_get_value_enum(opal_info_t *info, const char *key, i
                                            int *flag);
 
 /**
- *   Get a (key, value) pair from an 'MPI_Info' object
+ *   Get a (key, value) pair from an 'MPI_Info' object and mark the entry
+ *   as referenced.
  *
  *   @param info Pointer to opal_info_t object
  *   @param key null-terminated character string of the index key
@@ -250,7 +221,7 @@ OPAL_DECLSPEC int opal_info_get_value_enum(opal_info_t *info, const char *key, i
  *   @retval OPAL_SUCCESS
  *
  *   The \c string pointer will only be set if the key is found, i.e., if \c flag
- *   is set to \c true. It is the caller's responsibility to decremenet the
+ *   is set to \c true. It is the caller's responsibility to decrement the
  *   reference count of the \c string object by calling \c OBJ_RELEASE on it
  *   once the object is not needed any more.
  */
@@ -297,7 +268,7 @@ OPAL_DECLSPEC int opal_info_get_valuelen(opal_info_t *info, const char *key, int
  *   @retval OPAL_SUCCESS
  *   @retval OPAL_ERR_BAD_PARAM
  *
- *   It is the caller's responsibility to decremenet the reference count of the
+ *   It is the caller's responsibility to decrement the reference count of the
  *   \c key string by calling \c OBJ_RELEASE on it once the object is not needed
  *   any more.
  */
@@ -315,6 +286,43 @@ static inline int opal_info_get_nkeys(opal_info_t *info, int *nkeys)
     *nkeys = (int) opal_list_get_size(&(info->super));
     return OPAL_SUCCESS;
 }
+
+
+/**
+ * Mark the entry \c key as referenced.
+ *
+ * This function is useful for lazily initialized components
+ * that do not read the key immediately but want to make sure
+ * the key is kept by the object owning the info key.
+ *
+ * @param info Pointer to opal_info_t object.
+ * @param key The key which to mark as referenced.
+ *
+ * @retval OPAL_SUCCESS
+ */
+int opal_info_mark_referenced(opal_info_t *info, const char *key);
+
+/**
+ * Remove a reference from the entry \c key.
+ *
+ * This function should be used by components reading the key
+ * without wanting to retain it in the object owning the info.
+ *
+ * @param info Pointer to opal_info_t object.
+ * @param key The key which to unmark as referenced.
+ *
+ * @retval OPAL_SUCCESS
+ */
+int opal_info_unmark_referenced(opal_info_t *info, const char *key);
+
+/**
+ * Remove any entries that are not marked as referenced
+ *
+ * @param info Pointer to opal_info_t object.
+ *
+ * @retval OPAL_SUCCESS
+ */
+int opal_info_remove_unreferenced(opal_info_t *info);
 
 END_C_DECLS
 

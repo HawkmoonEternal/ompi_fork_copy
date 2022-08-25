@@ -172,7 +172,7 @@ int mca_io_base_file_select(ompi_file_t *file,
 
 #if 1
     /* For the moment, just take the top module off the list */
-    /* MSC actually take the buttom */
+    /* MSC actually take the bottom */
     item = opal_list_remove_last(selectable);
     avail = (avail_io_t *) item;
     selected = *avail;
@@ -192,14 +192,8 @@ int mca_io_base_file_select(ompi_file_t *file,
         unquery(avail, file);
         OBJ_RELEASE(item);
     }
+
     OBJ_RELEASE(selectable);
-
-    /* Save the pointers of the selected module on the ompi_file_t */
-
-    file->f_io_version = selected.ai_version;
-    file->f_io_selected_component = selected.ai_component;
-    file->f_io_selected_module = selected.ai_module;
-    file->f_io_selected_data = selected.ai_module_data;
 
     if (!strcmp (selected.ai_component.v2_0_0.io_version.mca_component_name,
                  "ompio")) {
@@ -242,7 +236,15 @@ int mca_io_base_file_select(ompi_file_t *file,
         }
 
     }
-    /* Finally -- intialize the selected module. */
+
+    /* Save the pointers of the selected module on the ompi_file_t */
+
+    file->f_io_version = selected.ai_version;
+    file->f_io_selected_component = selected.ai_component;
+    file->f_io_selected_module = selected.ai_module;
+    file->f_io_selected_data = selected.ai_module_data;
+
+    /* Finally -- initialize the selected module. */
 
     if (OMPI_SUCCESS != (err = module_init(file))) {
         return err;

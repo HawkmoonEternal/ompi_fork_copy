@@ -10,7 +10,7 @@
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
  * Copyright (c) 2008      Cisco Systems, Inc.  All rights reserved.
- * Copyright (c) 2013-2015 Sandia National Laboratories. All rights reserved.
+ * Copyright (c) 2013-2022 Sandia National Laboratories. All rights reserved.
  * Copyright (c) 2015      Los Alamos National Security, LLC. All rights
  *                         reserved.
  * Copyright (c) 2015      Bull SAS.  All rights reserved.
@@ -24,14 +24,14 @@
 
 #include "ompi_config.h"
 
+#include "ompi/datatype/ompi_datatype.h"
+#include "ompi/datatype/ompi_datatype_internal.h"
+#include "ompi/mca/coll/base/base.h"
+#include "ompi/mca/coll/coll.h"
+#include "ompi/op/op.h"
+
 #include "coll_portals4.h"
 #include "coll_portals4_request.h"
-
-#include "mpi.h"
-#include "ompi/op/op.h"
-#include "ompi/datatype/ompi_datatype_internal.h"
-#include "ompi/mca/coll/coll.h"
-#include "ompi/mca/coll/base/base.h"
 
 #define REQ_COLL_TABLE_ID           15
 #define REQ_COLL_FINISH_TABLE_ID    16
@@ -135,7 +135,7 @@ ptl_datatype_t ompi_coll_portals4_atomic_datatype [OMPI_DATATYPE_MPI_MAX_PREDEFI
         if (!comm->c_coll->coll_ ## __api || !comm->c_coll->coll_ ## __api ## _module) {      \
             opal_output_verbose(1, ompi_coll_base_framework.framework_output,               \
                     "(%d/%s): no underlying " # __api"; disqualifying myself",              \
-                    __comm->c_contextid, __comm->c_name);                                   \
+                    ompi_comm_get_local_cid(__comm), __comm->c_name);                          \
                     return OMPI_ERROR;                                                      \
         }                                                                                   \
         OBJ_RETAIN(__module->previous_ ## __api ## _module);                                \
@@ -661,7 +661,11 @@ portals4_module_enable(mca_coll_base_module_t *module,
     return OMPI_SUCCESS;
 }
 
-
+#if OPAL_ENABLE_DEBUG
+/* These string maps are only used for debugging output.
+ * They will be compiled-out when OPAL is configured
+ * without --enable-debug.
+ */
 static char *failtype[] = {
         "PTL_NI_OK",
         "PTL_NI_PERM_VIOLATION",
@@ -695,6 +699,7 @@ static char *evname[] = {
         "PTL_EVENT_SEARCH",
         "PTL_EVENT_LINK"
 };
+#endif
 
 /* Target EQ */
 static int

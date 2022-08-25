@@ -18,6 +18,8 @@
 # $HEADER$
 #
 
+dist_opaldata_DATA = help-mca-allocator-bucket.txt
+
 sources = \
         allocator_bucket.c \
         allocator_bucket_alloc.c \
@@ -39,7 +41,7 @@ mcacomponentdir = $(opallibdir)
 mcacomponent_LTLIBRARIES = $(component_install)
 mca_allocator_bucket_la_SOURCES = $(sources)
 mca_allocator_bucket_la_LDFLAGS = -module -avoid-version
-mca_allocator_bucket_la_LIBADD = $(top_builddir)/opal/lib@OPAL_LIB_PREFIX@open-pal.la
+mca_allocator_bucket_la_LIBADD = $(top_builddir)/opal/lib@OPAL_LIB_NAME@.la
 
 noinst_LTLIBRARIES = $(component_noinst)
 libmca_allocator_bucket_la_SOURCES = $(sources)

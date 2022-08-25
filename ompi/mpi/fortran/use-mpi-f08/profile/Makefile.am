@@ -11,14 +11,14 @@
 #                         University of Stuttgart.  All rights reserved.
 # Copyright (c) 2004-2005 The Regents of the University of California.
 #                         All rights reserved.
-# Copyright (c) 2009-2014 Cisco Systems, Inc.  All rights reserved.
+# Copyright (c) 2009-2021 Cisco Systems, Inc.  All rights reserved.
 # Copyright (c) 2011      Sandia National Laboratories. All rights reserved.
 # Copyright (c) 2012      Oak Ridge National Laboratory. All rights reserved.
 # Copyright (c) 2012-2013 Inria.  All rights reserved.
 # Copyright (c) 2013      Los Alamos National Security, LLC. All rights
 #                         reserved.
-# Copyright (c) 2015-2020 Research Organization for Information Science
-#                         and Technology (RIST). All rights reserved.
+# Copyright (c) 2015-2021 Research Organization for Information Science
+#                         and Technology (RIST).  All rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -27,6 +27,13 @@
 #
 
 include $(top_srcdir)/Makefile.ompi-rules
+
+# Note that Automake's Fortran-buidling rules uses CPPFLAGS and
+# AM_CPPFLAGS.  This can cause weirdness (e.g.,
+# https://github.com/open-mpi/ompi/issues/7253).  Let's just zero
+# those out and rely on AM_FCFLAGS.
+CPPFLAGS =
+AM_CPPFLAGS =
 
 # This Makefile is only relevant if we're building the "use mpi_f08"
 # MPI bindings.
@@ -55,14 +62,21 @@ pmpi_api_files = \
         paint_add_f08.F90 \
         paint_diff_f08.F90 \
         pallgather_f08.F90 \
+        pallgather_init_f08.F90 \
         pallgatherv_f08.F90 \
+        pallgatherv_init_f08.F90 \
         palloc_mem_f08.F90 \
         pallreduce_f08.F90 \
         palltoall_f08.F90 \
+        palltoall_init_f08.F90 \
         palltoallv_f08.F90 \
+        palltoallv_init_f08.F90 \
         palltoallw_f08.F90 \
+        palltoallw_init_f08.F90 \
         pbarrier_f08.F90 \
+        pbarrier_init_f08.F90 \
         pbcast_f08.F90 \
+        pbcast_init_f08.F90 \
         pbsend_f08.F90 \
         pbsend_init_f08.F90 \
         pbuffer_attach_f08.F90 \
@@ -90,6 +104,7 @@ pmpi_api_files = \
         pcomm_dup_f08.F90 \
         pcomm_dup_with_info_f08.F90 \
         pcomm_idup_f08.F90 \
+        pcomm_idup_with_info_f08.F90 \
         pcomm_free_f08.F90 \
         pcomm_free_keyval_f08.F90 \
         pcomm_get_attr_f08.F90 \
@@ -122,6 +137,7 @@ pmpi_api_files = \
         perror_class_f08.F90 \
         perror_string_f08.F90 \
         pexscan_f08.F90 \
+        pexscan_init_f08.F90 \
         pf_sync_reg_f08.F90 \
         pfetch_and_op_f08.F90 \
         pfile_call_errhandler_f08.F90 \
@@ -187,7 +203,9 @@ pmpi_api_files = \
         pfinalize_f08.F90 \
         pfree_mem_f08.F90 \
         pgather_f08.F90 \
+        pgather_init_f08.F90 \
         pgatherv_f08.F90 \
+        pgatherv_init_f08.F90 \
         pget_accumulate_f08.F90 \
         pget_address_f08.F90 \
         pget_count_f08.F90 \
@@ -243,6 +261,7 @@ pmpi_api_files = \
         pinfo_get_f08.F90 \
         pinfo_get_nkeys_f08.F90 \
         pinfo_get_nthkey_f08.F90 \
+        pinfo_get_string_f08.F90 \
         pinfo_get_valuelen_f08.F90 \
         pinfo_set_f08.F90 \
         pinit_f08.F90 \
@@ -260,16 +279,23 @@ pmpi_api_files = \
         piscatter_f08.F90 \
         piscatterv_f08.F90 \
         pisend_f08.F90 \
+        pisendrecv_f08.F90 \
+        pisendrecv_replace_f08.F90 \
         pissend_f08.F90 \
         pis_thread_main_f08.F90 \
         plookup_name_f08.F90 \
         pmprobe_f08.F90 \
         pmrecv_f08.F90 \
         pneighbor_allgather_f08.F90 \
+        pneighbor_allgather_init_f08.F90 \
         pneighbor_allgatherv_f08.F90 \
+        pneighbor_allgatherv_init_f08.F90 \
         pneighbor_alltoall_f08.F90 \
+        pneighbor_alltoall_init_f08.F90 \
         pneighbor_alltoallv_f08.F90 \
+        pneighbor_alltoallv_init_f08.F90 \
         pneighbor_alltoallw_f08.F90 \
+        pneighbor_alltoallw_init_f08.F90 \
         pop_commutative_f08.F90 \
         pop_create_f08.F90 \
         popen_port_f08.F90 \
@@ -287,9 +313,12 @@ pmpi_api_files = \
         precv_f08.F90 \
         precv_init_f08.F90 \
         preduce_f08.F90 \
+        preduce_init_f08.F90 \
         preduce_local_f08.F90 \
         preduce_scatter_f08.F90 \
+        preduce_scatter_init_f08.F90 \
         preduce_scatter_block_f08.F90 \
+        preduce_scatter_block_init_f08.F90 \
         pregister_datarep_f08.F90 \
         prequest_free_f08.F90 \
         prequest_get_status_f08.F90 \
@@ -299,12 +328,24 @@ pmpi_api_files = \
         prsend_f08.F90 \
         prsend_init_f08.F90 \
         pscan_f08.F90 \
+        pscan_init_f08.F90 \
         pscatter_f08.F90 \
+        pscatter_init_f08.F90 \
         pscatterv_f08.F90 \
+        pscatterv_init_f08.F90 \
         psend_f08.F90 \
         psend_init_f08.F90 \
         psendrecv_f08.F90 \
         psendrecv_replace_f08.F90 \
+        psession_create_errhandler_f08.F90\
+        psession_get_errhandler_f08.F90\
+        psession_get_info_f08.F90 \
+        psession_get_nth_pset_f08.F90 \
+        psession_get_num_psets_f08.F90 \
+        psession_get_pset_info_f08.F90 \
+        psession_init_f08.F90 \
+        psession_finalize_f08.F90 \
+        psession_set_errhandler_f08.F90\
         pssend_f08.F90 \
         pssend_init_f08.F90 \
         pstartall_f08.F90 \
@@ -424,11 +465,3 @@ $(nodist_libmpi_usempif08_pmpi_la_SOURCES):
 MAINTAINERCLEANFILES = $(nodist_libmpi_usempif08_pmpi_la_SOURCES)
 
 endif
-
-# Don't want these targets in here
-
-tags-recursive:
-tags:
-TAGS:
-GTAGS:
-ID:

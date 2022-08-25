@@ -10,7 +10,7 @@
 #                         University of Stuttgart.  All rights reserved.
 # Copyright (c) 2004-2005 The Regents of the University of California.
 #                         All rights reserved.
-# Copyright (c) 2006-2020 Cisco Systems, Inc.  All rights reserved
+# Copyright (c) 2006-2022 Cisco Systems, Inc.  All rights reserved
 # Copyright (c) 2006-2008 Sun Microsystems, Inc.  All rights reserved.
 # Copyright (c) 2006-2017 Los Alamos National Security, LLC.  All rights
 #                         reserved.
@@ -20,16 +20,14 @@
 # Copyright (c) 2013      Mellanox Technologies, Inc.
 #                         All rights reserved.
 # Copyright (c) 2013-2020 Intel, Inc.  All rights reserved.
-# Copyright (c) 2014-2017 Research Organization for Information Science
-#                         and Technology (RIST). All rights reserved.
+# Copyright (c) 2014-2022 Research Organization for Information Science
+#                         and Technology (RIST).  All rights reserved.
 # Copyright (c) 2016-2017 IBM Corporation.  All rights reserved.
-# Copyright (c) 2018      Amazon.com, Inc. or its affiliates.
+# Copyright (c) 2018-2021 Amazon.com, Inc. or its affiliates.
 #                         All Rights reserved.
 # Copyright (c) 2018      FUJITSU LIMITED.  All rights reserved.
 # Copyright (c) 2019      Triad National Security, LLC. All rights
 #                         reserved.
-# Copyright (c) 2020      Amazon.com, Inc. or its affiliates.
-#                         All Rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -68,6 +66,9 @@ OPAL_CAPTURE_CONFIGURE_CLI([OPAL_CONFIGURE_CLI])
 # because it twiddles random bits of autoconf
 OPAL_LOAD_PLATFORM
 
+# Start a list of packages / modules / etc. that want to disable "make dist".
+OPAL_MAKEDIST_DISABLE=""
+
 #
 # Start it up
 #
@@ -75,6 +76,13 @@ OPAL_LOAD_PLATFORM
 OPAL_CONFIGURE_SETUP
 opal_show_title "Configuring project_name_long"
 opal_show_subtitle "Prerequisites"
+
+# compatability for oac_check_package
+m4_copy([OPAL_LOG_COMMAND], [OAC_LOG_COMMAND])
+m4_copy([OPAL_LOG_MSG], [OAC_LOG_MSG])
+m4_copy([OPAL_APPEND], [OAC_APPEND])
+
+AC_PROG_SED
 
 AC_CHECK_PROG([PERL],[perl],[perl],[no])
 AS_IF([test "X$PERL" = "Xno"],
@@ -93,15 +101,6 @@ AS_IF([test "$host" != "$target"],
        AC_MSG_WARN([Cross-compiling is only partially supported])
        AC_MSG_WARN([Proceed at your own risk!])])
 
-# AC_USE_SYSTEM_EXTENSIONS alters CFLAGS (e.g., adds -g -O2)
-OPAL_VAR_SCOPE_PUSH([CFLAGS_save])
-CFLAGS_save=$CFLAGS
-AC_USE_SYSTEM_EXTENSIONS
-# AC_USE_SYSTEM_EXTENSIONS will modify CFLAGS if nothing was in there
-# beforehand.  We don't want that.  So if there was nothing in
-# CFLAGS, put nothing back in there.
-AS_IF([test -z "$CFLAGS_save"], [CFLAGS=])
-OPAL_VAR_SCOPE_POP
 
 #
 # Init automake
@@ -131,29 +130,10 @@ AC_DEFUN([OMPI_CHECK_DIR_FOR_SPACES],[
            AC_MSG_ERROR([Cannot continue.])])
 ])
 
-AC_DEFUN([OMPI_CANONICALIZE_PATH],[
-    case $host_os in
-    darwin*)
-        # MacOS does not have "readlink -f" or realpath (at least as
-        # of MacOS Cataline / 10.15).  Instead, use Python, because we
-        # know MacOS comes with a /usr/bin/python that has
-        # os.path.realpath.
-        $2=`/usr/bin/python -c 'import os; print os.path.realpath("'$1'")'`
-        ;;
-    *)
-        $2=`readlink -f $1`
-        ;;
-    esac
-])
-
-OMPI_CHECK_DIR_FOR_SPACES([$srcdir], [a], [source tree])
-OMPI_CANONICALIZE_PATH([$srcdir], [ompi_dir])
-OMPI_CHECK_DIR_FOR_SPACES([$ompi_dir], [an], [absolute source tree])
-OMPI_CANONICALIZE_PATH([.], [ompi_dir])
+ompi_dir=`pwd`
 OMPI_CHECK_DIR_FOR_SPACES([$ompi_dir], [a], [build tree])
+OMPI_CHECK_DIR_FOR_SPACES([$srcdir], [a], [source tree])
 OMPI_CHECK_DIR_FOR_SPACES([$prefix], [a], [prefix])
-OMPI_CANONICALIZE_PATH([$prefix], [ompi_dir])
-OMPI_CHECK_DIR_FOR_SPACES([$ompi_dir], [an], [absolute prefix])
 
 opal_show_subtitle "Checking versions"
 
@@ -290,20 +270,13 @@ m4_ifdef([project_oshmem],
 ############################################################################
 
 OPAL_CONFIGURE_OPTIONS
-OPAL_CHECK_OS_FLAVORS
-OPAL_CHECK_CUDA
 
+###########################
+# Open MPI options
 m4_ifdef([project_ompi], [OMPI_CONFIGURE_OPTIONS])
-m4_ifdef([project_oshmem], [OSHMEM_CONFIGURE_OPTIONS])
-
-# Set up project specific AM_CONDITIONALs
-AS_IF([test "$enable_ompi" != "no"], [project_ompi_amc=true], [project_ompi_amc=false])
-m4_ifndef([project_ompi], [project_ompi_amc=false])
-
-AS_IF([test "$enable_oshmem" != "no"], [project_oshmem_amc=true], [project_oshmem_amc="no (disabled)"])
-m4_ifndef([project_oshmem], [project_oshmem_amc="no (not available)"])
 
 # Enable/Disable Software-Based Performance Counters Capability
+AC_MSG_CHECKING([if want software-based performance counters (SPC)])
 AC_ARG_ENABLE([spc],
     [AS_HELP_STRING([--enable-spc],
                    [Enable software-based performance counters capability (default: disabled)])])
@@ -328,9 +301,22 @@ fi
 
 # The library prefixes must be set before we call OPAL MCA.  Here is
 # as good a place as any.
-OPAL_SET_LIB_PREFIX([])
+m4_ifdef([project_opal],
+         [OPAL_SET_LIB_NAME([open-pal])])
+
 m4_ifdef([project_ompi],
-          [OMPI_SET_LIB_NAME([])])
+         [OMPI_SET_LIB_NAME([])])
+
+###########################
+# OSHMEM options
+m4_ifdef([project_oshmem], [OSHMEM_CONFIGURE_OPTIONS])
+
+# Set up project specific AM_CONDITIONALs
+AS_IF([test "$enable_ompi" != "no"], [project_ompi_amc=true], [project_ompi_amc=false])
+m4_ifndef([project_ompi], [project_ompi_amc=false])
+
+AS_IF([test "$enable_oshmem" != "no"], [project_oshmem_amc=true], [project_oshmem_amc="no (disabled)"])
+m4_ifndef([project_oshmem], [project_oshmem_amc="no (not available)"])
 
 ############################################################################
 # Libtool: part one
@@ -343,10 +329,6 @@ m4_ifdef([project_ompi],
 
 AC_ENABLE_SHARED
 AC_DISABLE_STATIC
-
-# Must be called before OPAL_SETUP_CC to get the value of CC
-# before it is modified by the C99/C11 checks.
-OPAL_SETUP_WRAPPER_INIT
 
 ##################################
 # Check for known incompatibility
@@ -391,10 +373,6 @@ AM_CONDITIONAL(OMPI_NEED_WINDOWS_REPLACEMENTS,
 
 # Do all Interix detections if necessary
 OMPI_INTERIX
-
-# Does the compiler support "ident"-like constructs?
-
-OPAL_CHECK_IDENT([CC], [CFLAGS], [c], [C])
 
 #
 # Check for some types
@@ -548,16 +526,35 @@ OPAL_C_GET_ALIGNMENT(size_t, OPAL_ALIGNMENT_SIZE_T)
 
 OPAL_CHECK_ALT_SHORT_FLOAT
 
+# Check system alignment requirements
+if test "$opal_want_heterogeneous" = 1; then
+    ompi_cv_c_word_size_align=yes
+else
+    AC_CACHE_CHECK([if word-sized integers must be word-size aligned],
+        [ompi_cv_c_word_size_align],
+        [AC_LANG_PUSH(C)
+         AC_RUN_IFELSE([AC_LANG_PROGRAM([dnl
+#include <stdlib.h>], [[    long data[2] = {0, 0};
+    long *lp;
+    int *ip;
+    ip = (int*) data;
+    ip++;
+    lp = (long*) ip;
+    return lp[0]; ]])],
+            [ompi_cv_c_word_size_align=no],
+            [ompi_cv_c_word_size_align=yes],
+            [ompi_cv_c_word_size_align=yes])])
+fi
+AS_IF([test $ompi_cv_c_word_size_align = yes], [results=1], [results=0])
+AC_DEFINE_UNQUOTED([OPAL_ALIGN_WORD_SIZE_INTEGERS], [$results],
+    [set to 1 if word-size integers must be aligned to word-size padding to prevent bus errors])
+
 #
 # Check for other compiler characteristics
 #
 
 OPAL_C_WEAK_SYMBOLS
 OPAL_C_MACRO_WEAK_SYMBOLS
-
-if test "x$CC" = "xicc"; then
-    OPAL_CHECK_ICC_VARARGS
-fi
 
 # If we want the profiling layer:
 # - If the C compiler has weak symbols, use those.
@@ -598,6 +595,22 @@ opal_show_subtitle "Compiler characteristics"
 OPAL_CHECK_ATTRIBUTES
 OPAL_CHECK_COMPILER_VERSION_ID
 
+# Open MPI only supports GCC >=v4.8.1.  Notes:
+#
+# 1. The default compiler that comes with RHEL 7 is v4.8.5 (version ID
+#    264197).
+# 2. We regularly test with GCC v4.8.1 (version ID 264193).
+# 3. GCC 4.8.0 probably also works; we just haven't tested it.
+#
+# Since we regularly test with 4.8.1, that's what we check for.
+AS_IF([test "$opal_cv_compiler_FAMILYNAME" = "GNU" && \
+       test "$opal_cv_compiler_VERSION" -lt 264193],
+      [AC_MSG_WARN([Open MPI no longer supports versions of the GNU compiler suite])
+       AC_MSG_WARN([less than v4.8.1.])
+       AC_MSG_WARN([Please upgrade your GNU compiler suite, or use])
+       AC_MSG_WARN([a different compiler to build Open MPI.])
+       AC_MSG_ERROR([Cannot continue])
+      ])
 
 ##################################
 # Java MPI Binding request
@@ -650,6 +663,14 @@ AC_CACHE_SAVE
 
 
 ##################################
+# Wrapper compilers.
+#
+# Must be called before MCA system
+##################################
+OPAL_SETUP_WRAPPER_INIT
+
+
+##################################
 # Header files
 ##################################
 
@@ -663,7 +684,7 @@ AC_CHECK_HEADERS([alloca.h aio.h arpa/inet.h dirent.h \
     sys/fcntl.h sys/ipc.h sys/shm.h \
     sys/ioctl.h sys/mman.h sys/param.h sys/queue.h \
     sys/resource.h sys/select.h sys/socket.h sys/sockio.h \
-    sys/stat.h sys/statfs.h sys/statvfs.h sys/time.h sys/tree.h \
+    sys/stat.h sys/statfs.h sys/statvfs.h time.h sys/time.h sys/tree.h \
     sys/types.h sys/uio.h sys/un.h net/uio.h sys/utsname.h sys/vfs.h sys/wait.h syslog.h \
     termios.h ulimit.h unistd.h util.h utmp.h malloc.h \
     ifaddrs.h crt_externs.h regex.h mntent.h paths.h \
@@ -852,6 +873,15 @@ AC_INCLUDES_DEFAULT
 #endif
 ])
 
+AC_CHECK_MEMBERS([struct timespec.tv_nsec],
+               [], [], [AC_INCLUDES_DEFAULT
+#ifdef HAVE_TIME_H
+#include <time.h>
+#endif
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif])
+
 #
 # Find corresponding types for MPI_Aint, MPI_Count, and MPI_Offset.
 # And if relevant, find the corresponding MPI_ADDRESS_KIND,
@@ -870,7 +900,8 @@ AC_MSG_CHECKING([the linker for support for the -fini option])
 OPAL_VAR_SCOPE_PUSH([LDFLAGS_save])
 LDFLAGS_save=$LDFLAGS
 LDFLAGS="$LDFLAGS_save -Wl,-fini -Wl,finalize"
-AC_TRY_LINK([void finalize (void) {}], [], [AC_MSG_RESULT([yes])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([void finalize (void) {}], [])],
+               [AC_MSG_RESULT([yes])
         opal_ld_have_fini=1], [AC_MSG_RESULT([no])
         opal_ld_have_fini=0])
 LDFLAGS=$LDFLAGS_save
@@ -901,7 +932,7 @@ OPAL_SEARCH_LIBS_CORE([ceil], [m])
 # -lrt might be needed for clock_gettime
 OPAL_SEARCH_LIBS_CORE([clock_gettime], [rt])
 
-AC_CHECK_FUNCS([asprintf snprintf vasprintf vsnprintf openpty isatty getpwuid fork waitpid execve pipe ptsname setsid mmap tcgetpgrp posix_memalign strsignal sysconf syslog vsyslog regcmp regexec regfree _NSGetEnviron socketpair usleep mkfifo dbopen dbm_open statfs statvfs setpgid setenv __malloc_initialize_hook __clear_cache])
+AC_CHECK_FUNCS([asprintf snprintf vasprintf vsnprintf openpty isatty getpwuid fork waitpid execve pipe ptsname setsid mmap tcgetpgrp posix_memalign strsignal sysconf syslog vsyslog regcmp regexec regfree _NSGetEnviron socketpair usleep mkfifo dbopen dbm_open statfs statvfs setpgid setenv __malloc_initialize_hook __clear_cache on_exit])
 
 # Sanity check: ensure that we got at least one of statfs or statvfs.
 if test $ac_cv_func_statfs = no && test $ac_cv_func_statvfs = no; then
@@ -960,6 +991,25 @@ AC_CACHE_SAVE
 
 opal_show_title "System-specific tests"
 
+OPAL_CHECK_CUDA
+##################################
+# ROCm support
+##################################
+OPAL_CHECK_ROCM([opal_rocm],
+	        [opal_rocm_happy="yes"],
+	        [opal_rocm_happy="no"])
+OPAL_SUMMARY_ADD([Miscellaneous], [ROCm suport], [], [$opal_rocm_happy])
+
+AS_IF([test "$OPAL_CUDA_SUPPORT" = "1" && test "$OPAL_ROCM_SUPPORT" = "1"],
+          [AC_MSG_WARN([Cannot support both CUDA and ROCm.])
+           AC_MSG_WARN([You must reconfigure Open MPI choosing either CUDA or ROCm .])
+           AC_MSG_ERROR([Cannot continue.])])
+
+##################################
+OPAL_CHECK_OS_FLAVORS
+
+
+
 # Do we have _SC_NPROCESSORS_ONLN? (only going to pass if we also have
 # <unistd.h> and sysconf(), which is ok) OS X 10.4 has <unistd.h> and
 # sysconf(), but does not have _SC_NPROCESSORS_ONLN.  Doh!
@@ -1001,10 +1051,14 @@ AC_PROG_GREP
 AC_PROG_EGREP
 
 #
-# We need as and lex
+# We need as and flex
 #
 AM_PROG_AS
-AM_PROG_LEX
+
+dnl Note that prior to AC v2.70, PROG_LEX did not take any arguments.
+dnl But it is harmless to pass an argument to it ($1 will just be
+dnl ignored).
+AC_PROG_LEX([noyywrap])
 
 # If we don't have Flex and we don't have a generated .c file
 # (distribution tarballs will have the .c file included, but git
@@ -1012,24 +1066,23 @@ AM_PROG_LEX
 # Lex are not workable (all things being equal, since this is *only*
 # required for developers, we decided that it really was not worth it
 # to be portable between different versions of lex ;-).
-
-if test -z "$LEX" || \
+AS_IF([test -z "$LEX" || \
    test -n "`echo $LEX | $GREP missing`" || \
-   test "`basename $LEX`" != "flex"; then
-    if test ! -f "$srcdir/opal/util/show_help_lex.c"; then
-        AC_MSG_WARN([*** Could not find Flex on your system.])
+   test "`basename $LEX`" != "flex"],
+    [AS_IF([test ! -f "$srcdir/opal/util/show_help_lex.c"],
+       [AC_MSG_WARN([*** Could not find Flex on your system.])
         AC_MSG_WARN([*** Flex is required for developer builds of Open MPI.])
         AC_MSG_WARN([*** Other versions of Lex are not supported.])
         AC_MSG_WARN([*** NOTE: If you are building a tarball downloaded from www.open-mpi.org, you do not need Flex])
         AC_MSG_ERROR([Cannot continue])
-    fi
-fi
+       ])
+    ])
 
 #
-# Setup man page processing
+# Setup HTML and man page processing
 #
 
-OPAL_SETUP_MAN_PAGES
+OPAL_SETUP_SPHINX
 
 #
 # File system case sensitivity
@@ -1199,20 +1252,13 @@ AC_CACHE_SAVE
 
 OPAL_CHECK_CUDA_AFTER_OPAL_DL
 
+OPAL_CHECK_ROCM_AFTER_OPAL_DL
+
 ##################################
 # MPI Extended Interfaces
 ##################################
 
 m4_ifdef([project_ompi], [OMPI_SETUP_MPI_EXT])
-
-# checkpoint results
-AC_CACHE_SAVE
-
-##################################
-# Contributed software
-##################################
-
-m4_ifdef([project_ompi], [OMPI_SETUP_CONTRIB])
 
 # checkpoint results
 AC_CACHE_SAVE
@@ -1469,6 +1515,8 @@ AC_MSG_RESULT([$LIBS])
 AC_CONFIG_FILES([
     Makefile
 
+    docs/Makefile
+
     config/Makefile
 
     contrib/Makefile
@@ -1496,6 +1544,10 @@ AC_CONFIG_FILES([contrib/dist/mofed/debian/rules],
                 [chmod +x contrib/dist/mofed/debian/rules])
 AC_CONFIG_FILES([contrib/dist/mofed/compile_debian_mlnx_example],
                 [chmod +x contrib/dist/mofed/compile_debian_mlnx_example])
+
+AS_IF([test -n "$OPAL_MAKEDIST_DISABLE"],
+      [AC_MSG_WARN(["make dist" will be disabled due to: $OPAL_MAKEDIST_DISABLE])])
+AC_SUBST([OPAL_MAKEDIST_DISABLE])
 
 OPAL_CONFIG_FILES
 m4_ifdef([project_ompi], [OMPI_CONFIG_FILES])

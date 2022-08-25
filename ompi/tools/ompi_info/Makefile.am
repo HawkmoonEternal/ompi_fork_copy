@@ -9,7 +9,7 @@
 #                         University of Stuttgart.  All rights reserved.
 # Copyright (c) 2004-2005 The Regents of the University of California.
 #                         All rights reserved.
-# Copyright (c) 2008-2020 Cisco Systems, Inc.  All rights reserved.
+# Copyright (c) 2008-2022 Cisco Systems, Inc.  All rights reserved.
 # Copyright (c) 2008      Sun Microsystems, Inc.  All rights reserved.
 # Copyright (c) 2012      Los Alamos National Security, LLC.
 #                         All rights reserved.
@@ -42,11 +42,6 @@ AM_CFLAGS = \
             -DOPAL_CC_ABSOLUTE="\"@OPAL_CC_ABSOLUTE@\"" \
             -DOMPI_CXX_ABSOLUTE="\"@OMPI_CXX_ABSOLUTE@\""
 
-include $(top_srcdir)/Makefile.ompi-rules
-
-man_pages = ompi_info.1
-EXTRA_DIST = $(man_pages:.1=.1in)
-
 if OPAL_INSTALL_BINARIES
 
 bin_PROGRAMS = ompi_info
@@ -66,7 +61,7 @@ ompi_info_SOURCES = \
         param.c
 
 ompi_info_LDADD = $(top_builddir)/ompi/lib@OMPI_LIBMPI_NAME@.la
-ompi_info_LDADD += $(top_builddir)/opal/lib@OPAL_LIB_PREFIX@open-pal.la
+ompi_info_LDADD += $(top_builddir)/opal/lib@OPAL_LIB_NAME@.la
 
 distclean-local:
 	rm -f $(man_pages)

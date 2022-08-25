@@ -9,7 +9,7 @@
 #                         University of Stuttgart.  All rights reserved.
 # Copyright (c) 2004-2005 The Regents of the University of California.
 #                         All rights reserved.
-# Copyright (c) 2006-2015 Cisco Systems, Inc.  All rights reserved.
+# Copyright (c) 2006-2021 Cisco Systems, Inc.  All rights reserved.
 # Copyright (c) 2011-2013 Inria.  All rights reserved.
 # Copyright (c) 2011-2013 Universite Bordeaux 1
 # Copyright (c) 2013-2018 Los Alamos National Security, LLC. All rights
@@ -18,6 +18,9 @@
 #                         and Technology (RIST).  All rights reserved.
 # Copyright (c) 2016      IBM Corporation.  All rights reserved.
 # Copyright (c) 2018      FUJITSU LIMITED.  All rights reserved.
+# Copyright (c) 2021      Triad National Security, LLC. All rights
+#                         reserved.
+#
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -55,7 +58,7 @@ CLEANFILES =
 lib@OMPI_LIBMPI_NAME@_mpifh_la_LIBADD = \
         $(top_builddir)/ompi/lib@OMPI_LIBMPI_NAME@.la \
         $(OMPI_MPIEXT_MPIFH_LIBS) \
-        $(OMPI_TOP_BUILDDIR)/opal/lib@OPAL_LIB_PREFIX@open-pal.la
+        $(OMPI_TOP_BUILDDIR)/opal/lib@OPAL_LIB_NAME@.la
 
 lib@OMPI_LIBMPI_NAME@_mpifh_la_LDFLAGS = -version-info $(libmpi_mpifh_so_version)
 
@@ -136,17 +139,25 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         aint_add_f.c \
         aint_diff_f.c \
         allgather_f.c \
+        allgather_init_f.c \
         allgatherv_f.c \
+        allgatherv_init_f.c \
         alloc_mem_f.c \
         allreduce_f.c \
+        allreduce_init_f.c \
         alltoall_f.c \
+        alltoall_init_f.c \
         alltoallv_f.c \
+        alltoallv_init_f.c \
         alltoallw_f.c \
+        alltoallw_init_f.c \
         attr_delete_f.c \
         attr_get_f.c \
         attr_put_f.c \
         barrier_f.c \
+        barrier_init_f.c \
         bcast_f.c \
+        bcast_init_f.c \
         bsend_f.c \
         bsend_init_f.c \
         buffer_attach_f.c \
@@ -167,6 +178,7 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         comm_connect_f.c \
         comm_create_errhandler_f.c \
         comm_create_f.c \
+        comm_create_from_group_f.c \
         comm_create_group_f.c \
         comm_create_keyval_f.c \
         comm_delete_attr_f.c \
@@ -174,6 +186,7 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         comm_dup_f.c \
         comm_dup_with_info_f.c \
         comm_idup_f.c \
+        comm_idup_with_info_f.c \
         comm_free_f.c \
         comm_free_keyval_f.c \
         comm_get_attr_f.c \
@@ -205,6 +218,7 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         error_class_f.c \
         error_string_f.c \
         exscan_f.c \
+        exscan_init_f.c \
         f_sync_reg_f.c \
         file_call_errhandler_f.c \
         file_close_f.c \
@@ -269,7 +283,9 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         finalize_f.c \
         free_mem_f.c \
         gather_f.c \
+        gather_init_f.c \
         gatherv_f.c \
+        gatherv_init_f.c \
         get_address_f.c \
         get_count_f.c \
         get_elements_f.c \
@@ -288,6 +304,7 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         group_compare_f.c \
         group_difference_f.c \
         group_excl_f.c \
+        group_from_session_pset_f.c \
         group_free_f.c \
         group_incl_f.c \
         group_intersection_f.c \
@@ -323,12 +340,14 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         info_get_f.c \
         info_get_nkeys_f.c \
         info_get_nthkey_f.c \
+        info_get_string_f.c \
         info_get_valuelen_f.c \
         info_set_f.c \
         init_f.c \
         initialized_f.c \
         init_thread_f.c \
         intercomm_create_f.c \
+        intercomm_create_from_groups_f.c \
         intercomm_merge_f.c \
         iprobe_f.c \
         irecv_f.c \
@@ -337,6 +356,8 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         ireduce_scatter_block_f.c \
         irsend_f.c \
         isend_f.c \
+        isendrecv_f.c \
+        isendrecv_replace_f.c \
         iscan_f.c \
         iscatter_f.c \
         iscatterv_f.c \
@@ -348,10 +369,15 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         mprobe_f.c \
         mrecv_f.c \
         neighbor_allgather_f.c \
+        neighbor_allgather_init_f.c \
         neighbor_allgatherv_f.c \
+        neighbor_allgatherv_init_f.c \
         neighbor_alltoall_f.c \
+        neighbor_alltoall_init_f.c \
         neighbor_alltoallv_f.c \
+        neighbor_alltoallv_init_f.c \
         neighbor_alltoallw_f.c \
+        neighbor_alltoallw_init_f.c \
         op_commutative_f.c \
         op_create_f.c \
         open_port_f.c \
@@ -373,21 +399,37 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         recv_f.c \
         recv_init_f.c \
         reduce_f.c \
+        reduce_init_f.c \
         reduce_local_f.c \
         reduce_scatter_f.c \
+        reduce_scatter_init_f.c \
         reduce_scatter_block_f.c \
+        reduce_scatter_block_init_f.c \
         register_datarep_f.c \
         request_free_f.c \
         request_get_status_f.c \
         rsend_f.c \
         rsend_init_f.c \
         scan_f.c \
+        scan_init_f.c \
         scatter_f.c \
+        scatter_init_f.c \
         scatterv_f.c \
+        scatterv_init_f.c \
         send_f.c \
         send_init_f.c \
         sendrecv_f.c \
         sendrecv_replace_f.c \
+        session_call_errhandler_f.c \
+        session_create_errhandler_f.c \
+        session_get_errhandler_f.c \
+        session_get_info_f.c \
+        session_get_nth_pset_f.c \
+        session_get_num_psets_f.c \
+        session_get_pset_info_f.c \
+        session_init_f.c \
+        session_finalize_f.c \
+        session_set_errhandler_f.c \
         ssend_f.c \
         ssend_init_f.c \
         startall_f.c \
@@ -493,8 +535,10 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         win_flush_local_f.c \
         win_flush_local_all_f.c
 
-
-if OMPI_ENABLE_MPI1_COMPAT
+# The following functions were removed from the MPI standard, but are
+# retained for ABI compliance reasons.  They are listed independently
+# of the other MPI functions in case we one day change behavior around
+# ABI compliance.
 lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         address_f.c \
         errhandler_create_f.c \
@@ -506,7 +550,6 @@ lib@OMPI_LIBMPI_NAME@_mpifh_la_SOURCES += \
         type_lb_f.c \
         type_struct_f.c \
         type_ub_f.c
-endif
 endif
 
 #

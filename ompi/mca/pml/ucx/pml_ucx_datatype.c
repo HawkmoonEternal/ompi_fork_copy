@@ -24,7 +24,6 @@
 #ifdef HAVE_UCP_REQUEST_PARAM_T
 #define PML_UCX_DATATYPE_SET_VALUE(_datatype, _val) \
     (_datatype)->op_param.send._val; \
-    (_datatype)->op_param.bsend._val; \
     (_datatype)->op_param.recv._val;
 #endif
 
@@ -190,8 +189,6 @@ pml_ucx_datatype_t *mca_pml_ucx_init_nbx_datatype(ompi_datatype_t *datatype,
     pml_datatype->datatype                    = ucp_datatype;
     pml_datatype->op_param.send.op_attr_mask  = UCP_OP_ATTR_FIELD_CALLBACK;
     pml_datatype->op_param.send.cb.send       = mca_pml_ucx_send_nbx_completion;
-    pml_datatype->op_param.bsend.op_attr_mask = UCP_OP_ATTR_FIELD_CALLBACK;
-    pml_datatype->op_param.bsend.cb.send      = mca_pml_ucx_bsend_nbx_completion;
     pml_datatype->op_param.recv.op_attr_mask  = UCP_OP_ATTR_FIELD_CALLBACK |
                                                 UCP_OP_ATTR_FLAG_NO_IMM_CMPL;
     pml_datatype->op_param.recv.cb.recv       = mca_pml_ucx_recv_nbx_completion;
@@ -206,16 +203,29 @@ pml_ucx_datatype_t *mca_pml_ucx_init_nbx_datatype(ompi_datatype_t *datatype,
         PML_UCX_DATATYPE_SET_VALUE(pml_datatype, datatype = ucp_datatype);
     }
 
+    pml_datatype->op_param.isend = pml_datatype->op_param.send;
+    pml_datatype->op_param.irecv = pml_datatype->op_param.recv;
+    pml_datatype->op_param.isend.op_attr_mask |= ompi_pml_ucx.op_attr_nonblocking;
+    pml_datatype->op_param.irecv.op_attr_mask |= ompi_pml_ucx.op_attr_nonblocking;
+
     return pml_datatype;
 }
 #endif
 
 ucp_datatype_t mca_pml_ucx_init_datatype(ompi_datatype_t *datatype)
 {
+    static opal_thread_internal_mutex_t lock = OPAL_THREAD_INTERNAL_MUTEX_INITIALIZER;
     size_t size = 0; /* init to suppress compiler warning */
     ucp_datatype_t ucp_datatype;
     ucs_status_t status;
     int ret;
+
+    opal_thread_internal_mutex_lock(&lock);
+
+    if (datatype->pml_data != PML_UCX_DATATYPE_INVALID) {
+        /* datatype is already initialized in concurrent thread */
+        goto out;
+    }
 
     if (mca_pml_ucx_datatype_is_contig(datatype)) {
         ompi_datatype_type_size(datatype, &size);
@@ -269,7 +279,10 @@ ucp_datatype_t mca_pml_ucx_init_datatype(ompi_datatype_t *datatype)
     datatype->pml_data = ucp_datatype;
 #endif
 
-    return ucp_datatype;
+out:
+    opal_thread_internal_mutex_unlock(&lock);
+
+    return mca_pml_ucx_from_ompi_datatype(datatype);
 }
 
 static void mca_pml_ucx_convertor_construct(mca_pml_ucx_convertor_t *convertor)

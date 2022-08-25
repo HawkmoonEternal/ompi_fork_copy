@@ -2,11 +2,11 @@
 /*
  * Copyright (c) 2013-2018 Intel, Inc. All rights reserved
  *
- * Copyright (c) 2014-2017 Cisco Systems, Inc.  All rights reserved
+ * Copyright (c) 2014-2021 Cisco Systems, Inc.  All rights reserved
  * Copyright (c) 2015-2016 Los Alamos National Security, LLC.  All rights
  *                         reserved.
- * Copyright (c) 2018      Amazon.com, Inc. or its affiliates.  All Rights reserved.
- * Copyright (c) 2020      Triad National Security, LLC. All rights
+ * Copyright (c) 2018-2022 Amazon.com, Inc. or its affiliates.  All Rights reserved.
+ * Copyright (c) 2020-2021 Triad National Security, LLC. All rights
  *                         reserved.
  * $COPYRIGHT$
  *
@@ -21,7 +21,7 @@
 #include "opal/util/printf.h"
 #include "opal/mca/common/ofi/common_ofi.h"
 #if OPAL_CUDA_SUPPORT
-#include "opal/mca/common/cuda/common_cuda.h"
+#include "opal/cuda/common_cuda.h"
 #endif /* OPAL_CUDA_SUPPORT */
 
 static int ompi_mtl_ofi_component_open(void);
@@ -40,8 +40,8 @@ static int av_type;
 static int ofi_tag_mode;
 
 #if OPAL_HAVE_THREAD_LOCAL
-    opal_thread_local int per_thread_ctx;
-    opal_thread_local struct fi_cq_tagged_entry wc[MTL_OFI_MAX_PROG_EVENT_COUNT];
+    opal_thread_local int ompi_mtl_ofi_per_thread_ctx;
+    opal_thread_local struct fi_cq_tagged_entry ompi_mtl_ofi_wc[MTL_OFI_MAX_PROG_EVENT_COUNT];
 #endif
 
 /*
@@ -185,7 +185,7 @@ ompi_mtl_ofi_component_register(void)
     control_progress = MTL_OFI_PROG_UNSPEC;
     mca_base_component_var_register (&mca_mtl_ofi_component.super.mtl_version,
                                      "control_progress",
-                                     "Specify control progress model (default: unspecificed, use provider's default). Set to auto or manual for auto or manual progress respectively.",
+                                     "Specify control progress model (default: unspecified, use provider's default). Set to auto or manual for auto or manual progress respectively.",
                                      MCA_BASE_VAR_TYPE_INT, new_enum, 0, 0,
                                      OPAL_INFO_LVL_3,
                                      MCA_BASE_VAR_SCOPE_READONLY,
@@ -254,9 +254,7 @@ ompi_mtl_ofi_component_register(void)
                                     MCA_BASE_VAR_SCOPE_READONLY,
                                     &ompi_mtl_ofi.num_ofi_contexts);
 
-    opal_common_ofi_register_mca_variables(&mca_mtl_ofi_component.super.mtl_version);
-
-    return OMPI_SUCCESS;
+    return opal_common_ofi_mca_register(&mca_mtl_ofi_component.super.mtl_version);
 }
 
 
@@ -285,8 +283,7 @@ ompi_mtl_ofi_component_open(void)
             "provider_exclude")) {
         return OMPI_ERR_NOT_AVAILABLE;
     }
-
-    return OMPI_SUCCESS;
+    return opal_common_ofi_open();
 }
 
 static int
@@ -303,8 +300,7 @@ ompi_mtl_ofi_component_close(void)
 #if OPAL_CUDA_SUPPORT
     mca_common_cuda_fini();
 #endif
-    opal_common_ofi_mca_deregister();
-    return OMPI_SUCCESS;
+    return opal_common_ofi_close();
 }
 
 int
@@ -340,7 +336,7 @@ select_ofi_provider(struct fi_info *providers,
     }
 
     opal_output_verbose(1, opal_common_ofi.output,
-                        "%s:%d: mtl:ofi:prov: %s\n",
+                        "%s:%d: mtl:ofi:provider: %s\n",
                         __FILE__, __LINE__,
                         (prov ? prov->fabric_attr->prov_name : "none"));
 
@@ -356,7 +352,7 @@ select_ofi_provider(struct fi_info *providers,
       * however some may have multiple info objects with different
       * attributes for the same NIC. The initial provider attributes
       * are used to ensure that all NICs we return provide the same
-      * capabilities as the inital one.
+      * capabilities as the initial one.
       *
       * We use package rank to select between NICs of equal distance
       * if we cannot calculate a package_rank, we fall back to using the
@@ -364,8 +360,8 @@ select_ofi_provider(struct fi_info *providers,
       */
     if (NULL != prov) {
         prov = opal_mca_common_ofi_select_provider(prov, &ompi_process_info);
-        opal_output_verbose(1, ompi_mtl_base_framework.framework_output,
-                            "%s:%d: mtl:ofi:provider: %s\n",
+        opal_output_verbose(1, opal_common_ofi.output,
+                            "%s:%d: mtl:ofi:provider:domain: %s\n",
                             __FILE__, __LINE__,
                             (prov ? prov->domain_attr->name : "none"));
     }
@@ -374,8 +370,8 @@ select_ofi_provider(struct fi_info *providers,
 }
 
 static void
-ompi_mtl_ofi_define_tag_mode(int ofi_tag_mode, int *bits_for_cid) {
-    switch (ofi_tag_mode) {
+ompi_mtl_ofi_define_tag_mode(int ofi_tag_mode_arg, int *bits_for_cid) {
+    switch (ofi_tag_mode_arg) {
         case MTL_OFI_TAG_1:
             *bits_for_cid = (int) MTL_OFI_CID_BIT_COUNT_1;
             ompi_mtl_ofi.base.mtl_max_tag = (int)((1ULL << (MTL_OFI_TAG_BIT_COUNT_1 - 1)) - 1);
@@ -479,7 +475,7 @@ static int ompi_mtl_ofi_init_sep(struct fi_info *prov, int universe_size)
 
     /*
      * If SEP supported and Thread Grouping feature enabled, use
-     * num_ofi_contexts + 2. Extra 2 items is to accomodate Open MPI contextid
+     * num_ofi_contexts + 2. Extra 2 items is to accommodate Open MPI contextid
      * numbering- COMM_WORLD is 0, COMM_SELF is 1. Other user created
      * Comm contextid values are assigned sequentially starting with 3.
      */
@@ -517,6 +513,37 @@ static int ompi_mtl_ofi_init_regular_ep(struct fi_info * prov, int universe_size
                        fi_strerror(-ret), -ret);
         return ret;
     }
+
+#if OPAL_CUDA_SUPPORT && HAVE_DECL_FI_OPT_FI_HMEM_P2P
+    /*
+     * Set the FI_HMEM peer to peer option to ENABLED. This notifies Libfabric
+     * that the provider can decide whether to use device peer to peer support
+     * for network transfers, and allows copies if p2p is not supported.
+     *
+     * Note that this option may not be supported by the provider, so continue
+     * if FI_HMEM is supported by the provider but it does not support this
+     * setopt option. This setopt parameter was introduced in Libfabric 1.14.
+     *
+     * The version check is needed as one of the Libfabric setopt handlers
+     * incorrectly assumed all option values are size_t, which was also fixed
+     * in 1.14.
+     */
+    int setopt_val = FI_HMEM_P2P_ENABLED;
+
+    if (FI_VERSION_GE(fi_version(), FI_VERSION(1, 14))) {
+            ret = fi_setopt(&ompi_mtl_ofi.sep->fid,
+                            FI_OPT_ENDPOINT, FI_OPT_FI_HMEM_P2P,
+                            &setopt_val, sizeof(setopt_val));
+
+            if (!(0 == ret || -FI_ENOPROTOOPT == ret)) {
+                opal_show_help("help-mtl-ofi.txt", "OFI call fail", true,
+                               "fi_setopt",
+                               ompi_process_info.nodename, __FILE__, __LINE__,
+                               fi_strerror(-ret), -ret);
+                return ret;
+            }
+    }
+#endif /* OPAL_CUDA_SUPPORT && FI_OPT_FI_HMEM_P2P */
 
     /**
      * Create the objects that will be bound to the endpoint.
@@ -577,12 +604,10 @@ ompi_mtl_ofi_component_init(bool enable_progress_threads,
     struct fi_info *providers = NULL;
     struct fi_info *prov = NULL;
     struct fi_info *prov_cq_data = NULL;
-    char ep_name[FI_NAME_MAX] = {0};
+    void *ep_name;
     size_t namelen;
     int universe_size;
     char *univ_size_str;
-
-    opal_common_ofi_mca_register();
 
     opal_output_verbose(1, opal_common_ofi.output,
                         "%s:%d: mtl:ofi:provider_include = \"%s\"\n",
@@ -628,7 +653,7 @@ ompi_mtl_ofi_component_init(bool enable_progress_threads,
     /** If Open MPI is built with CUDA, request device transfer
      *  capabilities */
     hints->caps |= FI_HMEM;
-    hints->domain_attr->mr_mode |= FI_MR_HMEM;
+    hints->domain_attr->mr_mode |= FI_MR_HMEM | FI_MR_ALLOCATED;
     /**
      * Note: API version 1.9 is the first version that supports FI_HMEM
      */
@@ -637,9 +662,9 @@ ompi_mtl_ofi_component_init(bool enable_progress_threads,
 
     /* Make sure to get a RDM provider that can do the tagged matching
        interface and local communication and remote communication. */
-    hints->mode               = FI_CONTEXT;
+    hints->mode               = FI_CONTEXT | FI_CONTEXT2;
     hints->ep_attr->type      = FI_EP_RDM;
-    hints->caps               |= FI_TAGGED | FI_LOCAL_COMM | FI_REMOTE_COMM | FI_DIRECTED_RECV;
+    hints->caps               |= FI_MSG | FI_TAGGED | FI_LOCAL_COMM | FI_REMOTE_COMM | FI_DIRECTED_RECV;
     hints->tx_attr->msg_order = FI_ORDER_SAS;
     hints->rx_attr->msg_order = FI_ORDER_SAS;
     hints->rx_attr->op_flags  = FI_COMPLETION;
@@ -893,6 +918,20 @@ select_prov:
         }
     }
 
+    /* this must be called during single threaded part of the code and
+     * before Libfabric configures its memory monitors.  Easiest to do
+     * that before domain open.  Silently ignore not-supported errors,
+     * as they are not critical to program correctness, but only
+     * indicate that LIbfabric will have to pick a different, possibly
+     * less optimal, monitor. */
+    ret = opal_common_ofi_export_memory_monitor();
+    if (0 != ret && -FI_ENOSYS != ret) {
+        opal_output_verbose(1, opal_common_ofi.output,
+                            "Failed to inject Libfabric memory monitor: %s",
+                             fi_strerror(-ret));
+    }
+
+
     /**
      * Open fabric
      * The getinfo struct returns a fabric attribute struct that can be used to
@@ -928,7 +967,7 @@ select_prov:
      */
     ret = fi_domain(ompi_mtl_ofi.fabric,  /* In:  Fabric object                 */
                     prov,                 /* In:  Provider                      */
-                    &ompi_mtl_ofi.domain, /* Out: Domain oject                  */
+                    &ompi_mtl_ofi.domain, /* Out: Domain object                 */
                     NULL);                /* Optional context for domain events */
     if (0 != ret) {
         opal_show_help("help-mtl-ofi.txt", "OFI call fail", true,
@@ -1031,15 +1070,11 @@ select_prov:
     fi_freeinfo(providers);
     providers = NULL;
 
-    /**
-     * Get our address and publish it with modex.
-     */
-    namelen = sizeof(ep_name);
-    ret = fi_getname((fid_t)ompi_mtl_ofi.sep,
-                     &ep_name[0],
-                     &namelen);
-    if (ret) {
-        MTL_OFI_LOG_FI_ERR(ret, "fi_getname failed");
+    ret = opal_common_ofi_fi_getname((fid_t)ompi_mtl_ofi.sep,
+                                     &ep_name,
+                                     &namelen);
+    if (OMPI_SUCCESS != ret) {
+        MTL_OFI_LOG_FI_ERR(ret, "opal_common_ofi_fi_getname failed");
         goto error;
     }
 
@@ -1055,11 +1090,16 @@ select_prov:
     }
 
     ompi_mtl_ofi.epnamelen = namelen;
+    free(ep_name);
 
     /**
      * Set the ANY_SRC address.
      */
     ompi_mtl_ofi.any_addr = FI_ADDR_UNSPEC;
+    ompi_mtl_ofi.is_initialized = false;
+    ompi_mtl_ofi.has_posted_initial_buffer = false;
+    
+    ompi_mtl_ofi.base.mtl_flags |= MCA_MTL_BASE_FLAG_SUPPORTS_EXT_CID;
 
 #if OPAL_CUDA_SUPPORT
     mca_common_cuda_stage_one_init();
@@ -1109,6 +1149,9 @@ error:
     }
     if (ompi_mtl_ofi.ofi_ctxt) {
         free(ompi_mtl_ofi.ofi_ctxt);
+    }
+    if (ep_name) {
+        free(ep_name);
     }
 
     return NULL;

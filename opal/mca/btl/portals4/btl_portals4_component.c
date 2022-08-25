@@ -38,7 +38,6 @@
 #include "btl_portals4.h"
 #include "btl_portals4_frag.h"
 #include "btl_portals4_recv.h"
-#include "portals4.h"
 
 static int mca_btl_portals4_component_register(void);
 static int mca_btl_portals4_component_open(void);
@@ -73,7 +72,7 @@ static int mca_btl_portals4_component_register(void)
     mca_btl_portals4_component.use_logical = 0;
     (void) mca_base_component_var_register(
         &mca_btl_portals4_component.super.btl_version, "use_logical",
-        "Use the logical to physical table to accelerate portals4 adressing: 1 (true) : 0 (false)",
+        "Use the logical to physical table to accelerate portals4 addressing: 1 (true) : 0 (false)",
         MCA_BASE_VAR_TYPE_INT, NULL, 0, 0, OPAL_INFO_LVL_5, MCA_BASE_VAR_SCOPE_READONLY,
         &mca_btl_portals4_component.use_logical);
 
@@ -637,8 +636,8 @@ int mca_btl_portals4_component_progress(void)
                 recv_descriptor.cbdata = reg->cbdata;
 
                 OPAL_OUTPUT_VERBOSE((50, opal_btl_base_framework.framework_output,
-                                     "PTL_EVENT_PUT: tag=%x base_descriptor=%p cbfunc: %lx\n", tag,
-                                     (void *) &btl_base_descriptor, (uint64_t) reg->cbfunc));
+                                     "PTL_EVENT_PUT: tag=%x recv_descriptor=%p cbfunc: %lx\n", tag,
+                                     (void *) &recv_descriptor, (uint64_t) reg->cbfunc));
                 reg->cbfunc(&portals4_btl->super, &recv_descriptor);
 
                 goto done;

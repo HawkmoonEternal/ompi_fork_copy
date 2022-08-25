@@ -9,7 +9,7 @@
  *                         reserved.
  * Copyright (c) 2014-2018 Research Organization for Information Science
  *                         and Technology (RIST).  All rights reserved.
- * Copyright (c) 2017      IBM Corporation.  All rights reserved.
+ * Copyright (c) 2017-2022 IBM Corporation.  All rights reserved.
  * Copyright (c) 2018      FUJITSU LIMITED.  All rights reserved.
  * $COPYRIGHT$
  *
@@ -112,6 +112,7 @@ static int nbc_allreduce_init(const void* sendbuf, void* recvbuf, int count, MPI
     return OMPI_ERR_OUT_OF_RESOURCE;
   }
 
+  alg = NBC_ARED_RING;  /* default generic selection */
   /* algorithm selection */
   int nprocs_pof2 = opal_next_poweroftwo(p) >> 1;
   if (libnbc_iallreduce_algorithm == 0) {
@@ -119,8 +120,6 @@ static int nbc_allreduce_init(const void* sendbuf, void* recvbuf, int count, MPI
       alg = NBC_ARED_BINOMIAL;
     } else if (count >= nprocs_pof2 && ompi_op_is_commute(op)) {
       alg = NBC_ARED_REDSCAT_ALLGATHER;
-    } else {
-      alg = NBC_ARED_RING;
     }
   } else {
     if (libnbc_iallreduce_algorithm == 1)
@@ -131,8 +130,6 @@ static int nbc_allreduce_init(const void* sendbuf, void* recvbuf, int count, MPI
       alg = NBC_ARED_REDSCAT_ALLGATHER;
     else if (libnbc_iallreduce_algorithm == 4)
       alg = NBC_ARED_RDBL;
-    else
-      alg = NBC_ARED_RING;
   }
 #ifdef NBC_CACHE_SCHEDULE
   /* search schedule in communicator specific tree */
@@ -369,7 +366,7 @@ static inline int allred_sched_diss(int rank, int p, int count, MPI_Datatype dat
 
   root = 0; /* this makes the code for ireduce and iallreduce nearly identical - could be changed to improve performance */
   RANK2VRANK(rank, vrank, root);
-  maxr = (int)ceil((log((double)p)/LOG2));
+  maxr = ceil_of_log2(p);
   /* ensure the result ends up in recvbuf on vrank 0 */
   if (0 == (maxr%2)) {
     rbuf = (void *)(-gap);
@@ -633,38 +630,37 @@ static inline int allred_sched_recursivedoubling(int rank, int p, const void *se
   return OMPI_SUCCESS;
 }
 
-static inline int allred_sched_ring (int r, int p, int count, MPI_Datatype datatype, const void *sendbuf, void *recvbuf, MPI_Op op,
-                                     int size, int ext, NBC_Schedule *schedule, void *tmpbuf) {
+static inline int
+allred_sched_ring(int r, int p,
+                  int count, MPI_Datatype datatype, const void *sendbuf, void *recvbuf,
+                  MPI_Op op, int size, int ext, NBC_Schedule *schedule, void *tmpbuf)
+{
   int segsize, *segsizes, *segoffsets; /* segment sizes and offsets per segment (number of segments == number of nodes */
-  int speer, rpeer; /* send and recvpeer */
+  int speer, rpeer; /* send and recv peers */
   int res = OMPI_SUCCESS;
 
-  if (count == 0) {
+  if (0 == count) {
     return OMPI_SUCCESS;
   }
 
-  segsizes = (int *) malloc (sizeof (int) * p);
-  segoffsets = (int *) malloc (sizeof (int) * p);
-  if (NULL == segsizes || NULL == segoffsets) {
-    free (segsizes);
-    free (segoffsets);
+  segsizes = (int *) malloc((2 * p + 1 ) *sizeof (int));
+  if (NULL == segsizes) {
     return OMPI_ERR_OUT_OF_RESOURCE;
   }
+  segoffsets = segsizes + p;
 
-  segsize = (count + p - 1) / p; /* size of the segments */
+  segsize = count / p; /* size of the segments across the last ranks.
+                          The remainder will be evenly distributed across the smaller ranks */
 
   segoffsets[0] = 0;
-  for (int i = 0, mycount = count ; i < p ; ++i) {
-    mycount -= segsize;
+  for (int i = 0, mycount = count % p; i < p ; ++i) {
     segsizes[i] = segsize;
-    if (mycount < 0) {
-      segsizes[i] = segsize + mycount;
-      mycount = 0;
+    if( mycount > 0 ) {  /* We have extra segments to distribute */
+        segsizes[i]++;
+        mycount--;
     }
 
-    if (i) {
-      segoffsets[i] = segoffsets[i-1] + segsizes[i-1];
-    }
+    segoffsets[i+1] = segoffsets[i] + segsizes[i];
   }
 
   /* reduce peers */
@@ -772,9 +768,9 @@ static inline int allred_sched_ring (int r, int p, int count, MPI_Datatype datat
   /* first p-1 rounds are reductions */
   for (int round = 0 ; round < p - 1 ; ++round) {
     int selement = (r+1-round + 2*p /*2*p avoids negative mod*/)%p; /* the element I am sending */
-    int soffset = segoffsets[selement]*ext;
+    size_t soffset = segoffsets[selement]*(size_t)ext;
     int relement = (r-round + 2*p /*2*p avoids negative mod*/)%p; /* the element that I receive from my neighbor */
-    int roffset = segoffsets[relement]*ext;
+    size_t roffset = segoffsets[relement]*(size_t)ext;
 
     /* first message come out of sendbuf */
     if (round == 0) {
@@ -786,49 +782,48 @@ static inline int allred_sched_ring (int r, int p, int count, MPI_Datatype datat
     }
 
     if (OPAL_UNLIKELY(OMPI_SUCCESS != res)) {
-      break;
+      goto free_and_return;
     }
-
-    res = NBC_Sched_recv ((char *) recvbuf + roffset, false, segsizes[relement], datatype, rpeer,
-                          schedule, true);
-    if (OPAL_UNLIKELY(OMPI_SUCCESS != res)) {
-      break;
+    if( recvbuf != sendbuf ) {  /* check for MPI_IN_PLACE */
+        res = NBC_Sched_recv ((char *) recvbuf + roffset, false, segsizes[relement], datatype, rpeer,
+                              schedule, true);
+        if (OPAL_UNLIKELY(OMPI_SUCCESS != res)) {
+          goto free_and_return;
+        }
+        res = NBC_Sched_op ((char *) sendbuf + roffset, false, (char *) recvbuf + roffset, false,
+                             segsizes[relement], datatype, op, schedule, true);
+    } else {
+        res = NBC_Sched_recv ((char *) tmpbuf, false, segsizes[relement], datatype, rpeer,
+                              schedule, true);
+        if (OPAL_UNLIKELY(OMPI_SUCCESS != res)) {
+          goto free_and_return;
+        }
+        res = NBC_Sched_op ((char *) tmpbuf, false, (char *) recvbuf + roffset, false,
+                             segsizes[relement], datatype, op, schedule, true);
     }
-
-    res = NBC_Sched_op ((char *) sendbuf + roffset, false, (char *) recvbuf + roffset, false,
-                         segsizes[relement], datatype, op, schedule, true);
     if (OPAL_UNLIKELY(OMPI_SUCCESS != res)) {
-      break;
+      goto free_and_return;
     }
   }
-
-  if (OPAL_UNLIKELY(OMPI_SUCCESS != res)) {
-    free (segsizes);
-    free (segoffsets);
-    return res;
-  }
-
   for (int round = p - 1 ; round < 2 * p - 2 ; ++round) {
     int selement = (r+1-round + 2*p /*2*p avoids negative mod*/)%p; /* the element I am sending */
-    int soffset = segoffsets[selement]*ext;
+    size_t soffset = segoffsets[selement]*(size_t)ext;
     int relement = (r-round + 2*p /*2*p avoids negative mod*/)%p; /* the element that I receive from my neighbor */
-    int roffset = segoffsets[relement]*ext;
+    size_t roffset = segoffsets[relement]*(size_t)ext;
 
     res = NBC_Sched_send ((char *) recvbuf + soffset, false, segsizes[selement], datatype, speer,
                           schedule, false);
     if (OPAL_UNLIKELY(OMPI_SUCCESS != res)) {
       break;
     }
-
     res = NBC_Sched_recv ((char *) recvbuf + roffset, false, segsizes[relement], datatype, rpeer,
                           schedule, true);
     if (OPAL_UNLIKELY(OMPI_SUCCESS != res)) {
       break;
     }
   }
-
+free_and_return:
   free (segsizes);
-  free (segoffsets);
 
   return res;
 }
@@ -1084,7 +1079,7 @@ static inline int allred_sched_redscat_allgather(
         sindex[0] = rindex[0] = 0;
          for (int mask = 1; mask < nprocs_pof2; mask <<= 1) {
             /*
-             * On each iteration: rindex[step] = sindex[step] -- begining of the
+             * On each iteration: rindex[step] = sindex[step] -- beginning of the
              * current window. Length of the current window is storded in wsize.
              */
             int vdest = vrank ^ mask;

@@ -151,9 +151,6 @@ static void unpack_remote_mkeys(shmem_ctx_t ctx, pmix_data_buffer_t *msg, int re
     int32_t n;
     int32_t tr_id;
     int i;
-    ompi_proc_t *proc;
-
-    proc = oshmem_proc_group_find(oshmem_group_all, remote_pe);
     cnt = 1;
     PMIx_Data_unpack(NULL, msg, &n, &cnt, PMIX_UINT32);
     for (i = 0; i < n; i++) {
@@ -168,7 +165,7 @@ static void unpack_remote_mkeys(shmem_ctx_t ctx, pmix_data_buffer_t *msg, int re
         if (0 == memheap_oob.mkeys[tr_id].va_base) {
             cnt = 1;
             PMIx_Data_unpack(NULL, msg, &memheap_oob.mkeys[tr_id].u.key, &cnt, PMIX_UINT64);
-            if (OPAL_PROC_ON_LOCAL_NODE(proc->super.proc_flags)) {
+            if (oshmem_proc_on_local_node(remote_pe)) {
                 memheap_attach_segment(&memheap_oob.mkeys[tr_id], tr_id);
             }
         } else {
@@ -283,7 +280,7 @@ static void do_recv(int source_pe, pmix_data_buffer_t* buffer)
 
 /**
  * simple/fast version of MPI_Test that
- * - only works with persistant request
+ * - only works with persistent request
  * - does not do any progress
  * - can be safely called from within opal_progress()
  */
@@ -621,7 +618,7 @@ void mca_memheap_modex_recv_all(void)
 
     rcv_buffer = malloc (buffer_size);
     if (NULL == rcv_buffer) {
-        MEMHEAP_ERROR("failed to allocate recieve buffer");
+        MEMHEAP_ERROR("failed to allocate receive buffer");
         rc = OSHMEM_ERR_OUT_OF_RESOURCE;
         goto exit_fatal;
     }
@@ -775,7 +772,6 @@ void mkey_segment_init(mkey_segment_t *seg, sshmem_mkey_t *mkey, uint32_t segno)
 
     s = memheap_find_seg(segno);
     assert(NULL != s);
-
     seg->super.va_base = s->super.va_base;
     seg->super.va_end  = s->super.va_end;
     seg->rva_base      = mkey->va_base;

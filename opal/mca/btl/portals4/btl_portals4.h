@@ -24,15 +24,17 @@
 #ifndef BTL_PORTALS_H_HAS_BEEN_INCLUDED
 #define BTL_PORTALS_H_HAS_BEEN_INCLUDED
 
-#include <btl_portals4_frag.h>
-#include <portals4.h>
+#include "opal_config.h"
 
 #include "opal/class/opal_free_list.h"
 #include "opal/class/opal_list.h"
 #include "opal/datatype/opal_convertor.h"
+
 #include "opal/mca/btl/base/base.h"
 #include "opal/mca/btl/base/btl_base_error.h"
 #include "opal/mca/btl/btl.h"
+
+#include <portals4.h>
 
 BEGIN_C_DECLS
 
@@ -52,7 +54,7 @@ struct mca_btl_portals4_component_t {
      * portals4_init_interface(). */
     int need_init;
 
-    /* Use the logical to physical table to accelerate portals4 adressing: 1 (true) : 0 (false) */
+    /* Use the logical to physical table to accelerate portals4 addressing: 1 (true) : 0 (false) */
     int use_logical;
 
     /* initial size of free lists */

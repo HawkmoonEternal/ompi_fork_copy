@@ -23,6 +23,8 @@
 
 #include "ompi_config.h"
 
+#include "math.h"
+
 #include "mpi.h"
 #include "opal/util/bit_ops.h"
 #include "ompi/constants.h"
@@ -50,7 +52,7 @@
  * Example on 6 nodes:
  *   Initialization: everyone has its own buffer at location 0 in rbuf
  *                   This means if user specified MPI_IN_PLACE for sendbuf
- *                   we must copy our block from recvbuf to begining!
+ *                   we must copy our block from recvbuf to beginning!
  *    #     0      1      2      3      4      5
  *         [0]    [1]    [2]    [3]    [4]    [5]
  *   Step 0: send message to (rank - 2^0), receive message from (rank + 2^0)
@@ -122,7 +124,7 @@ int ompi_coll_base_allgather_intra_bruck(const void *sbuf, int scount,
     /* Communication step:
        At every step i, rank r:
        - doubles the distance
-       - sends message which starts at begining of rbuf and has size
+       - sends message which starts at beginning of rbuf and has size
        (blockcount * rcount) to rank (r - distance)
        - receives message of size blockcount * rcount from rank (r + distance)
        at location (rbuf + distance * rcount * rext)
@@ -157,10 +159,10 @@ int ompi_coll_base_allgather_intra_bruck(const void *sbuf, int scount,
     /* Finalization step:
        On all nodes except 0, data needs to be shifted locally:
        - create temporary shift buffer,
-       see discussion in coll_basic_reduce.c about the size and begining
+       see discussion in coll_basic_reduce.c about the size and beginning
        of temporary buffer.
        - copy blocks [0 .. (size - rank - 1)] from rbuf to shift buffer
-       - move blocks [(size - rank) .. size] from rbuf to begining of rbuf
+       - move blocks [(size - rank) .. size] from rbuf to beginning of rbuf
        - copy blocks from shift buffer starting at block [rank] in rbuf.
     */
     if (0 != rank) {
@@ -180,7 +182,7 @@ int ompi_coll_base_allgather_intra_bruck(const void *sbuf, int scount,
                                                   shift_buf, rbuf);
         if (err < 0) { line = __LINE__; free(free_buf); goto err_hndl;  }
 
-        /* 2. move blocks [(size - rank) .. size] from rbuf to the begining of rbuf */
+        /* 2. move blocks [(size - rank) .. size] from rbuf to the beginning of rbuf */
         tmpsend = (char*) rbuf + (ptrdiff_t)(size - rank) * (ptrdiff_t)rcount * rext;
         err = ompi_datatype_copy_content_same_ddt(rdtype, (ptrdiff_t)rank * (ptrdiff_t)rcount,
                                                   rbuf, tmpsend);
@@ -338,7 +340,145 @@ ompi_coll_base_allgather_intra_recursivedoubling(const void *sbuf, int scount,
     return err;
 }
 
+/*
+ * ompi_coll_base_allgather_intra_sparbit
+ *
+ * Function:     allgather using O(log(N)) steps.
+ * Accepts:      Same arguments as MPI_Allgather
+ * Returns:      MPI_SUCCESS or error code
+ *
+ * Description: Proposal of an allgather algorithm similar to Bruck but with inverted distances
+ *              and non-decreasing exchanged data sizes. Described in "Sparbit: a new
+ *              logarithmic-cost and data locality-aware MPI Allgather algorithm".
+ *
+ * Memory requirements:  
+ *              Additional memory for N requests. 
+ *
+ * Example on 6 nodes, with l representing the highest power of two smaller than N, in this case l =
+ * 4 (more details can be found on the paper):
+ *  Initial state
+ *    #     0      1      2      3      4      5
+ *         [0]    [ ]    [ ]    [ ]    [ ]    [ ]
+ *         [ ]    [1]    [ ]    [ ]    [ ]    [ ]
+ *         [ ]    [ ]    [2]    [ ]    [ ]    [ ]
+ *         [ ]    [ ]    [ ]    [3]    [ ]    [ ]
+ *         [ ]    [ ]    [ ]    [ ]    [4]    [ ]
+ *         [ ]    [ ]    [ ]    [ ]    [ ]    [5]
+ *   Step 0: Each process sends its own block to process r + l and receives another from r - l.
+ *    #     0      1      2      3      4      5
+ *         [0]    [ ]    [ ]    [ ]    [0]    [ ]
+ *         [ ]    [1]    [ ]    [ ]    [ ]    [1]
+ *         [2]    [ ]    [2]    [ ]    [ ]    [ ]
+ *         [ ]    [3]    [ ]    [3]    [ ]    [ ]
+ *         [ ]    [ ]    [4]    [ ]    [4]    [ ]
+ *         [ ]    [ ]    [ ]    [5]    [ ]    [5]
+ *   Step 1: Each process sends its own block to process r + l/2 and receives another from r - l/2.
+ *   The block received on the previous step is ignored to avoid a future double-write.  
+ *    #     0      1      2      3      4      5
+ *         [0]    [ ]    [0]    [ ]    [0]    [ ]
+ *         [ ]    [1]    [ ]    [1]    [ ]    [1]
+ *         [2]    [ ]    [2]    [ ]    [2]    [ ]
+ *         [ ]    [3]    [ ]    [3]    [ ]    [3]
+ *         [4]    [ ]    [4]    [ ]    [4]    [ ]
+ *         [ ]    [5]    [ ]    [5]    [ ]    [5]
+ *   Step 1: Each process sends all the data it has (3 blocks) to process r + l/4 and similarly
+ *   receives all the data from process r - l/4. 
+ *    #     0      1      2      3      4      5
+ *         [0]    [0]    [0]    [0]    [0]    [0]
+ *         [1]    [1]    [1]    [1]    [1]    [1]
+ *         [2]    [2]    [2]    [2]    [2]    [2]
+ *         [3]    [3]    [3]    [3]    [3]    [3]
+ *         [4]    [4]    [4]    [4]    [4]    [4]
+ *         [5]    [5]    [5]    [5]    [5]    [5]
+ */
 
+int ompi_coll_base_allgather_intra_sparbit(const void *sbuf, int scount,
+                                                  struct ompi_datatype_t *sdtype,
+                                                  void* rbuf, int rcount,
+                                                  struct ompi_datatype_t *rdtype,
+                                                  struct ompi_communicator_t *comm,
+                                                  mca_coll_base_module_t *module)
+{
+    /* ################# VARIABLE DECLARATION, BUFFER CREATION AND PREPARATION FOR THE ALGORITHM ######################## */
+
+    /* list of variable declaration */
+    int rank = 0, comm_size = 0, comm_log = 0, exclusion = 0, data_expected = 1, transfer_count = 0;
+    int sendto, recvfrom, send_disp, recv_disp;
+    uint32_t last_ignore, ignore_steps, distance = 1;
+
+    int err = 0;
+    int line = -1;
+
+    ptrdiff_t rlb, rext;
+
+    char *tmpsend = NULL, *tmprecv = NULL;
+
+    MPI_Request *requests = NULL;
+
+    /* algorithm choice information printing */
+    OPAL_OUTPUT((ompi_coll_base_framework.framework_output, 
+                 "coll:base:allgather_intra_sparbit rank %d", rank));
+
+    comm_size = ompi_comm_size(comm);
+    rank = ompi_comm_rank(comm);
+
+    err = ompi_datatype_get_extent(rdtype, &rlb, &rext);
+    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
+
+    /* if the MPI_IN_PLACE condition is not set, copy the send buffer to the receive buffer to perform the sends (all the data is extracted and forwarded from the recv buffer)*/
+    /* tmprecv and tmpsend are used as abstract pointers to simplify send and receive buffer choice */
+    tmprecv = (char *) rbuf;
+    if(MPI_IN_PLACE != sbuf){
+        tmpsend = (char *) sbuf; 
+        err = ompi_datatype_sndrcv(tmpsend, scount, sdtype, tmprecv + (ptrdiff_t) rank * rcount * rext, rcount, rdtype);
+        if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl;  }
+    }
+    tmpsend = tmprecv;
+
+    requests = (MPI_Request *) malloc(comm_size * sizeof(MPI_Request));
+    
+    /* ################# ALGORITHM LOGIC ######################## */
+
+    /* calculate log2 of the total process count */
+    comm_log = ceil(log(comm_size)/log(2));
+    distance <<= comm_log - 1;
+
+    last_ignore = __builtin_ctz(comm_size);
+    ignore_steps = (~((uint32_t) comm_size >> last_ignore) | 1) << last_ignore;
+
+    /* perform the parallel binomial tree distribution steps */
+    for (int i = 0; i < comm_log; ++i) {
+       sendto = (rank + distance) % comm_size;  
+       recvfrom = (rank - distance + comm_size) % comm_size;  
+       exclusion = (distance & ignore_steps) == distance;
+
+       for (transfer_count = 0; transfer_count < data_expected - exclusion; transfer_count++) {
+           send_disp = (rank - 2 * transfer_count * distance + comm_size) % comm_size;
+           recv_disp = (rank - (2 * transfer_count + 1) * distance + comm_size) % comm_size;
+
+           /* Since each process sends several non-contiguos blocks of data, each block sent (and therefore each send and recv call) needs a different tag. */
+           /* As base OpenMPI only provides one tag for allgather, we are forced to use a tag space from other components in the send and recv calls */
+           MCA_PML_CALL(isend(tmpsend + (ptrdiff_t) send_disp * scount * rext, scount, rdtype, sendto, MCA_COLL_BASE_TAG_HCOLL_BASE - send_disp, MCA_PML_BASE_SEND_STANDARD, comm, requests + transfer_count));
+           MCA_PML_CALL(irecv(tmprecv + (ptrdiff_t) recv_disp * rcount * rext, rcount, rdtype, recvfrom, MCA_COLL_BASE_TAG_HCOLL_BASE - recv_disp, comm, requests + data_expected - exclusion + transfer_count));
+       }
+       ompi_request_wait_all(transfer_count * 2, requests, MPI_STATUSES_IGNORE);
+
+       distance >>= 1; 
+       /* calculates the data expected for the next step, based on the current number of blocks and eventual exclusions */
+       data_expected = (data_expected << 1) - exclusion;
+       exclusion = 0;
+    }
+    
+    free(requests);
+
+    return OMPI_SUCCESS;
+
+err_hndl:
+    OPAL_OUTPUT((ompi_coll_base_framework.framework_output,  "%s:%4d\tError occurred %d, rank %2d",
+                 __FILE__, line, err, rank));
+    (void)line;  // silence compiler warning
+    return err;
+}
 
 /*
  * ompi_coll_base_allgather_intra_ring
@@ -392,7 +532,7 @@ int ompi_coll_base_allgather_intra_ring(const void *sbuf, int scount,
        [(r - i - 1 + size) % size]
        - sends message to rank [(r + 1) % size] containing data from rank
        [(r - i + size) % size]
-       - sends message which starts at begining of rbuf and has size
+       - sends message which starts at beginning of rbuf and has size
     */
     sendto = (rank + 1) % size;
     recvfrom  = (rank - 1 + size) % size;
@@ -545,7 +685,7 @@ ompi_coll_base_allgather_intra_neighborexchange(const void *sbuf, int scount,
        - Rest of the steps:
        update recv_data_from according to offset, and
        exchange two blocks with appropriate neighbor.
-       the send location becomes previous receve location.
+       the send location becomes previous receive location.
     */
     tmprecv = (char*)rbuf + (ptrdiff_t)neighbor[0] * (ptrdiff_t)rcount * rext;
     tmpsend = (char*)rbuf + (ptrdiff_t)rank * (ptrdiff_t)rcount * rext;

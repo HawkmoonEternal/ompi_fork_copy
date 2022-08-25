@@ -3,7 +3,7 @@
  * Copyright (c) 2004-2007 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
  *                         Corporation.  All rights reserved.
- * Copyright (c) 2004-2020 The University of Tennessee and The University
+ * Copyright (c) 2004-2021 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2004-2008 High Performance Computing Center Stuttgart,
@@ -35,13 +35,13 @@ int ompi_request_default_test(ompi_request_t ** rptr,
 #if OPAL_ENABLE_PROGRESS_THREADS == 0
     int do_it_once = 0;
 
- recheck_request_status:
+recheck_request_status:
 #endif
     opal_atomic_mb();
     if( request->req_state == OMPI_REQUEST_INACTIVE ) {
         *completed = true;
         if (MPI_STATUS_IGNORE != status) {
-            *status = ompi_status_empty;
+            OMPI_COPY_STATUS(status, ompi_status_empty, false);
         }
         return OMPI_SUCCESS;
     }
@@ -53,17 +53,9 @@ int ompi_request_default_test(ompi_request_t ** rptr,
            STATUS_IGNORE.  See MPI-2:8.2. */
         if (OMPI_REQUEST_GEN == request->req_type) {
             ompi_grequest_invoke_query(request, &request->req_status);
-            if (MPI_STATUS_IGNORE != status) {
-                int old_error = status->MPI_ERROR;
-                *status = request->req_status;
-                status->MPI_ERROR = old_error;
-            }
-        } else if (MPI_STATUS_IGNORE != status) {
-            /* Do *NOT* set a new value for status->MPI_ERROR here!
-               See MPI-1.1 doc, sec 3.2.5, p.22 */
-            int old_error = status->MPI_ERROR;
-            *status = request->req_status;
-            status->MPI_ERROR = old_error;
+        }
+        if (MPI_STATUS_IGNORE != status) {
+            OMPI_COPY_STATUS(status, request->req_status, false);
         }
         if( request->req_persistent ) {
             request->req_state = OMPI_REQUEST_INACTIVE;
@@ -94,9 +86,10 @@ int ompi_request_default_test(ompi_request_t ** rptr,
          * If we run the opal_progress then check the status of the request before
          * leaving. We will call the opal_progress only once per call.
          */
-        opal_progress();
-        do_it_once++;
-        goto recheck_request_status;
+        ++do_it_once;
+        if (0 != opal_progress()) {
+            goto recheck_request_status;
+        }
     }
 #endif
     *completed = false;
@@ -134,19 +127,9 @@ int ompi_request_default_test_any(
                STATUS_IGNORE */
             if (OMPI_REQUEST_GEN == request->req_type) {
                 ompi_grequest_invoke_query(request, &request->req_status);
-                if (MPI_STATUS_IGNORE != status) {
-                    /* Do *NOT* set a new value for status->MPI_ERROR
-                       here!  See MPI-1.1 doc, sec 3.2.5, p.22 */
-                    int old_error = status->MPI_ERROR;
-                    *status = request->req_status;
-                    status->MPI_ERROR = old_error;
-                }
-            } else if (MPI_STATUS_IGNORE != status) {
-                /* Do *NOT* set a new value for status->MPI_ERROR
-                   here!  See MPI-1.1 doc, sec 3.2.5, p.22 */
-                int old_error = status->MPI_ERROR;
-                *status = request->req_status;
-                status->MPI_ERROR = old_error;
+            }
+            if (MPI_STATUS_IGNORE != status) {
+                OMPI_COPY_STATUS(status, request->req_status, false);
             }
 
             if( request->req_persistent ) {
@@ -184,7 +167,7 @@ int ompi_request_default_test_any(
     } else {
         *completed = true;
         if (MPI_STATUS_IGNORE != status) {
-            *status = ompi_status_empty;
+            OMPI_COPY_STATUS(status, ompi_status_empty, false);
         }
     }
     return OMPI_SUCCESS;
@@ -201,15 +184,15 @@ int ompi_request_default_test_all(
     ompi_request_t **rptr;
     size_t num_completed = 0;
     ompi_request_t *request;
+    int do_it_once = 0;
 
     opal_atomic_mb();
-    rptr = requests;
-    for (i = 0; i < count; i++, rptr++) {
-        request = *rptr;
+    for (i = 0; i < count; i++) {
+        request = requests[i];
 
-        if( request->req_state == OMPI_REQUEST_INACTIVE ||
-            REQUEST_COMPLETE(request) ) {
+        if( request->req_state == OMPI_REQUEST_INACTIVE || REQUEST_COMPLETE(request) ) {
             num_completed++;
+            continue;
         }
 #if OPAL_ENABLE_FT_MPI
         /* Check for dead requests due to process failure */
@@ -217,20 +200,29 @@ int ompi_request_default_test_all(
         if(OPAL_UNLIKELY( ompi_request_is_failed(request) &&
                           MPI_ERR_PROC_FAILED_PENDING == request->req_status.MPI_ERROR )) {
             if (MPI_STATUSES_IGNORE != statuses) {
-                statuses[i] = request->req_status;
+                OMPI_COPY_STATUS(&statuses[i], request->req_status, true);
                 statuses[i].MPI_ERROR = MPI_ERR_PROC_FAILED_PENDING;
             }
             *completed = false;
             return MPI_ERR_PROC_FAILED_PENDING;
         }
 #endif /* OPAL_ENABLE_FT_MPI */
+#if OPAL_ENABLE_PROGRESS_THREADS == 0
+        if (0 == do_it_once) {
+            ++do_it_once;
+            if (0 != opal_progress()) {
+                /* continue walking the list, retest the current request */
+                --i;
+                continue;
+            }
+        }
+#endif /* OPAL_ENABLE_PROGRESS_THREADS */
+        /* short-circuit */
+        break;
     }
 
     if (num_completed != count) {
         *completed = false;
-#if OPAL_ENABLE_PROGRESS_THREADS == 0
-        opal_progress();
-#endif
         return OMPI_SUCCESS;
     }
 
@@ -246,13 +238,13 @@ int ompi_request_default_test_all(
              * to ompi_status_empty.
              */
             if( request->req_state == OMPI_REQUEST_INACTIVE ) {
-                statuses[i] = ompi_status_empty;
+                OMPI_COPY_STATUS(&statuses[i], ompi_status_empty, true);
                 continue;
             }
             if (OMPI_REQUEST_GEN == request->req_type) {
                 ompi_grequest_invoke_query(request, &request->req_status);
             }
-            statuses[i] = request->req_status;
+            OMPI_COPY_STATUS(&statuses[i], request->req_status, true);
             if( request->req_persistent ) {
                 request->req_state = OMPI_REQUEST_INACTIVE;
                 continue;
@@ -336,6 +328,7 @@ int ompi_request_default_test_some(
         }
         if( REQUEST_COMPLETE(request) ) {
             indices[num_requests_done++] = i;
+            continue;
         }
 #if OPAL_ENABLE_FT_MPI
         /* Check for dead requests due to process failure */
@@ -372,7 +365,7 @@ int ompi_request_default_test_some(
         /* Special case for MPI_ANY_SOURCE */
         if(OPAL_UNLIKELY( MPI_ERR_PROC_FAILED_PENDING == request->req_status.MPI_ERROR )) {
             if (MPI_STATUSES_IGNORE != statuses) {
-                statuses[i] = request->req_status;
+                OMPI_COPY_STATUS(&statuses[i], request->req_status, true);
                 statuses[i].MPI_ERROR = MPI_ERR_PROC_FAILED_PENDING;
             }
             rc = MPI_ERR_PROC_FAILED_PENDING;
@@ -387,7 +380,7 @@ int ompi_request_default_test_some(
             ompi_grequest_invoke_query(request, &request->req_status);
         }
         if (MPI_STATUSES_IGNORE != statuses) {
-            statuses[i] = request->req_status;
+            OMPI_COPY_STATUS(&statuses[i], request->req_status, true);
         }
 
         if (MPI_SUCCESS != request->req_status.MPI_ERROR) {

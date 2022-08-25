@@ -2,7 +2,7 @@
  * Copyright (c) 2004-2007 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
  *                         Corporation.  All rights reserved.
- * Copyright (c) 2004-2020 The University of Tennessee and The University
+ * Copyright (c) 2004-2021 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2004-2008 High Performance Computing Center Stuttgart,
@@ -15,6 +15,8 @@
  *                         reserved.
  * Copyright (c) 2014-2015 Research Organization for Information Science
  *                         and Technology (RIST). All rights reserved.
+ * Copyright (c) 2021      Triad National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -55,6 +57,7 @@ int MPI_Waitany(int count, MPI_Request requests[], int *indx, MPI_Status *status
 
     if ( MPI_PARAM_CHECK ) {
         int i, rc = MPI_SUCCESS;
+        MPI_Request check_req = NULL;
         OMPI_ERR_INIT_FINALIZE(FUNC_NAME);
         if ((NULL == requests) && (0 != count)) {
             rc = MPI_ERR_REQUEST;
@@ -63,6 +66,20 @@ int MPI_Waitany(int count, MPI_Request requests[], int *indx, MPI_Status *status
                 if (NULL == requests[i]) {
                     rc = MPI_ERR_REQUEST;
                     break;
+                }
+                if (requests[i] == &ompi_request_empty) {
+                    continue;
+                } else if (NULL == requests[i]->req_mpi_object.comm) {
+                    continue;
+                } else if (NULL == check_req) {
+                    check_req = requests[i];
+                }
+                else {
+                    if (!ompi_comm_instances_same(requests[i]->req_mpi_object.comm,
+                                                     check_req->req_mpi_object.comm)) {
+                        rc = MPI_ERR_REQUEST;
+                        break;
+                    }
                 }
             }
         }
@@ -76,7 +93,7 @@ int MPI_Waitany(int count, MPI_Request requests[], int *indx, MPI_Status *status
     if (OPAL_UNLIKELY(0 == count)) {
         *indx = MPI_UNDEFINED;
         if (MPI_STATUS_IGNORE != status) {
-            *status = ompi_status_empty;
+            OMPI_COPY_STATUS(status, ompi_status_empty, false);
         }
         return MPI_SUCCESS;
     }

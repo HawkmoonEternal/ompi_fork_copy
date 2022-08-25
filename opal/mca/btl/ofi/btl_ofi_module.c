@@ -16,6 +16,8 @@
  *
  * Copyright (c) 2018      Amazon.com, Inc. or its affiliates.  All Rights reserved.
  * Copyright (c) 2020      Google, LLC. All rights reserved.
+ * Copyright (c) 2022      Triad National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -239,6 +241,18 @@ int mca_btl_ofi_reg_mem(void *reg_data, void *base, size_t size,
         return OPAL_ERR_OUT_OF_RESOURCE;
     }
 
+    if (btl->use_fi_mr_bind) {
+        BTL_VERBOSE(("binding mr to endpoint"));
+        rc = fi_mr_bind(ur->ur_mr, &btl->ofi_endpoint->fid, 0ULL);
+        if (FI_SUCCESS != rc) {
+            return OPAL_ERR_OUT_OF_RESOURCE;
+        }
+        rc = fi_mr_enable(ur->ur_mr);
+        if (FI_SUCCESS != rc) {
+            return OPAL_ERR_OUT_OF_RESOURCE;
+        }
+    }
+
     ur->handle.rkey = fi_mr_key(ur->ur_mr);
     ur->handle.desc = fi_mr_desc(ur->ur_mr);
 
@@ -390,8 +404,10 @@ mca_btl_ofi_module_t *mca_btl_ofi_module_alloc(int mode)
         module->super.btl_register_mem = mca_btl_ofi_register_mem;
         module->super.btl_deregister_mem = mca_btl_ofi_deregister_mem;
 
+        /* btl/ofi support remote completion because it required FI_DELIVERY_COMPLETE capability
+         */
         module->super.btl_flags |= MCA_BTL_FLAGS_ATOMIC_FOPS | MCA_BTL_FLAGS_ATOMIC_OPS
-                                   | MCA_BTL_FLAGS_RDMA;
+                                   | MCA_BTL_FLAGS_RDMA | MCA_BTL_FLAGS_RDMA_REMOTE_COMPLETION;
 
         module->super.btl_atomic_flags = MCA_BTL_ATOMIC_SUPPORTS_ADD | MCA_BTL_ATOMIC_SUPPORTS_SWAP
                                          | MCA_BTL_ATOMIC_SUPPORTS_CSWAP

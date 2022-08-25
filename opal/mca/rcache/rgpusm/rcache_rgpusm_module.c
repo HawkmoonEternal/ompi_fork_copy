@@ -17,7 +17,7 @@
  * Copyright (c) 2012-2015 NVIDIA Corporation.  All rights reserved.
  * Copyright (c) 2015      Los Alamos National Security, LLC.  All rights
  *                         reserved.
- *
+ * Copyright (c) 2022      Amazon.com, Inc. or its affiliates.  All Rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -86,7 +86,7 @@
 #ifdef HAVE_MALLOC_H
 #    include <malloc.h>
 #endif
-#include "opal/mca/common/cuda/common_cuda.h"
+#include "opal/cuda/common_cuda.h"
 #include "opal/mca/rcache/base/base.h"
 #include "opal/mca/rcache/rcache.h"
 #include "opal/util/proc.h"
@@ -184,7 +184,7 @@ int mca_rcache_rgpusm_register(mca_rcache_base_module_t *rcache, void *addr, siz
     /* This chunk of code handles the case where leave pinned is not
      * set and we do not use the cache.  This is not typically how we
      * will be running.  This means that one can have an unlimited
-     * number of registrations occuring at the same time.  Since we
+     * number of registrations occurring at the same time.  Since we
      * are not leaving the registrations pinned, the number of
      * registrations is unlimited and there is no need for a cache. */
     if (!mca_rcache_rgpusm_component.leave_pinned

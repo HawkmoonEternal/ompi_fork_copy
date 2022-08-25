@@ -10,11 +10,13 @@
  *
  * Copyright (c) 2012      Oracle and/or its affiliates.  All rights reserved.
  * Copyright (c) 2014      NVIDIA Corporation.  All rights reserved.
- * Copyright (c) 2015-2018 Research Organization for Information Science
+ * Copyright (c) 2015-2021 Research Organization for Information Science
  *                         and Technology (RIST).  All rights reserved.
  * Copyright (c) 2015      Los Alamos National Security, LLC. All rights
  *                         reserved.
  * Copyright (c) 2018      FUJITSU LIMITED.  All rights reserved.
+ * Copyright (c) 2021      IBM Corporation.  All rights reserved.
+ * Copyright (c) 2022      Amazon.com, Inc. or its affiliates.  All Rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -31,7 +33,7 @@
 #include "coll_libnbc.h"
 #if OPAL_CUDA_SUPPORT
 #include "opal/datatype/opal_convertor.h"
-#include "opal/mca/common/cuda/common_cuda.h"
+#include "opal/cuda/common_cuda.h"
 #endif /* OPAL_CUDA_SUPPORT */
 #include "ompi/include/ompi/constants.h"
 #include "ompi/request/request.h"
@@ -50,8 +52,15 @@
 extern "C" {
 #endif
 
-/* log(2) */
-#define LOG2 0.69314718055994530941
+/* Dividing very close floats may lead to unexpected roundings */
+static inline int
+ceil_of_log2 (int val) {
+    int ret = 0;
+    while (1 << ret < val) {
+        ret ++;
+    }
+    return ret;
+}
 
 /* true/false */
 #define true 1
@@ -90,7 +99,7 @@ typedef enum {
 /* the send argument struct */
 typedef struct {
   NBC_Fn_type type;
-  int count;
+  size_t count;
   const void *buf;
   MPI_Datatype datatype;
   int dest;
@@ -101,7 +110,7 @@ typedef struct {
 /* the receive argument struct */
 typedef struct {
   NBC_Fn_type type;
-  int count;
+  size_t count;
   void *buf;
   MPI_Datatype datatype;
   char tmpbuf;
@@ -118,18 +127,18 @@ typedef struct {
   void *buf2;
   MPI_Op op;
   MPI_Datatype datatype;
-  int count;
+  size_t count;
 } NBC_Args_op;
 
 /* the copy argument struct */
 typedef struct {
   NBC_Fn_type type;
-  int srccount;
+  size_t srccount;
   void *src;
   void *tgt;
   MPI_Datatype srctype;
   MPI_Datatype tgttype;
-  int tgtcount;
+  size_t tgtcount;
   char tmpsrc;
   char tmptgt;
 } NBC_Args_copy;
@@ -137,7 +146,7 @@ typedef struct {
 /* unpack operation arguments */
 typedef struct {
   NBC_Fn_type type;
-  int count;
+  size_t count;
   void *inbuf;
   void *outbuf;
   MPI_Datatype datatype;
@@ -146,15 +155,15 @@ typedef struct {
 } NBC_Args_unpack;
 
 /* internal function prototypes */
-int NBC_Sched_send (const void* buf, char tmpbuf, int count, MPI_Datatype datatype, int dest, NBC_Schedule *schedule, bool barrier);
-int NBC_Sched_local_send (const void* buf, char tmpbuf, int count, MPI_Datatype datatype, int dest,NBC_Schedule *schedule, bool barrier);
-int NBC_Sched_recv (void* buf, char tmpbuf, int count, MPI_Datatype datatype, int source, NBC_Schedule *schedule, bool barrier);
-int NBC_Sched_local_recv (void* buf, char tmpbuf, int count, MPI_Datatype datatype, int source, NBC_Schedule *schedule, bool barrier);
-int NBC_Sched_op (const void* buf1, char tmpbuf1, void* buf2, char tmpbuf2, int count, MPI_Datatype datatype,
+int NBC_Sched_send (const void* buf, char tmpbuf, size_t count, MPI_Datatype datatype, int dest, NBC_Schedule *schedule, bool barrier);
+int NBC_Sched_local_send (const void* buf, char tmpbuf, size_t count, MPI_Datatype datatype, int dest,NBC_Schedule *schedule, bool barrier);
+int NBC_Sched_recv (void* buf, char tmpbuf, size_t count, MPI_Datatype datatype, int source, NBC_Schedule *schedule, bool barrier);
+int NBC_Sched_local_recv (void* buf, char tmpbuf, size_t count, MPI_Datatype datatype, int source, NBC_Schedule *schedule, bool barrier);
+int NBC_Sched_op (const void* buf1, char tmpbuf1, void* buf2, char tmpbuf2, size_t count, MPI_Datatype datatype,
                   MPI_Op op, NBC_Schedule *schedule, bool barrier);
-int NBC_Sched_copy (void *src, char tmpsrc, int srccount, MPI_Datatype srctype, void *tgt, char tmptgt, int tgtcount,
+int NBC_Sched_copy (void *src, char tmpsrc, size_t srccount, MPI_Datatype srctype, void *tgt, char tmptgt, size_t tgtcount,
                     MPI_Datatype tgttype, NBC_Schedule *schedule, bool barrier);
-int NBC_Sched_unpack (void *inbuf, char tmpinbuf, int count, MPI_Datatype datatype, void *outbuf, char tmpoutbuf,
+int NBC_Sched_unpack (void *inbuf, char tmpinbuf, size_t count, MPI_Datatype datatype, void *outbuf, char tmpoutbuf,
                       NBC_Schedule *schedule, bool barrier);
 
 int NBC_Sched_barrier (NBC_Schedule *schedule);
@@ -564,7 +573,7 @@ static inline void NBC_SchedCache_dictwipe(hb_tree *dict_in, int *size) {
 #define NBC_IN_PLACE(sendbuf, recvbuf, inplace) \
 { \
   inplace = 0; \
-  if(recvbuf == sendbuf) { \
+  if(recvbuf == sendbuf && MPI_BOTTOM != sendbuf) { \
     inplace = 1; \
   } else \
   if(sendbuf == MPI_IN_PLACE) { \

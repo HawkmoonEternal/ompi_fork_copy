@@ -5,7 +5,7 @@
  *                         reserved.
  * Copyright (c) 2019      Research Organization for Information Science
  *                         and Technology (RIST).  All rights reserved.
- * Copyright (c) 2020      Triad National Security, LLC. All rights
+ * Copyright (c) 2020-2021 Triad National Security, LLC. All rights
  *                         reserved.
  * Copyright (c) 2020      Amazon.com, Inc. or its affiliates.
  *                         All Rights reserved.
@@ -98,6 +98,7 @@ typedef struct {
     opal_pmix_condition_t cond;
     volatile bool active;
     int status;
+    size_t errhandler_ref;
     char *msg;
 } opal_pmix_lock_t;
 
@@ -301,7 +302,7 @@ typedef struct {
             (r) = PMIX_ERR_NOT_FOUND;                                                  \
         } else if (_kv->type != (t)) {                                                 \
             (r) = PMIX_ERR_TYPE_MISMATCH;                                              \
-        } else if (PMIX_SUCCESS == (r)) {                                              \
+        } else if (PMIX_SUCCESS == (r) && NULL != (d)) {                               \
             PMIX_VALUE_UNLOAD((r), _kv, (void **) (d), &_sz);                          \
         }                                                                              \
         if (NULL != _kv) {                                                             \

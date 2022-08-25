@@ -9,10 +9,10 @@
 
 #include "ompi_config.h"
 
-#include "ompi/request/request.h"
-#include "ompi/mca/osc/osc.h"
 #include "ompi/mca/osc/base/base.h"
 #include "ompi/mca/osc/base/osc_base_obj_convert.h"
+#include "ompi/mca/osc/osc.h"
+#include "ompi/request/request.h"
 
 #include "osc_portals4.h"
 #include "osc_portals4_request.h"
@@ -29,7 +29,7 @@ request_free(struct ompi_request_t **ompi_req)
     ompi_osc_portals4_request_t *request =
         (ompi_osc_portals4_request_t*) *ompi_req;
 
-    if (true != request->super.req_complete) {
+    if (!REQUEST_COMPLETE(&request->super)) {
         return MPI_ERR_REQUEST;
     }
 

@@ -68,7 +68,13 @@ tm_topology_t * tgt_to_tm(char *filename)
     printf("Reading TGT file: %s\n",filename);
 
 
-  fgets(line,1024,pf);
+  if (NULL == fgets(line,1024,pf)) {
+      /* either an error has occurred (and is in an unknown state) or
+         we hit EOF and line is empty.  Either way, make line the
+         empty string to avoid errors later */
+      line[0] = '\0';
+  }
+
   fclose(pf);
 
   s = strstr(line,"tleaf");
@@ -159,7 +165,13 @@ double ** topology_to_arch(hwloc_topology_t topology)
   double **arch = NULL;
 
   nb_proc = hwloc_get_nbobjs_by_type(topology, HWLOC_OBJ_PU);
-  arch = (double**)MALLOC(sizeof(double*)*nb_proc);
+  if (nb_proc < 0) {
+    return NULL;
+  }
+  arch = (double**)malloc(sizeof(double*)*nb_proc);
+  if (NULL == arch) {
+    return NULL;
+  }
   for( i = 0 ; i < nb_proc ; i++ ){
     obj_proc1 = hwloc_get_obj_by_type(topology,HWLOC_OBJ_PU,i);
     arch[obj_proc1->os_index] = (double*)MALLOC(sizeof(double)*nb_proc);
@@ -534,7 +546,9 @@ int  tm_topology_add_binding_constraints(char *constraints_filename, tm_topology
 
   /* compute the size of the array to store the constraints*/
   n = 0;
-  fgets(line, LINE_SIZE, pf);
+  if (NULL == fgets(line, LINE_SIZE, pf)) {
+    line[0] = '\0';
+  }
   l = line;
   while((ptr=strtok(l," \t"))){
     l = NULL;
@@ -545,7 +559,9 @@ int  tm_topology_add_binding_constraints(char *constraints_filename, tm_topology
   tab = (int*)MALLOC(n*sizeof(int));
 
   rewind(pf);
-  fgets(line, LINE_SIZE, pf);
+  if (NULL == fgets(line, LINE_SIZE, pf)) {
+    line[0] = '\0';
+  }
   fclose(pf);
   l = line;
   i = 0;
@@ -575,7 +591,7 @@ int  tm_topology_add_binding_constraints(char *constraints_filename, tm_topology
 }
 
 
-void topology_numbering_cpy(tm_topology_t *topology,int **numbering,int *nb_nodes)
+void topology_numbering_cpy(tm_topology_t *topology,int **numbering_loc,int *nb_nodes)
 {
   int nb_levels;
   unsigned int vl = tm_get_verbose_level();
@@ -584,8 +600,8 @@ void topology_numbering_cpy(tm_topology_t *topology,int **numbering,int *nb_node
   *nb_nodes = topology->nb_nodes[nb_levels-1];
   if(vl >= INFO)
     printf("nb_nodes=%d\n",*nb_nodes);
-  *numbering = (int*)MALLOC(sizeof(int)*(*nb_nodes));
-  memcpy(*numbering,topology->node_id,sizeof(int)*(*nb_nodes));
+  *numbering_loc = (int*)MALLOC(sizeof(int)*(*nb_nodes));
+  memcpy(*numbering_loc,topology->node_id,sizeof(int)*(*nb_nodes));
 }
 
 void topology_arity_cpy(tm_topology_t *topology,int **arity,int *nb_levels)
@@ -699,7 +715,7 @@ void optimize_arity(int **arity, double **cost, int *nb_levels,int n)
 
 void tm_optimize_topology(tm_topology_t **topology){
   int *arity = NULL,nb_levels;
-  int *numbering = NULL,nb_nodes;
+  int *numbering_loc = NULL,nb_nodes;
   tm_topology_t *new_topo;
   double *cost;
   unsigned int vl = tm_get_verbose_level();
@@ -710,13 +726,13 @@ void tm_optimize_topology(tm_topology_t **topology){
     tm_display_arity(*topology);
 
   topology_arity_cpy(*topology,&arity,&nb_levels);
-  topology_numbering_cpy(*topology,&numbering,&nb_nodes);
+  topology_numbering_cpy(*topology,&numbering_loc,&nb_nodes);
   topology_constraints_cpy(*topology,&constraints,&nb_constraints);
   topology_cost_cpy(*topology,&cost);
 
 
   optimize_arity(&arity,&cost,&nb_levels,nb_levels-2);
-  new_topo = tm_build_synthetic_topology(arity, NULL, nb_levels,numbering,nb_nodes);
+  new_topo = tm_build_synthetic_topology(arity, NULL, nb_levels,numbering_loc,nb_nodes);
   new_topo->cost = cost;
   new_topo->constraints    = constraints;
   new_topo->nb_constraints = nb_constraints;
@@ -736,7 +752,7 @@ void tm_optimize_topology(tm_topology_t **topology){
     tm_display_arity(new_topo);
   }
   FREE(arity);
-  FREE(numbering);
+  FREE(numbering_loc);
   tm_free_topology(*topology);
 
   *topology = new_topo;

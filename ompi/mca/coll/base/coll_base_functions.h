@@ -189,6 +189,7 @@ BEGIN_C_DECLS
 /* All Gather */
 int ompi_coll_base_allgather_intra_bruck(ALLGATHER_ARGS);
 int ompi_coll_base_allgather_intra_recursivedoubling(ALLGATHER_ARGS);
+int ompi_coll_base_allgather_intra_sparbit(ALLGATHER_ARGS);
 int ompi_coll_base_allgather_intra_ring(ALLGATHER_ARGS);
 int ompi_coll_base_allgather_intra_neighborexchange(ALLGATHER_ARGS);
 int ompi_coll_base_allgather_intra_basic_linear(ALLGATHER_ARGS);
@@ -196,6 +197,7 @@ int ompi_coll_base_allgather_intra_two_procs(ALLGATHER_ARGS);
 
 /* All GatherV */
 int ompi_coll_base_allgatherv_intra_bruck(ALLGATHERV_ARGS);
+int ompi_coll_base_allgatherv_intra_sparbit(ALLGATHERV_ARGS);
 int ompi_coll_base_allgatherv_intra_ring(ALLGATHERV_ARGS);
 int ompi_coll_base_allgatherv_intra_neighborexchange(ALLGATHERV_ARGS);
 int ompi_coll_base_allgatherv_intra_basic_default(ALLGATHERV_ARGS);
@@ -517,7 +519,7 @@ OMPI_DECLSPEC OBJ_CLASS_DECLARATION(mca_coll_base_comm_t);
 
 /**
  * Free all requests in an array. As these requests are usually used during
- * collective communications, and as on a succesful collective they are
+ * collective communications, and as on a successful collective they are
  * expected to be released during the corresponding wait, the array should
  * generally be empty. However, this function might be used on error conditions
  * where it will allow a correct cleanup.
@@ -542,7 +544,7 @@ static inline void ompi_coll_base_free_reqs(ompi_request_t **reqs, int count)
                  * free, as this is the best that can be done in this case. */
                 ompi_request_cancel(reqs[i]);
                 ompi_request_wait(&reqs[i], MPI_STATUS_IGNORE);
-            } else /* this 'else' intentionaly spills outside the ifdef */
+            } else /* this 'else' intentionally spills outside the ifdef */
 #endif /* OPAL_ENABLE_FT_MPI */
             ompi_request_free(&reqs[i]);
         }

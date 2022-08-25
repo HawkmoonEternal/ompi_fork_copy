@@ -10,16 +10,16 @@
 
 #include "ompi_config.h"
 
+#include "opal/util/bit_ops.h"
+
+#include "ompi/constants.h"
+#include "ompi/datatype/ompi_datatype.h"
+#include "ompi/mca/coll/base/base.h"
+#include "ompi/mca/coll/coll.h"
+#include "ompi/mca/pml/pml.h"
+
 #include "coll_portals4.h"
 #include "coll_portals4_request.h"
-
-#include "mpi.h"
-#include "ompi/constants.h"
-#include "opal/util/bit_ops.h"
-#include "ompi/mca/pml/pml.h"
-#include "ompi/mca/coll/coll.h"
-#include "ompi/mca/coll/base/base.h"
-#include "ompi/datatype/ompi_datatype.h"
 
 /*
  * the bcast communication is based on 1 to N scheme
@@ -200,13 +200,13 @@ bcast_kary_tree_top(void *buff, int count,
     }
 
     /* Compute match bits */
-    COLL_PORTALS4_SET_BITS(match_bits_ack, ompi_comm_get_cid(comm), 1, 0,
+    COLL_PORTALS4_SET_BITS(match_bits_ack, ompi_comm_get_local_cid(comm), 1, 0,
             COLL_PORTALS4_BCAST, 0, internal_count);
 
-    COLL_PORTALS4_SET_BITS(match_bits_rtr, ompi_comm_get_cid(comm), 0, 1,
+    COLL_PORTALS4_SET_BITS(match_bits_rtr, ompi_comm_get_local_cid(comm), 0, 1,
             COLL_PORTALS4_BCAST, 0, internal_count);
 
-    COLL_PORTALS4_SET_BITS(match_bits, ompi_comm_get_cid(comm), 0, 0,
+    COLL_PORTALS4_SET_BITS(match_bits, ompi_comm_get_local_cid(comm), 0, 0,
             COLL_PORTALS4_BCAST, 0, internal_count);
 
     /* The data will be cut in segment_nb segments.
@@ -531,13 +531,13 @@ bcast_pipeline_top(void *buff, int count,
     }
 
     /* Compute match bits */
-    COLL_PORTALS4_SET_BITS(match_bits_ack, ompi_comm_get_cid(comm), 1, 0,
+    COLL_PORTALS4_SET_BITS(match_bits_ack, ompi_comm_get_local_cid(comm), 1, 0,
             COLL_PORTALS4_BCAST, 0, internal_count);
 
-    COLL_PORTALS4_SET_BITS(match_bits_rtr, ompi_comm_get_cid(comm), 0, 1,
+    COLL_PORTALS4_SET_BITS(match_bits_rtr, ompi_comm_get_local_cid(comm), 0, 1,
             COLL_PORTALS4_BCAST, 0, internal_count);
 
-    COLL_PORTALS4_SET_BITS(match_bits, ompi_comm_get_cid(comm), 0, 0,
+    COLL_PORTALS4_SET_BITS(match_bits, ompi_comm_get_local_cid(comm), 0, 0,
             COLL_PORTALS4_BCAST, 0, internal_count);
     /* The data will be cut in segment_nb segments.
      * nb_long segments will have a size of (seg_size + 1)

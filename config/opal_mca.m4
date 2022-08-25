@@ -10,10 +10,12 @@ dnl Copyright (c) 2004-2005 High Performance Computing Center Stuttgart,
 dnl                         University of Stuttgart.  All rights reserved.
 dnl Copyright (c) 2004-2005 The Regents of the University of California.
 dnl                         All rights reserved.
-dnl Copyright (c) 2010-2016 Cisco Systems, Inc.  All rights reserved.
+dnl Copyright (c) 2010-2021 Cisco Systems, Inc.  All rights reserved
 dnl Copyright (c) 2013-2017 Intel, Inc. All rights reserved.
 dnl Copyright (c) 2018-2021 Amazon.com, Inc. or its affiliates.
 dnl                         All Rights reserved.
+dnl Copyright (c) 2021      Triad National Security, LLC. All rights
+dnl                         reserved.
 dnl $COPYRIGHT$
 dnl
 dnl Additional copyrights may follow
@@ -41,6 +43,8 @@ AC_DEFUN([OPAL_EVAL_ARG], [$1])
 AC_DEFUN([OPAL_MCA],[
     dnl for OPAL_CONFIGURE_USER env variable
     AC_REQUIRE([OPAL_CONFIGURE_SETUP])
+    dnl For all the path management
+    AC_REQUIRE([OPAL_SETUP_WRAPPER_INIT])
 
     # Set a special flag so that we can detect if the user calls
     # OPAL_WRAPPER_FLAGS_ADD and error.
@@ -59,9 +63,9 @@ AC_DEFUN([OPAL_MCA],[
         [AS_HELP_STRING([--enable-mca-no-build=LIST],
                         [Comma-separated list of <type>-<component> pairs
                          that will not be built.  Example:
-                         "--enable-mca-no-build=btl-portals,oob-ud" will
-                         disable building the "portals" btl and the "ud"
-                         oob components.])])
+                         "--enable-mca-no-build=btl-portals4,topo-treematch" will
+                         disable building the "portals4" btl and the "treematch"
+                         topo components.])])
     AC_ARG_ENABLE([mca-dso],
         [AS_HELP_STRING([--enable-mca-dso=LIST],
                        [Comma-separated list of types and/or
@@ -91,7 +95,7 @@ AC_DEFUN([OPAL_MCA],[
     if test "$enable_mca_no_build" = "yes"; then
         AC_MSG_RESULT([yes])
         AC_MSG_ERROR([*** The enable-mca-no-build flag requires an explicit list
-*** of type-component pairs.  For example, --enable-mca-no-build=pml-ob1])
+of type-component pairs.  For example, --enable-mca-no-build=pml-ob1])
     else
         ifs_save="$IFS"
         IFS="${IFS}$PATH_SEPARATOR,"
@@ -103,10 +107,10 @@ AC_DEFUN([OPAL_MCA],[
                 type=$item
             fi
             if test -z $comp ; then
-                AS_VAR_SET([AS_TR_SH([DISABLE_$type])], [1])
+                AS_VAR_SET([AS_TR_SH([DISABLE_${type}])], [1])
                 msg="$item $msg"
             else
-                AS_VAR_SET([AS_TR_SH([DISABLE_$type_$comp])], [1])
+                AS_VAR_SET([AS_TR_SH([DISABLE_${type}_${comp}])], [1])
                 msg="$item $msg"
             fi
         done
@@ -121,11 +125,7 @@ AC_DEFUN([OPAL_MCA],[
     # in the form DIRECT_[type]=[component]
     #
     AC_MSG_CHECKING([which components should be direct-linked into the library])
-    if test "$enable_mca_direct" = "yes" ; then
-        AC_MSG_RESULT([yes])
-        AC_MSG_ERROR([*** The enable-mca-direct flag requires an explicit list of
-*** type-component pairs.  For example, --enable-mca-direct=pml-ob1,coll-basic])
-    elif test ! -z "$enable_mca_direct" && test "$enable_mca_direct" != "" ; then
+    if test -n "$enable_mca_direct" ; then
         #
         # we need to add this into the static list, unless the static list
         # is everything
@@ -143,15 +143,21 @@ AC_DEFUN([OPAL_MCA],[
         IFS="${IFS}$PATH_SEPARATOR,"
         msg=
         for item in $enable_mca_direct; do
-            type="`echo $item | cut -f1 -d-`"
-            comp="`echo $item | cut -f2- -d-`"
+            type="`echo $item | cut -s -f1 -d-`"
+            comp="`echo $item | cut -s -f2- -d-`"
             if test -z $type || test -z $comp ; then
-                AC_MSG_ERROR([*** The enable-mca-direct flag requires a
-*** list of type-component pairs.  Invalid input detected.])
-            else
-                AS_VAR_SET([AS_TR_SH([DIRECT_$type])], [AS_TR_SH([$comp])])
-                msg="$item $msg"
+                AC_MSG_ERROR([enable-mca-direct requires a list of type-component pairs (ex. --enable-mca-direct=pml-ob1,smsc-xpmem)])
             fi
+
+            var_name=AS_TR_SH([DIRECT_${type}])
+            AS_VAR_COPY([var_value], [$var_name])
+
+            if test -n "$var_value" ; then
+                AC_MSG_ERROR([enable-mca-direct can only enable a single component per framwork: specified both ${type}-${var_value} and ${type}-${comp}.])
+            fi
+
+            AS_VAR_SET([$var_name], AS_TR_SH([${comp}]))
+            msg="$item $msg"
         done
         IFS="$ifs_save"
     fi
@@ -454,6 +460,18 @@ AC_DEFUN([MCA_CONFIGURE_FRAMEWORK],[
                                                [static_components], [dso_components],
                                                [static_ltlibs])])])])])
 
+    AS_VAR_SET_IF([OPAL_EVAL_ARG([DIRECT_$2])], [
+                      AC_MSG_CHECKING([if direct-selection component exists for $2 framework])
+                      direct_component_happy=no
+                      for component in $all_components ; do
+                          AS_IF([test $component = "$DIRECT_$2"], [direct_component_happy=yes])
+                      done
+                      if test $direct_component_happy = no ; then
+                          AC_MSG_ERROR([direct component $DIRECT_$2 requested but not found in $all_components])
+                      fi
+                      AC_MSG_RESULT([$DIRECT_$2])
+                  ])
+
     MCA_$1_$2_ALL_COMPONENTS="$all_components"
     MCA_$1_$2_STATIC_COMPONENTS="$static_components"
     MCA_$1_$2_DSO_COMPONENTS="$dso_components"
@@ -735,7 +753,7 @@ AC_DEFUN([OPAL_MCA_STRIP_LAFILES], [
     OPAL_VAR_SCOPE_PUSH([opal_tmp])
 
     for arg in $2; do
-	opal_tmp=`echo $arg | awk '{print substr([$][1], length([$][1])-2) }'`
+        opal_tmp=`echo $arg | awk '{print substr([$][1], length([$][1])-2) }'`
         AS_IF([test "$opal_tmp" != ".la"],
               [AS_IF([test -z "$$1"], [$1=$arg], [$1="$$1 $arg"])])
     done
@@ -767,12 +785,12 @@ AC_DEFUN([MCA_PROCESS_COMPONENT],[
     else
         if test "$2" = "common"; then
             # Static libraries in "common" frameworks are installed, and
-            # therefore must obey the $FRAMEWORK_LIB_PREFIX that was
+            # therefore must obey the $FRAMEWORK_LIB_NAME that was
             # set.
-            $7="mca/$2/$3/lib${m4_translit([$1], [a-z], [A-Z])_LIB_PREFIX}mca_$2_$3.la $$7"
+            $7="mca/$2/$3/lib${m4_translit([$1], [a-z], [A-Z])_LIB_NAME}mca_$2_$3.la $$7"
         else
             # Other frameworks do not have to obey the
-            # $FRAMEWORK_LIB_PREFIX prefix.
+            # $FRAMEWORK_LIB_NAME prefix.
             $7="mca/$2/$3/libmca_$2_$3.la $$7"
         fi
         echo "extern const mca_base_component_t mca_$2_$3_component;" >> $outfile.extern
@@ -818,28 +836,29 @@ AC_MSG_ERROR([*** $2 component $3 was supposed to be direct-called, but
     # provide them for the final link of the application.  Components
     # can explicitly set <framework>_<component>_WRAPPER_EXTRA_<flag>
     # for either LDFLAGS or LIBS, for cases where the component wants
-    # to explicitly manage that behavior.  If the full variable is not
-    # defined, this macro will copy <framework>_<component>_<flag>
-    # into the wrapper flags.
+    # to explicitly manage which flags are passed to the wrapper
+    # compiler.  If the <framework>_<component>_WRAPPER_EXTRA_<flag>
+    # variable is not set, then it is assumed that the component
+    # wishes all LDFLAGS and LIBS to be provided as wrapper flags.
     AS_IF([test "$8" = "static"],
-          [m4_foreach(flags, [LDFLAGS, LIBS],
-                      [m4_if(flags, [LIBS],
-                             [OPAL_MCA_STRIP_LAFILES([tmp_]flags, [$$2_$3_]flags)],
-                             [tmp_]flags[=$$2_$3_]flags)
-                       AS_VAR_SET_IF([$2_$3_WRAPPER_EXTRA_]flags,
-                                     [OPAL_FLAGS_APPEND_UNIQ([mca_wrapper_extra_]m4_tolower(flags), [$$2_$3_WRAPPER_EXTRA_]flags)],
-                                     [OPAL_FLAGS_APPEND_UNIQ([mca_wrapper_extra_]m4_tolower(flags), [$tmp_]flags)])
-                       dnl yes, this is weird indenting, but the
-                       dnl combination of m4_foreach and AS_VAR_SET_IF
-                       dnl will result in the closing of one if and the
-                       dnl start of the next on the same line, resulting
-		       dnl in parse errors, if this is not here.
-		       ])])
+          [AS_VAR_SET_IF([$2_$3_WRAPPER_EXTRA_LDFLAGS],
+              [AS_VAR_COPY([tmp_flags], [$2_$3_WRAPPER_EXTRA_LDFLAGS])],
+              [AS_VAR_COPY([tmp_flags], [$2_$3_LDFLAGS])])
+           OPAL_FLAGS_APPEND_UNIQ([mca_wrapper_extra_ldflags], [$tmp_flags])
 
+           AS_VAR_SET_IF([$2_$3_WRAPPER_EXTRA_LIBS],
+              [AS_VAR_COPY([tmp_flags], [$2_$3_WRAPPER_EXTRA_LIBS])],
+              [AS_VAR_COPY([tmp_all_flags], [$2_$3_LIBS])
+               OPAL_MCA_STRIP_LAFILES([tmp_flags], [$tmp_all_flags])])
+           OPAL_FLAGS_APPEND_MOVE([mca_wrapper_extra_libs], [$tmp_flags])])
 
-    # if needed, copy over WRAPPER_EXTRA_CPPFLAGS.  Since a configure script
-    # component can never be used in a STOP_AT_FIRST framework, we
-    # don't have to implement the else clause in the literal check...
+    # WRAPPER_EXTRA_CPPFLAGS are only needed for STOP_AT_FIRST
+    # components, as all other components are not allowed to leak
+    # headers or compile-time flags into the top-level library or
+    # wrapper compilers.  If needed, copy over WRAPPER_EXTRA_CPPFLAGS.
+    # Since a configure script component can never be used in a
+    # STOP_AT_FIRST framework, we don't have to implement the else
+    # clause in the literal check.
     AS_LITERAL_IF([$3],
         [AS_IF([test "$$2_$3_WRAPPER_EXTRA_CPPFLAGS" != ""],
            [m4_if(OPAL_EVAL_ARG([MCA_$1_$2_CONFIGURE_MODE]), [STOP_AT_FIRST], [stop_at_first=1], [stop_at_first=0])
@@ -934,7 +953,7 @@ AC_DEFUN([MCA_COMPONENT_BUILD_CHECK],[
 
     # if we were explicitly disabled, don't build :)
     AS_IF([test "$DISABLE_$2" = "1"], [want_component=0])
-    AS_VAR_IF([DISABLE_$2_$3], [1], [want_component = 0])
+    AS_VAR_IF([DISABLE_$2_$3], [1], [want_component=0])
 
     AS_IF([test "$want_component" = "1"], [$4], [$5])
 ])

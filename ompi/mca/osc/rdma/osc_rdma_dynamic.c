@@ -214,7 +214,7 @@ int ompi_osc_rdma_attach (struct ompi_win_t *win, void *base, size_t len)
         return ret;
     }
 
-    /* do a binary seach for where the region should be inserted */
+    /* do a binary search for where the region should be inserted */
     if (region_count) {
         region = find_insertion_point ((ompi_osc_rdma_region_t *) module->state->regions, 0, region_count - 1,
                                        (intptr_t) base, module->region_size, &region_index);
@@ -252,7 +252,8 @@ int ompi_osc_rdma_attach (struct ompi_win_t *win, void *base, size_t len)
             return OMPI_ERR_RMA_ATTACH;
         }
 
-        memcpy (region->btl_handle_data, handle, module->selected_btls[0]->btl_registration_handle_size);
+        assert(module->use_accelerated_btl);
+        memcpy(region->btl_handle_data, handle, module->accelerated_btl->btl_registration_handle_size);
         rdma_region_handle->btl_handle = handle;
     } else {
         rdma_region_handle->btl_handle = NULL;
@@ -467,12 +468,9 @@ int ompi_osc_rdma_find_dynamic_region (ompi_osc_rdma_module_t *module, ompi_osc_
                      " (len %lu)", base, base + len, (unsigned long) len);
 
     OPAL_THREAD_LOCK(&module->lock);
-    // Make sure region isn't being touched.
-    ompi_osc_rdma_lock_acquire_exclusive (module, peer, offsetof (ompi_osc_rdma_state_t, regions_lock));
     if (!ompi_osc_rdma_peer_local_state (peer)) {
         ret = ompi_osc_rdma_refresh_dynamic_region (module, dy_peer);
         if (OMPI_SUCCESS != ret) {
-            ompi_osc_rdma_lock_release_exclusive (module, peer, offsetof (ompi_osc_rdma_state_t, regions_lock));
             return ret;
         }
 
@@ -489,7 +487,6 @@ int ompi_osc_rdma_find_dynamic_region (ompi_osc_rdma_module_t *module, ompi_osc_
         ret = OMPI_ERR_RMA_RANGE;
     }
     OPAL_THREAD_UNLOCK(&module->lock);
-    ompi_osc_rdma_lock_release_exclusive (module, peer, offsetof (ompi_osc_rdma_state_t, regions_lock));
 
     /* round a matching region */
     return ret;

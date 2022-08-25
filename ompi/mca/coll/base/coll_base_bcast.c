@@ -218,8 +218,10 @@ ompi_coll_base_bcast_intra_generic( void* buffer,
         for( req_index = 0; req_index < 2; req_index++ ) {
             if (MPI_REQUEST_NULL == recv_reqs[req_index]) continue;
             if (MPI_ERR_PENDING == recv_reqs[req_index]->req_status.MPI_ERROR) continue;
-            err = recv_reqs[req_index]->req_status.MPI_ERROR;
-            break;
+            if (recv_reqs[req_index]->req_status.MPI_ERROR != MPI_SUCCESS) {
+                err = recv_reqs[req_index]->req_status.MPI_ERROR;
+                break;
+            }
         }
     }
     ompi_coll_base_free_reqs( recv_reqs, 2);
@@ -228,8 +230,10 @@ ompi_coll_base_bcast_intra_generic( void* buffer,
             for( req_index = 0; req_index < tree->tree_nextsize; req_index++ ) {
                 if (MPI_REQUEST_NULL == send_reqs[req_index]) continue;
                 if (MPI_ERR_PENDING == send_reqs[req_index]->req_status.MPI_ERROR) continue;
-                err = send_reqs[req_index]->req_status.MPI_ERROR;
-                break;
+                if (send_reqs[req_index]->req_status.MPI_ERROR != MPI_SUCCESS) {
+                    err = send_reqs[req_index]->req_status.MPI_ERROR;
+                    break;
+                }
             }
         }
         ompi_coll_base_free_reqs(send_reqs, tree->tree_nextsize);
@@ -365,7 +369,7 @@ ompi_coll_base_bcast_intra_split_bintree ( void* buffer,
     int err=0, line, rank, size, segindex, i, lr, pair;
     uint32_t counts[2];
     int segcount[2];       /* Number of elements sent with each segment */
-    int num_segments[2];   /* Number of segmenets */
+    int num_segments[2];   /* Number of segments */
     int sendcount[2];      /* the same like segcount, except for the last segment */
     size_t realsegsize[2], type_size;
     char *tmpbuf[2];
@@ -503,7 +507,7 @@ ompi_coll_base_bcast_intra_split_bintree ( void* buffer,
                 if (err != MPI_SUCCESS) { line = __LINE__; goto error_hndl; }
             } /* end of for each child */
 
-            /* upate the base request */
+            /* update the base request */
             base_req = new_req;
             /* go to the next buffer (ie. the one corresponding to the next recv) */
             tmpbuf[lr] += realsegsize[lr];
@@ -679,8 +683,10 @@ ompi_coll_base_bcast_intra_basic_linear(void *buff, int count,
         for( preq = reqs; preq < reqs+i; preq++ ) {
             if (MPI_REQUEST_NULL == *preq) continue;
             if (MPI_ERR_PENDING == (*preq)->req_status.MPI_ERROR) continue;
-            err = (*preq)->req_status.MPI_ERROR;
-            break;
+            if ((*preq)->req_status.MPI_ERROR != MPI_SUCCESS) {
+                err = (*preq)->req_status.MPI_ERROR;
+                break;
+            }
         }
         ompi_coll_base_free_reqs(reqs, i);
     }

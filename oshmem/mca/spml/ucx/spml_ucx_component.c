@@ -161,6 +161,11 @@ static int mca_spml_ucx_component_register(void)
                                      "Use synchronized quiet on shmem_quiet or shmem_barrier_all operations",
                                      &mca_spml_ucx_ctx_default.synchronized_quiet);
 
+    mca_spml_ucx_param_register_int("strong_sync", 0,
+                                    "Use strong synchronization on shmem_quiet, shmem_fence or shmem_barrier_all operations: "
+                                    "0 - don't do strong synchronization, 1 - use non blocking get, 2 - use blocking get, 3 - use flush operation",
+                                    &mca_spml_ucx_ctx_default.strong_sync);
+
     mca_spml_ucx_param_register_ulong("nb_progress_thresh_global", 0,
                                     "Number of nb_put or nb_get operations before ucx progress is triggered. Disabled by default (0). Setting this value will override nb_put/get_progress_thresh.",
                                     &mca_spml_ucx.nb_progress_thresh_global);
@@ -383,7 +388,14 @@ mca_spml_ucx_component_init(int* priority,
     if (OSHMEM_SUCCESS != spml_ucx_init())
         return NULL ;
 
+    if ((mca_spml_ucx_ctx_default.strong_sync < SPML_UCX_STRONG_ORDERING_NONE) ||
+        (mca_spml_ucx_ctx_default.strong_sync > SPML_UCX_STRONG_ORDERING_FLUSH)) {
+        SPML_UCX_ERROR("incorrect value of strong_sync parameter: %d",
+                       mca_spml_ucx_ctx_default.strong_sync);
+    }
+
     SPML_UCX_VERBOSE(50, "*** ucx initialized ****");
+
     return &mca_spml_ucx.super;
 }
 
@@ -391,13 +403,23 @@ static void _ctx_cleanup(mca_spml_ucx_ctx_t *ctx)
 {
     int i, j, nprocs = oshmem_num_procs();
     opal_common_ucx_del_proc_t *del_procs;
+    spml_ucx_mkey_t   *ucx_mkey;
+    int rc;
 
     del_procs = malloc(sizeof(*del_procs) * nprocs);
 
     for (i = 0; i < nprocs; ++i) {
         for (j = 0; j < memheap_map->n_segments; j++) {
-            if (ctx->ucp_peers[i].mkeys[j].key.rkey != NULL) {
-                ucp_rkey_destroy(ctx->ucp_peers[i].mkeys[j].key.rkey);
+            rc = mca_spml_ucx_ctx_mkey_by_seg(ctx, i, j, &ucx_mkey);
+            if (OSHMEM_SUCCESS != rc) {
+                SPML_UCX_ERROR("mca_spml_ucx_ctx_mkey_by_seg failed");
+            } else {
+                if (ucx_mkey->rkey != NULL) {
+                    rc = mca_spml_ucx_ctx_mkey_del(ctx, i, j, ucx_mkey);
+                    if (OSHMEM_SUCCESS != rc) {
+                        SPML_UCX_ERROR("mca_spml_ucx_ctx_mkey_del failed");
+                    }
+                }
             }
         }
 

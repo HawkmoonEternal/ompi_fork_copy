@@ -1,13 +1,13 @@
 #!/usr/bin/env perl
 #
-# Copyright (c) 2009-2021 Cisco Systems, Inc.  All rights reserved
+# Copyright (c) 2009-2022 Cisco Systems, Inc.  All rights reserved
 # Copyright (c) 2010      Oracle and/or its affiliates.  All rights reserved.
 # Copyright (c) 2013      Mellanox Technologies, Inc.
 #                         All rights reserved.
 # Copyright (c) 2013-2020 Intel, Inc.  All rights reserved.
-# Copyright (c) 2015-2020 Research Organization for Information Science
+# Copyright (c) 2015-2021 Research Organization for Information Science
 #                         and Technology (RIST).  All rights reserved.
-# Copyright (c) 2015-2021 IBM Corporation.  All rights reserved.
+# Copyright (c) 2015-2022 IBM Corporation.  All rights reserved.
 # Copyright (c) 2020      Amazon.com, Inc. or its affiliates.
 #                         All Rights reserved.
 #
@@ -43,7 +43,6 @@ my $dnl_line = "dnl ------------------------------------------------------------
 # Data structures to fill up with all the stuff we find
 my $mca_found;
 my $mpiext_found;
-my $mpicontrib_found;
 my @subdirs;
 
 # Command line parameters
@@ -66,9 +65,9 @@ my $include_list;
 my $exclude_list;
 
 # Minimum versions
-my $ompi_automake_version = "1.13.4";
-my $ompi_autoconf_version = "2.69";
-my $ompi_libtool_version = "2.4.2";
+my $ompi_automake_version;
+my $ompi_autoconf_version;
+my $ompi_libtool_version;
 
 # Search paths
 my $ompi_autoconf_search = "autoconf";
@@ -77,7 +76,7 @@ my $ompi_libtoolize_search = "libtoolize;glibtoolize";
 
 # version of packages we ship as tarballs
 my $libevent_version="2.1.12-stable";
-my $hwloc_version="2.4.0";
+my $hwloc_version="2.7.1";
 
 # One-time setup
 my $username;
@@ -130,6 +129,18 @@ sub debug_dump {
     my $d = new Data::Dumper([@_]);
     $d->Purity(1)->Indent(1);
     debug $d->Dump;
+}
+
+##############################################################################
+
+sub list_contains {
+    my $searched_string = shift;
+    foreach my $str (@_) {
+	if ($searched_string eq $str) {
+	    return 1;
+	}
+    }
+    return 0;
 }
 
 ##############################################################################
@@ -231,7 +242,7 @@ sub process_autogen_subdirs {
                 # Note: there's no real technical reason to defer
                 # processing the subdirs.  It's more of an aesthetic
                 # reason -- don't interrupt the current flow of
-                # finding mca / ext / contribs (which is a nice, fast
+                # finding mca / ext (which is a nice, fast
                 # process).  Then process the subdirs (which is a slow
                 # process) all at once.
                 push(@subdirs, "$dir/$_");
@@ -348,10 +359,18 @@ sub mca_process_framework {
                 verbose "--- Found $pname / $framework / $d component\n";
 
                 # Skip if specifically excluded
-                if (exists($exclude_list->{$framework}) &&
-                    $exclude_list->{$framework}[0] eq $d) {
-                    verbose "    => Excluded\n";
-                    next;
+                if (exists($exclude_list->{$framework})) {
+                    my $tst = 0;
+                    foreach my $ck (@{$exclude_list->{$framework}}) {
+                        if ($ck eq $d) {
+                            verbose "    => Excluded\n";
+                            $tst = 1;
+                            last;
+                        }
+                    }
+                    if ($tst) {
+                        next;
+                    }
                 }
 
                 # Skip if the framework is on the include list, but
@@ -696,93 +715,6 @@ m4_define([ompi_mpiext_list], [$m4_config_ext_list])\n";
 }
 
 ##############################################################################
-
-sub mpicontrib_process {
-    my ($topdir, $contrib_prefix, $contribdir) = @_;
-
-    my $cdir = "$topdir/$contrib_prefix/$contribdir";
-    return
-        if (! -d $cdir);
-
-    # Process this directory (pretty much the same treatment as for
-    # MCA components, so it's in a sub).
-    my $found_contrib;
-
-    $found_contrib->{"name"} = $contribdir;
-
-    # Push the results onto the hash array
-    push(@{$mpicontrib_found}, $found_contrib);
-
-    # Is there an autogen.subdirs in here?
-    process_autogen_subdirs($cdir);
-}
-
-##############################################################################
-
-sub mpicontrib_run_global {
-    my ($contrib_prefix) = @_;
-
-    my $topdir = Cwd::cwd();
-
-    my $dir = "$topdir/$contrib_prefix";
-    opendir(DIR, $dir) ||
-        my_die "Can't open $dir directory";
-    foreach my $d (sort(readdir(DIR))) {
-        # Skip any non-directory, "base", or any dir that begins with "."
-        next
-            if (! -d "$dir/$d" || $d eq "base" || substr($d, 0, 1) eq ".");
-
-        # If this directory has a configure.m4, then it's an
-        # contrib.
-        if (-f "$dir/$d/configure.m4") {
-            verbose "=== Found $d MPI contrib";
-
-            # Check ignore status
-            if (ignored("$dir/$d")) {
-                verbose " (ignored)\n";
-            } else {
-                verbose "\n";
-                mpicontrib_process($topdir, $contrib_prefix, $d);
-            }
-        }
-    }
-    closedir(DIR);
-    debug_dump($mpicontrib_found);
-
-    #-----------------------------------------------------------------------
-
-    $m4 .= "\n$dnl_line
-$dnl_line
-$dnl_line
-
-dnl Open MPI contrib information
-$dnl_line\n\n";
-
-    # Array for all the m4_includes that we'll need to pick up the
-    # configure.m4's.
-    my @includes;
-    my $m4_config_contrib_list;
-
-    # Troll through each of the found contribs
-    foreach my $contrib (@{$mpicontrib_found}) {
-        my $c = $contrib->{name};
-        push(@includes, "$contrib_prefix/$c/configure.m4");
-        $m4_config_contrib_list .= ", $c";
-    }
-
-    $m4_config_contrib_list =~ s/^, //;
-
-    # List the M4 and no configure contribs
-    $m4 .= "dnl List of all MPI contribs
-m4_define([ompi_mpicontrib_list], [$m4_config_contrib_list])\n";
-    # List out all the m4_include
-    $m4 .= "\ndnl List of configure.m4 files to include\n";
-    foreach my $i (@includes) {
-        $m4 .= "m4_include([$i])\n";
-    }
-}
-
-##############################################################################
 # Find and remove stale files
 
 sub find_and_delete {
@@ -1045,10 +977,28 @@ sub patch_autotools_output {
 	  whole_archive_flag_spec${tag}=
 	  tmp_sharedflag='--shared' ;;
 	nagfor*)			# NAGFOR 5.3
-	  tmp_sharedflag='-Wl,-shared';;
+	  tmp_sharedflag='-Wl,-shared' ;;
 	xl";
 
-        push(@verbose_out, $indent_str . "Patching configure for NAG compiler ($tag)\n");
+        push(@verbose_out, $indent_str . "Patching configure for NAG compiler #1 ($tag)\n");
+        $c =~ s/$search_string/$replace_string/;
+
+        # Newer versions of Libtool have the previous patch already. Therefore,
+        # we add the support for convenience libraries separetly
+        my $search_string = "whole_archive_flag_spec${tag}=" . '\n\s+' .
+            "tmp_sharedflag='--shared' ;;" . '\n\s+' .
+            'nagfor\052.*# NAGFOR 5.3\n\s+' .
+            "tmp_sharedflag='-Wl,-shared' ;;" . '\n\s+' .
+            'xl';
+        my $replace_string = "whole_archive_flag_spec${tag}=
+	  tmp_sharedflag='--shared' ;;
+        nagfor*)                        # NAGFOR 5.3
+          whole_archive_flag_spec${tag}='\$wl--whole-archive`for conv in \$convenience\\\"\\\"; do test  -n \\\"\$conv\\\" && new_convenience=\\\"\$new_convenience,\$conv\\\"; done; func_echo_all \\\"\$new_convenience\\\"` \$wl--no-whole-archive'
+          compiler_needs_object=yes
+          tmp_sharedflag='-Wl,-shared' ;;
+	xl";
+
+        push(@verbose_out, $indent_str . "Patching configure for NAG compiler #2 ($tag)\n");
         $c =~ s/$search_string/$replace_string/;
     }
 
@@ -1129,6 +1079,60 @@ sub patch_autotools_output {
     # Use cp so that we preserve permissions on configure
     safe_system("cp configure.patched configure");
     unlink("configure.patched");
+}
+
+sub export_version {
+    my ($name,$version) = @_;
+    $version =~ s/[^a-zA-Z0-9,.]//g;
+    my @version_splits = split(/\./,$version);
+    my $hex = sprintf("0x%04x%02x%02x", $version_splits[0], $version_splits[1], $version_splits[2]);
+    $m4 .= "m4_define([OMPI_${name}_MIN_VERSION], [$version])\n";
+    $m4 .= "m4_define([OMPI_${name}_NUMERIC_MIN_VERSION], [$hex])\n";
+}
+
+sub get_and_define_min_versions() {
+
+    open(IN, "VERSION") || my_die "Can't open VERSION";
+    while (<IN>) {
+          my $line = $_;
+          my @fields = split(/=/,$line);
+          if ($fields[0] eq "automake_min_version") {
+              if ($fields[1] ne "\n") {
+                  $ompi_automake_version = $fields[1];
+              }
+          }
+          elsif($fields[0] eq "autoconf_min_version") {
+              if ($fields[1] ne "\n") {
+                  $ompi_autoconf_version = $fields[1];
+              }
+          }
+          elsif($fields[0] eq "libtool_min_version") {
+              if ($fields[1] ne "\n") {
+                  $ompi_libtool_version = $fields[1];
+              }
+          }
+          elsif($fields[0] eq "pmix_min_version") {
+              if ($fields[1] ne "\n") {
+                  export_version("PMIX", $fields[1]);
+              }
+          }
+          elsif($fields[0] eq "prte_min_version") {
+              if ($fields[1] ne "\n") {
+                  export_version("PRTE", $fields[1]);
+              }
+          }
+          elsif($fields[0] eq "hwloc_min_version") {
+              if ($fields[1] ne "\n") {
+                  export_version("HWLOC", $fields[1]);
+              }
+          }
+          elsif($fields[0] eq "event_min_version") {
+              if ($fields[1] ne "\n") {
+                  export_version("EVENT", $fields[1]);
+              }
+          }
+    }
+    close(IN);
 }
 
 sub in_tarball {
@@ -1343,7 +1347,7 @@ $dnl_line\n\n";
 # Verify that we're in the OMPI root directorty by checking for a token file.
 
 my_die "Not at the root directory of an OMPI source tree"
-    if (! -f "config/opal_try_assemble.m4");
+    if (! -f "config/opal_mca.m4");
 
 my_die "autogen.pl has been invoked in the source tree of an Open MPI distribution tarball; aborting...
 You likely do not need to invoke \"autogen.pl\" -- you can probably run \"configure\" directly.
@@ -1361,6 +1365,8 @@ verbose "Open MPI autogen (buckle up!)
 
 $step. Checking tool versions\n\n";
 
+get_and_define_min_versions();
+
 # Check the autotools revision levels
 &find_and_check("autoconf", $ompi_autoconf_search, $ompi_autoconf_version);
 &find_and_check("libtool", $ompi_libtoolize_search, $ompi_libtool_version);
@@ -1370,6 +1376,16 @@ $step. Checking tool versions\n\n";
 
 ++$step;
 verbose "\n$step. Checking for git submodules\n\n";
+
+my @enabled_3rdparty_packages = ();
+my @disabled_3rdparty_packages = split(/,/, $no_3rdparty_arg);
+if ($no_prrte_arg) {
+    push(@disabled_3rdparty_packages, "prrte");
+}
+# Alias: 'openpmix' -> 'pmix'
+if (list_contains("openpmix", @disabled_3rdparty_packages)) {
+    push(@disabled_3rdparty_packages, "pmix");
+}
 
 # Make sure we got a submodule-full clone.  If not, abort and let a
 # human figure it out.
@@ -1385,6 +1401,14 @@ if (-f ".gitmodules") {
         my $extra      = $4;
 
         print("=== Submodule: $path\n");
+        if (index($path, "pmix") != -1 and list_contains("pmix", @disabled_3rdparty_packages)) {
+          print("Disabled - skipping openpmix");
+          next;
+        }
+        if (index($path, "prrte") != -1 and list_contains("prrte", @disabled_3rdparty_packages)) {
+          print("Disabled - skipping prrte");
+          next;
+        }
 
         # Make sure the submodule is there
         if ($status eq "-") {
@@ -1550,12 +1574,6 @@ mca_run_global($projects);
 ++$step;
 verbose "\n$step. Setup for 3rd-party packages\n";
 
-my @enabled_3rdparty_packages = ();
-my @disabled_3rdparty_packages = split(/,/, $no_3rdparty_arg);
-if ($no_prrte_arg) {
-    push(@disabled_3rdparty_packages, "prrte");
-}
-
 $m4 .= "\n$dnl_line
 $dnl_line
 $dnl_line
@@ -1563,7 +1581,8 @@ $dnl_line
 dnl 3rd-party package information\n";
 
 # Extract the OMPI options to exclude them when processing PMIx and PRRTE
-if ( ! ("pmix" ~~ @disabled_3rdparty_packages && "prrte" ~~ @disabled_3rdparty_packages) ) {
+if ( ! (list_contains("pmix", @disabled_3rdparty_packages) &&
+	list_contains("prrte", @disabled_3rdparty_packages))) {
     safe_system("./config/extract-3rd-party-configure.pl -p . -n \"OMPI\" -l > config/auto-generated-ompi-exclude.ini");
 }
 
@@ -1571,7 +1590,7 @@ if ( ! ("pmix" ~~ @disabled_3rdparty_packages && "prrte" ~~ @disabled_3rdparty_p
 # generic. Sorry :).
 
 verbose "=== Libevent\n";
-if ("libevent" ~~ @disabled_3rdparty_packages) {
+if (list_contains("libevent", @disabled_3rdparty_packages)) {
     verbose "--- Libevent disabled\n";
 } else {
     my $libevent_directory = "libevent-" . $libevent_version;
@@ -1586,7 +1605,7 @@ if ("libevent" ~~ @disabled_3rdparty_packages) {
 }
 
 verbose "=== hwloc\n";
-if ("hwloc" ~~ @disabled_3rdparty_packages) {
+if (list_contains("hwloc", @disabled_3rdparty_packages)) {
     verbose "--- hwloc disabled\n";
 } else {
     my $hwloc_directory = "hwloc-" . $hwloc_version;
@@ -1597,11 +1616,11 @@ if ("hwloc" ~~ @disabled_3rdparty_packages) {
     $m4 .= "m4_define([package_hwloc], [1])\n";
     $m4 .= "m4_define([hwloc_tarball], [" . $hwloc_tarball . "])\n";
     $m4 .= "m4_define([hwloc_directory], [" . $hwloc_directory . "])\n";
-    verbose "--- hwloc enabled\n";
+    verbose "--- hwloc enabled (" . $hwloc_version . ")\n";
 }
 
 verbose "=== PMIx\n";
-if ("pmix" ~~ @disabled_3rdparty_packages) {
+if (list_contains("pmix", @disabled_3rdparty_packages)) {
     verbose "--- PMIx disabled\n";
 } else {
     # sanity check pmix files exist
@@ -1620,7 +1639,7 @@ if ("pmix" ~~ @disabled_3rdparty_packages) {
 }
 
 verbose "=== PRRTE\n";
-if ("prrte" ~~ @disabled_3rdparty_packages) {
+if (list_contains("prrte", @disabled_3rdparty_packages)) {
     verbose "--- PRRTE disabled\n";
 } else {
     # sanity check prrte files exist
@@ -1642,15 +1661,11 @@ process_autogen_subdirs("3rd-party");
 
 #---------------------------------------------------------------------------
 
-# Find MPI extensions and contribs
+# Find MPI extensions
 if (!$no_ompi_arg) {
     ++$step;
     verbose "\n$step. Searching for Open MPI extensions\n\n";
     mpiext_run_global("ompi/mpiext");
-
-    ++$step;
-    verbose "\n$step. Searching for Open MPI contribs\n\n";
-    mpicontrib_run_global("ompi/contrib");
 }
 
 #---------------------------------------------------------------------------

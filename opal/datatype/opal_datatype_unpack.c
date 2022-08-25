@@ -217,7 +217,7 @@ opal_unpack_partial_predefined(opal_convertor_t *pConvertor, const dt_elem_desc_
     MEMCPY( temporary + start_position, partial_data, length );
 
     /* Save the original content of the user memory */
-#if OPAL_CUDA_SUPPORT
+#if OPAL_CUDA_SUPPORT || OPAL_ROCM_SUPPORT
     /* In the case where the data is being unpacked from device memory, need to
      * use the special host to device memory copy. */
     pConvertor->cbmemcpy(saved_data, user_data, data_length, pConvertor );
@@ -235,7 +235,7 @@ opal_unpack_partial_predefined(opal_convertor_t *pConvertor, const dt_elem_desc_
 
     /* Rebuild the data by pulling back the unmodified bytes from the original
      * content in the user memory. */
-#if OPAL_CUDA_SUPPORT
+#if OPAL_CUDA_SUPPORT || OPAL_ROCM_SUPPORT
     /* Need to copy the modified user_data again so we can see which
      * bytes need to be converted back to their original values. */
     {
@@ -272,7 +272,7 @@ opal_unpack_partial_predefined(opal_convertor_t *pConvertor, const dt_elem_desc_
  * - a datatype (with the flag DT_DATA set) will have the contiguous flags set if and only if
  *   the data is really contiguous (extent equal with size)
  * - for the OPAL_DATATYPE_LOOP type the DT_CONTIGUOUS flag set means that the content of the loop
- * is contiguous but with a gap in the begining or at the end.
+ * is contiguous but with a gap in the beginning or at the end.
  * - the DT_CONTIGUOUS flag for the type OPAL_DATATYPE_END_LOOP is meaningless.
  */
 int32_t opal_generic_simple_unpack_function(opal_convertor_t *pConvertor, struct iovec *iov,
@@ -547,7 +547,6 @@ int32_t opal_unpack_general_function(opal_convertor_t *pConvertor, struct iovec 
     dt_stack_t *pStack; /* pointer to the position on the stack */
     uint32_t pos_desc;  /* actual position in the description of the derived datatype */
     size_t count_desc;  /* the number of items already done in the actual pos_desc */
-    uint16_t type = OPAL_DATATYPE_MAX_PREDEFINED; /* type at current position */
     size_t total_unpacked = 0;                    /* total size unpacked this time */
     dt_elem_desc_t *description;
     dt_elem_desc_t *pElem;
@@ -588,7 +587,6 @@ int32_t opal_unpack_general_function(opal_convertor_t *pConvertor, struct iovec 
         while (1) {
             while (pElem->elem.common.flags & OPAL_DATATYPE_FLAG_DATA) {
                 /* now here we have a basic datatype */
-                type = description[pos_desc].elem.common.type;
                 OPAL_DATATYPE_SAFEGUARD_POINTER(conv_ptr + pElem->elem.disp, pData->size,
                                                 pConvertor->pBaseBuf, pData, pConvertor->count);
                 DO_DEBUG(opal_output(0,
@@ -596,7 +594,7 @@ int32_t opal_unpack_general_function(opal_convertor_t *pConvertor, struct iovec 
                                      (void *) iov_ptr, iov_len_local, (void *) pConvertor->pBaseBuf,
                                      conv_ptr + pElem->elem.disp - pConvertor->pBaseBuf, count_desc,
                                      description[pos_desc].elem.extent,
-                                     opal_datatype_basicDatatypes[type]->name););
+                                     opal_datatype_basicDatatypes[description[pos_desc].elem.common.type]->name););
                 unpack_predefined_heterogeneous(pConvertor, pElem, &count_desc, &conv_ptr, &iov_ptr,
                                                 &iov_len_local);
                 if (0 == count_desc) {    /* completed */

@@ -380,7 +380,7 @@ static void setup_mpit_pvars_enum(void)
 
     /* Free the strings (mca_base_var_enum_create() strdup()'ed them
        into private storage, so we don't need them any more) */
-    for (int i = 0; i < mca_btl_usnic_component.num_modules; ++i) {
+    for (i = 0; i < mca_btl_usnic_component.num_modules; ++i) {
         free((char *) devices[i].string);
     }
     free(devices);
@@ -415,10 +415,10 @@ static void setup_mpit_pvars_counters(void)
 
     REGISTERC(num_total_sends, "Total number of sends (MPI data, ACKs, retransmissions, etc.)");
     REGISTERC(num_resends, "Total number of all retransmissions");
-    REGISTERC(num_timeout_retrans, "Number of times chunk retransmissions have occured because an "
+    REGISTERC(num_timeout_retrans, "Number of times chunk retransmissions have occurred because an "
                                    "ACK was not received within the timeout");
     REGISTERC(num_fast_retrans,
-              "Number of times chunk retransmissions have occured because due to a repeated ACK");
+              "Number of times chunk retransmissions have occurred because due to a repeated ACK");
     REGISTERC(num_chunk_sends,
               "Number of sends that were part of a larger MPI message fragment (i.e., the MPI "
               "message was so long that it had to be split into multiple MTU/network sends)");
