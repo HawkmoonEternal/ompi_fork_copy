@@ -50,6 +50,8 @@ from github import Github
 GOOD = "good"
 BAD  = "bad"
 
+NACP = "bot:notacherrypick"
+
 GITHUB_WORKSPACE  = os.environ.get('GITHUB_WORKSPACE')
 GITHUB_SHA        = os.environ.get('GITHUB_SHA')
 GITHUB_BASE_REF   = os.environ.get('GITHUB_BASE_REF')
@@ -184,6 +186,7 @@ def check_cherry_pick(config, repo, commit):
         return GOOD, "skipped (submodules updates)"
 
     non_existent = dict()
+    unmerged = dict()
     found_cherry_pick_line = False
     for match in prog_cp.findall(commit.message):
         found_cherry_pick_line = True
@@ -193,9 +196,11 @@ def check_cherry_pick(config, repo, commit):
             # These errors mean that the git library recognized the
             # hash as a valid commit, but the GitHub Action didn't
             # fetch the entire repo, so we don't have all the meta
-            # data about this commit.  Bottom line: it's a good hash.
-            # So -- no error here.
-            pass
+            # data about this commit. This occurs because the commit
+            # only exists in an as-yet unmerged pull request on github. Therefore, we
+            # want to fail this commit until the corresponding pull request
+            # is merged.
+            unmerged[match] = True
         except git.BadName as e:
             # Use a dictionary to track the non-existent hashes, just
             # on the off chance that the same non-existent hash exists
@@ -206,19 +211,31 @@ def check_cherry_pick(config, repo, commit):
 
     # Process the results for this commit
     if found_cherry_pick_line:
-        if len(non_existent) == 0:
+        if len(non_existent) == 0 and len(unmerged) == 0:
             return GOOD, None
-        else:
+        elif len(non_existent) > 0 and len(unmerged) == 0:
             str = f"contains a cherry pick message that refers to non-existent commit"
             if len(non_existent) > 1:
                 str += "s"
             str += ": "
             str += ", ".join(non_existent)
             return BAD, str
+        elif len(non_existent) == 0 and len(unmerged) > 0:
+            str = f"contains a cherry pick message that refers to a commit that exists, but is in an as-yet unmerged pull request"
+            if len(non_existent) > 1:
+                str += "s"
+            str += ": "
+            str += ", ".join(unmerged)
+            return BAD, str
+        else:
+            str = f"contains a cherry pick message that refers to both non-existent commits and commits that exist but are in as-yet unmerged pull requests"
+            str += ": "
+            str += ", ".join(non_existent + unmerged)
+            return BAD, str
 
     else:
         if config['cherry pick required']:
-            return BAD, "does not include a cherry pick message"
+            return BAD, f"does not include a cherry pick message (did you need to {NACP}?)"
         else:
             return GOOD, None
 
@@ -284,7 +301,7 @@ def check_github_pr_description(config):
     pr_num = int(match.group(1))
     pr     = repo.get_pull(pr_num)
 
-    if "bot:notacherrypick" in pr.body:
+    if pr.body and NACP in pr.body:
         config['cherry pick required'] = False
 
 #----------------------------------------------------------------------------
