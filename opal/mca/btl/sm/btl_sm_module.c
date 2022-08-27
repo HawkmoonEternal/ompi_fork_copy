@@ -37,6 +37,7 @@
 #include "opal/mca/smsc/smsc.h"
 
 #include <string.h>
+#include <sys/sysinfo.h>
 
 static int sm_del_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
                         struct opal_proc_t **procs, struct mca_btl_base_endpoint_t **peers);
@@ -244,6 +245,7 @@ static int sm_add_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
 
     /* initializion */
 
+    int n = get_nprocs();
     /* get pointer to my proc structure */
     if (NULL == (my_proc = opal_proc_local_get())) {
         return OPAL_ERR_OUT_OF_RESOURCE;
@@ -254,8 +256,10 @@ static int sm_add_procs(struct mca_btl_base_module_t *btl, size_t nprocs,
         return OPAL_SUCCESS;
     }
 
+    /* TODO: Fix this ugly workaround. We need dynamic sm_btl sizes! */
     if (!sm_btl->btl_inited) {
-        rc = sm_btl_first_time_init(sm_btl, 1 + MCA_BTL_SM_NUM_LOCAL_PEERS);
+        //rc = sm_btl_first_time_init(sm_btl, 1 + MCA_BTL_SM_NUM_LOCAL_PEERS);
+        rc = sm_btl_first_time_init(sm_btl, 1 + 64*n);
         if (rc != OPAL_SUCCESS) {
             return rc;
         }

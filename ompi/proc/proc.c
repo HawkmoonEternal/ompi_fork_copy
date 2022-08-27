@@ -47,6 +47,8 @@
 #include "ompi/runtime/params.h"
 #include "ompi/mca/pml/pml.h"
 
+#define OPAL_JOBID_CONTINUOUS 0
+
 opal_list_t  ompi_proc_list = {{0}};
 static opal_mutex_t ompi_proc_lock;
 static opal_hash_table_t ompi_proc_hash;
@@ -308,11 +310,13 @@ int ompi_proc_complete_init(void)
 
     opal_mutex_lock (&ompi_proc_lock);
 
+    opal_proc.jobid = OMPI_PROC_MY_NAME->jobid;
+
     /* Add all local peers first */
     wildcard_rank.jobid = OMPI_PROC_MY_NAME->jobid;
     wildcard_rank.vpid = OMPI_NAME_WILDCARD->vpid;
     /* retrieve the local peers */
-    OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCAL_PEERS,
+    OPAL_MODEX_RECV_VALUE_OPTIONAL(ret, PMIX_LOCAL_PEERS,
                           &wildcard_rank, &val, PMIX_STRING);
     if (OPAL_SUCCESS == ret && NULL != val) {
         char **peers = opal_argv_split(val, ',');
@@ -322,6 +326,9 @@ int ompi_proc_complete_init(void)
             ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
             uint16_t u16, *u16ptr = &u16;
             if (OMPI_PROC_MY_NAME->vpid == local_rank) {
+                continue;
+            }
+            if( NULL != ompi_proc_lookup(opal_proc)){
                 continue;
             }
             ret = ompi_proc_allocate (OMPI_PROC_MY_NAME->jobid, local_rank, &proc);
@@ -357,6 +364,11 @@ int ompi_proc_complete_init(void)
          */
         opal_mutex_unlock (&ompi_proc_lock);
 
+#if OPAL_JOBID_CONTINUOUS 
+        
+        //TODO: Retrieve the proc_map and insert the procs
+
+#else
         for (ompi_vpid_t i = 0 ; i < ompi_process_info.num_procs ; ++i ) {
             opal_process_name_t proc_name;
             proc_name.jobid = OMPI_PROC_MY_NAME->jobid;
@@ -370,9 +382,21 @@ int ompi_proc_complete_init(void)
 
     opal_list_sort (&ompi_proc_list, ompi_proc_compare_vid);
 
+#endif
+
     opal_mutex_unlock (&ompi_proc_lock);
 
     return errcode;
+}
+
+int ompi_proc_list_sort(){
+    int ret;
+
+    opal_mutex_lock (&ompi_proc_lock);
+    ret=opal_list_sort (&ompi_proc_list, ompi_proc_compare_vid);
+    opal_mutex_unlock (&ompi_proc_lock);
+
+    return ret;
 }
 
 int ompi_proc_finalize (void)

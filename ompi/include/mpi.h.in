@@ -758,6 +758,28 @@ enum {
    error codes without breaking ABI. */
 #define MPI_ERR_LASTCODE              92
 
+/* Pset operation constants. Don't change the order of these */
+enum{
+   MPI_PSETOP_NULL,
+   MPI_PSETOP_UNION, 
+   MPI_PSETOP_DIFFERENCE,
+   MPI_PSETOP_INTERSECTION
+};
+
+/* Resource change types. Don't change the order of these */
+enum{
+   MPI_RC_NULL,
+   MPI_RC_ADD, 
+   MPI_RC_SUB
+};
+
+enum{
+   MPI_RC_INVALID,
+   MPI_RC_ANNOUNCED,
+   MPI_RC_CONFIRMATION_PENDING,
+   MPI_RC_FINALIZED 
+};
+
 /*
  * Comparison results.  Don't change the order of these, the group
  * comparison functions rely on it.
@@ -1960,8 +1982,11 @@ OMPI_DECLSPEC  int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype
 OMPI_DECLSPEC  int MPI_Sendrecv_replace(void * buf, int count, MPI_Datatype datatype,
                                         int dest, int sendtag, int source, int recvtag,
                                         MPI_Comm comm, MPI_Status *status);
+OMPI_DECLSPEC  int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char delta_pset[], 
+                                                char result_pset[], int root, MPI_Comm *comm, int *terminate);
 OMPI_DECLSPEC  MPI_Fint MPI_Session_c2f (const MPI_Session session);
 OMPI_DECLSPEC  int MPI_Session_call_errhandler(MPI_Session session, int errorcode);
+OMPI_DECLSPEC  int MPI_Session_confirm_res_change(MPI_Session *session, MPI_Info *info, char delta_pset[], char *result_pset[]);
 OMPI_DECLSPEC  int MPI_Session_create_errhandler (MPI_Session_errhandler_function *session_errhandler_fn,
                                                   MPI_Errhandler *errhandler);
 OMPI_DECLSPEC  int MPI_Session_finalize (MPI_Session *session);
@@ -1970,9 +1995,14 @@ OMPI_DECLSPEC  int MPI_Session_get_info (MPI_Session session, MPI_Info *info_use
 OMPI_DECLSPEC  int MPI_Session_get_num_psets (MPI_Session session, MPI_Info info, int *npset_names);
 OMPI_DECLSPEC  int MPI_Session_get_nth_pset (MPI_Session session, MPI_Info info, int n, int *len, char *pset_name);
 OMPI_DECLSPEC  int MPI_Session_get_pset_info (MPI_Session session, const char *pset_name, MPI_Info *info_used);
+OMPI_DECLSPEC  int MPI_Session_pset_create_op(MPI_Session session, int op, char *pset1, char *pset2, 
+                                              char *pset_result, MPI_Info *info);
+OMPI_DECLSPEC  int MPI_Session_get_res_change(MPI_Session session, int *type, char *delta_pset, int *incl, 
+                                              int *status, MPI_Info *info_used);
 OMPI_DECLSPEC  int MPI_Session_init (MPI_Info info, MPI_Errhandler errhandler,
                                      MPI_Session *session);
 OMPI_DECLSPEC  MPI_Session MPI_Session_f2c (MPI_Fint session);
+OMPI_DECLSPEC  int MPI_Session_request_res_change(MPI_Session session, int delta, char *delta_pset, int rc_type, MPI_Info *info);
 OMPI_DECLSPEC  int MPI_Session_set_errhandler(MPI_Session session, MPI_Errhandler errhandler);
 OMPI_DECLSPEC  int MPI_Session_set_info (MPI_Session session, MPI_Info info);
 OMPI_DECLSPEC  int MPI_Ssend_init(const void *buf, int count, MPI_Datatype datatype,

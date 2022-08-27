@@ -570,7 +570,12 @@ void mca_btl_tcp_endpoint_close(mca_btl_base_endpoint_t *btl_endpoint)
      * reporting the error. The upper layer has then the opportunity to
      * re-route or re-schedule the fragments.
      */
-    if (MCA_BTL_TCP_FAILED == btl_endpoint->endpoint_state) {
+    /* FIXME:   This is a workaround to avoid report failure when processes terminate in dyn Sessions
+     *          We need a clean disconnect of these processes
+     *          Is maye fixed by new MPI_Session_dyn_integrate_res_change version
+     */
+     
+    if (MCA_BTL_TCP_FAILED == btl_endpoint->endpoint_state && false) {
         mca_btl_tcp_frag_t *frag = btl_endpoint->endpoint_send_frag;
         if (NULL == frag) {
             frag = (mca_btl_tcp_frag_t *) opal_list_remove_first(&btl_endpoint->endpoint_frags);
