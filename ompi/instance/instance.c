@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil -*- */
 /*
- * Copyright (c) 2018-2021 Triad National Security, LLC. All rights
+ * Copyright (c) 2018-2022 Triad National Security, LLC. All rights
  *                         reserved.
  * $COPYRIGHT$
  *
@@ -38,10 +38,12 @@
 #include "opal/mca/allocator/base/base.h"
 #include "opal/mca/rcache/base/base.h"
 #include "opal/mca/mpool/base/base.h"
+#include "opal/mca/smsc/base/base.h"
 #include "ompi/mca/bml/base/base.h"
 #include "ompi/mca/pml/base/base.h"
 #include "ompi/mca/coll/base/base.h"
 #include "ompi/mca/osc/base/base.h"
+#include "ompi/mca/part/base/base.h"
 #include "ompi/mca/io/base/base.h"
 #include "ompi/mca/topo/base/base.h"
 #include "opal/mca/pmix/base/base.h"
@@ -86,15 +88,21 @@ static void ompi_instance_construct (ompi_instance_t *instance)
     instance->i_name[0] = '\0';
     instance->i_flags = 0;
     instance->i_keyhash = NULL;
+    OBJ_CONSTRUCT(&instance->s_lock, opal_mutex_t);
     instance->errhandler_type = OMPI_ERRHANDLER_TYPE_INSTANCE;
 }
 
-OBJ_CLASS_INSTANCE(ompi_instance_t, opal_infosubscriber_t, ompi_instance_construct, NULL);
+static void ompi_instance_destruct(ompi_instance_t *instance)
+{
+    OBJ_DESTRUCT(&instance->s_lock);
+}
+
+OBJ_CLASS_INSTANCE(ompi_instance_t, opal_infosubscriber_t, ompi_instance_construct, ompi_instance_destruct);
 
 /* NTH: frameworks needed by MPI */
 static mca_base_framework_t *ompi_framework_dependencies[] = {
     &ompi_hook_base_framework, &ompi_op_base_framework,
-    &opal_allocator_base_framework, &opal_rcache_base_framework, &opal_mpool_base_framework,
+    &opal_allocator_base_framework, &opal_rcache_base_framework, &opal_mpool_base_framework, &opal_smsc_base_framework,
     &ompi_bml_base_framework, &ompi_pml_base_framework, &ompi_coll_base_framework,
     &ompi_osc_base_framework, NULL,
 };
@@ -488,6 +496,13 @@ opal_list_t ompi_registered_datareps = {{0}};
 
 opal_pointer_array_t ompi_instance_f_to_c_table = {{0}};
 
+/*
+ * PMIx event handlers
+ */
+
+static size_t ompi_default_pmix_err_handler = 0;
+static size_t ompi_ulfm_pmix_err_handler = 0;
+
 static int ompi_instance_print_error (const char *error, int ret)
 {
     /* Only print a message if one was not already printed */
@@ -555,10 +570,8 @@ void ompi_mpi_instance_release (void)
         return;
     }
 
-    OPAL_LIST_DESTRUCT(&ompi_mpi_instance_resource_changes);
-    OPAL_LIST_DESTRUCT(&ompi_mpi_instance_pmix_psets);
-    OBJ_DESTRUCT(&app_pset);
-    OBJ_DESTRUCT(&self_pset);
+    opal_argv_free (ompi_mpi_instance_pmix_psets);
+    ompi_mpi_instance_pmix_psets = NULL;
 
     opal_finalize_cleanup_domain (&ompi_instance_basic_domain);
     OBJ_DESTRUCT(&ompi_instance_basic_domain);
@@ -594,6 +607,7 @@ int ompi_mpi_instance_retain (void)
     OBJ_CONSTRUCT(&ompi_instance_f_to_c_table, opal_pointer_array_t);
     if (OPAL_SUCCESS != opal_pointer_array_init (&ompi_instance_f_to_c_table, 8,
                                                  OMPI_FORTRAN_HANDLE_MAX, 32)) {
+        opal_mutex_unlock (&instance_lock);
         return OMPI_ERROR;
     }
 
@@ -634,6 +648,7 @@ int ompi_mpi_instance_retain (void)
 
     /* initialize info */
     if (OMPI_SUCCESS != (ret = ompi_mpiinfo_init ())) {
+        opal_mutex_unlock (&instance_lock);
         return ompi_instance_print_error ("ompi_info_init() failed", ret);
     }
 
@@ -659,13 +674,27 @@ static void evhandler_reg_callbk(pmix_status_t status,
     opal_pmix_lock_t *lock = (opal_pmix_lock_t*)cbdata;
 
     lock->status = status;
+    lock->errhandler_ref = evhandler_ref;
+
     OPAL_PMIX_WAKEUP_THREAD(lock);
 }
+
+static void evhandler_dereg_callbk(pmix_status_t status,
+                                 void *cbdata)
+{
+    opal_pmix_lock_t *lock = (opal_pmix_lock_t*)cbdata;
+    
+    lock->status = status;
+
+    OPAL_PMIX_WAKEUP_THREAD(lock);
+}       
+
+
 
 /**
  * @brief Function that starts up the common components needed by all instances
  */
-static int ompi_mpi_instance_init_common (void)
+static int ompi_mpi_instance_init_common (int argc, char **argv)
 {
     int ret;
     ompi_proc_t **procs;
@@ -711,7 +740,7 @@ static int ompi_mpi_instance_init_common (void)
            default is specified before forcing "all" in case that is not what
            the user desires. Note that we do *NOT* set this value as an
            environment variable, just so that it won't be inherited by
-           any spawned processes and potentially cause unintented
+           any spawned processes and potentially cause unintended
            side-effects with launching RTE tools... */
         mca_base_var_set_value(ret, allvalue, 4, MCA_BASE_VAR_SOURCE_DEFAULT, NULL);
     }
@@ -719,9 +748,10 @@ static int ompi_mpi_instance_init_common (void)
     OMPI_TIMING_NEXT("initialization");
 
     /* Setup RTE */
-    if (OMPI_SUCCESS != (ret = ompi_rte_init (NULL, NULL))) {
+    if (OMPI_SUCCESS != (ret = ompi_rte_init (&argc, &argv))) {
         return ompi_instance_print_error ("ompi_mpi_init: ompi_rte_init failed", ret);
     }
+
     /* open the ompi hook framework */
     for (int i = 0 ; ompi_framework_dependencies[i] ; ++i) {
         ret = mca_base_framework_open (ompi_framework_dependencies[i], 0);
@@ -751,16 +781,23 @@ static int ompi_mpi_instance_init_common (void)
     OMPI_TIMING_IMPORT_OPAL("rte_init");
 
     ompi_rte_initialized = true;
+    /* if we are oversubscribed, then set yield_when_idle
+     * accordingly */
+    if (ompi_mpi_oversubscribed) {
+        ompi_mpi_yield_when_idle = true;
+    }
+
 
     /* Register the default errhandler callback  */
     /* we want to go first */
     PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_PREPEND, NULL, PMIX_BOOL);
     /* give it a name so we can distinguish it */
-    PMIX_INFO_LOAD(&info[1], PMIX_EVENT_HDLR_NAME, "MPI-Default", PMIX_STRING);
+    PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_NAME, "MPI-Default", PMIX_STRING);
     OPAL_PMIX_CONSTRUCT_LOCK(&mylock);
-    PMIx_Register_event_handler(NULL, 0, info, 2, ompi_errhandler_callback, evhandler_reg_callbk, (void*)&mylock);
+    PMIx_Register_event_handler(NULL, 0, info, 1, ompi_errhandler_callback, evhandler_reg_callbk, (void*)&mylock);
     OPAL_PMIX_WAIT_THREAD(&mylock);
     rc = mylock.status;
+    ompi_default_pmix_err_handler = mylock.errhandler_ref;
     OPAL_PMIX_DESTRUCT_LOCK(&mylock);
     PMIX_INFO_DESTRUCT(&info[0]);
     PMIX_INFO_DESTRUCT(&info[1]);
@@ -778,23 +815,16 @@ static int ompi_mpi_instance_init_common (void)
     rc = mylock.status;
     OPAL_PMIX_DESTRUCT_LOCK(&mylock);
     if (PMIX_SUCCESS != rc) {
+        ompi_default_pmix_err_handler = 0;
         ret = opal_pmix_convert_status(rc);
         return ret;
     }
 
-    code = PMIX_PROCESS_SET_DELETE;
-    OPAL_PMIX_CONSTRUCT_LOCK(&mylock);
-    PMIx_Register_event_handler(&code, 1, NULL, 0, pset_delete_handler, evhandler_reg_callbk, (void*)&mylock);
-    OPAL_PMIX_WAIT_THREAD(&mylock);
-    rc = mylock.status;
-    OPAL_PMIX_DESTRUCT_LOCK(&mylock);
-    if (PMIX_SUCCESS != rc) {
-        ret = opal_pmix_convert_status(rc);
-        return ret;
-    }
-
-    /* register event handler to track the runtimes actions related to resource changes */
-    code = PMIX_RC_FINALIZED;
+    /* Register the ULFM errhandler callback  */
+    /* we want to go first */
+    PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_PREPEND, NULL, PMIX_BOOL);
+    /* give it a name so we can distinguish it */
+    PMIX_INFO_LOAD(&info[1], PMIX_EVENT_HDLR_NAME, "ULFM-Event-handler", PMIX_STRING);
     OPAL_PMIX_CONSTRUCT_LOCK(&mylock);
     rc=PMIx_Register_event_handler(&code, 1, NULL, 0, rc_finalize_handler, evhandler_reg_callbk, (void*)&mylock);
     OPAL_PMIX_WAIT_THREAD(&mylock);
