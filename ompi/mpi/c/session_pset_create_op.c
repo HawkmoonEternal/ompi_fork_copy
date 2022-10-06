@@ -8,12 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if OMPI_BUILD_MPI_PROFILING
-#if OPAL_HAVE_WEAK_SYMBOLS
-#pragma weak MPI_Session_get_res_change = PMPI_Session_get_res_change
-#endif
-#define MPI_Session_get_res_change PMPI_Session_get_res_change
-#endif
+//#if OMPI_BUILD_MPI_PROFILING
+//#if OPAL_HAVE_WEAK_SYMBOLS
+//#pragma weak MPI_Session_pset_create_op = PMPI_Session_pset_create_op
+//#endif
+//#define MPI_Session_pset_create_op PMPI_Session_pset_create_op
+//#endif
 
 static const char FUNC_NAME[] = "MPI_Session_pset_create_op";
 

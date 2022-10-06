@@ -545,12 +545,12 @@ static int mca_btl_sm_component_progress(void)
             return 0;
         }
     }
-
+    
     /* check for messages in fast boxes */
     if (mca_btl_sm_component.num_fbox_in_endpoints) {
         count = mca_btl_sm_check_fboxes();
     }
-
+    
     mca_btl_sm_progress_endpoints();
 
     if (SM_FIFO_FREE == mca_btl_sm_component.my_fifo->fifo_head) {

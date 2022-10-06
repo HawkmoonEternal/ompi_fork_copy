@@ -368,17 +368,22 @@ interface_profile_sources = \
         send_init.c \
         sendrecv.c \
         sendrecv_replace.c \
+        session_accept_res_change.c \
         session_c2f.c \
         session_call_errhandler.c \
+        session_confirm_res_change.c \
         session_create_errhandler.c \
         session_get_errhandler.c \
         session_get_info.c \
         session_get_num_psets.c \
         session_get_nth_pset.c \
         session_get_pset_info.c \
+        session_get_res_change.c \
         session_init.c \
         session_f2c.c \
         session_finalize.c \
+        session_pset_create_op.c \
+        session_request_res_change.c \
         session_set_errhandler.c \
         session_set_info.c \
         ssend_init.c \

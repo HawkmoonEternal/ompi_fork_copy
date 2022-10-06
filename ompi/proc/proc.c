@@ -56,7 +56,6 @@ static opal_hash_table_t ompi_proc_hash;
 ompi_proc_t* ompi_proc_local_proc = NULL;
 
 static void ompi_proc_construct(ompi_proc_t* proc);
-static void ompi_proc_destruct(ompi_proc_t* proc);
 static ompi_proc_t *ompi_proc_for_name_nolock (const opal_process_name_t proc_name);
 
 OBJ_CLASS_INSTANCE(
@@ -304,6 +303,7 @@ static int ompi_proc_compare_vid (opal_list_item_t **a, opal_list_item_t **b)
 int ompi_proc_complete_init(void)
 {
     opal_process_name_t wildcard_rank;
+    opal_process_name_t opal_proc;
     ompi_proc_t *proc;
     int ret, errcode = OMPI_SUCCESS;
     char *val = NULL;
@@ -328,6 +328,7 @@ int ompi_proc_complete_init(void)
             if (OMPI_PROC_MY_NAME->vpid == local_rank) {
                 continue;
             }
+            opal_proc.vpid=local_rank;
             if( NULL != ompi_proc_lookup(opal_proc)){
                 continue;
             }
@@ -366,9 +367,6 @@ int ompi_proc_complete_init(void)
 
 #if OPAL_JOBID_CONTINUOUS 
         
-        //TODO: Retrieve the proc_map and insert the procs
-
-#else
         for (ompi_vpid_t i = 0 ; i < ompi_process_info.num_procs ; ++i ) {
             opal_process_name_t proc_name;
             proc_name.jobid = OMPI_PROC_MY_NAME->jobid;
@@ -376,13 +374,20 @@ int ompi_proc_complete_init(void)
             (void) ompi_proc_for_name (proc_name);
         }
 
-        /* acquire lock back for the next step - sort */
-        opal_mutex_lock (&ompi_proc_lock);
-    }
+       
+        
 
-    opal_list_sort (&ompi_proc_list, ompi_proc_compare_vid);
+
+#else
+        //TODO: Non-continues: Retrieve the proc_map and insert the procs
 
 #endif
+         /* acquire lock back for the next step - sort */
+        opal_mutex_lock (&ompi_proc_lock);
+        
+    }
+
+    opal_list_sort (&ompi_proc_list, ompi_proc_compare_vid);    
 
     opal_mutex_unlock (&ompi_proc_lock);
 

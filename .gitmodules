@@ -1,8 +1,8 @@
 [submodule "prrte"]
 	path = 3rd-party/prrte
-	url = ../../openpmix/prrte
-	branch = master
+	url = https://github.com/HawkmoonEternal/prrte.git
+	branch = merge_master_time-x
 [submodule "openpmix"]
 	path = 3rd-party/openpmix
-	url = ../../openpmix/openpmix.git
-	branch = master
+	url = https://github.com/HawkmoonEternal/openpmix.git
+	branch = merge_master_time-x

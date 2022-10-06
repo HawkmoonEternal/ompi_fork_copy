@@ -656,6 +656,7 @@ int ompi_rte_init(int *pargc, char ***pargv)
     pname.vpid = OPAL_VPID_WILDCARD;
     OPAL_MODEX_RECV_VALUE_OPTIONAL(rc, PMIX_JOB_SIZE,
                                    &pname, &u32ptr, PMIX_UINT32);
+
     if (PMIX_SUCCESS != rc) {
         if (ompi_singleton) {
             /* just assume 1 */
@@ -1000,7 +1001,6 @@ int ompi_rte_refresh_job_size(){
     OPAL_MODEX_RECV_VALUE(rc, PMIX_JOB_SIZE,
                                    &pname, &u32ptr, PMIX_UINT32);
     if (PMIX_SUCCESS != rc) {
-        printf("job size no success: %d\n", u32);
         if (ompi_singleton) {
             /* just assume 1 */
             u32 = 1;

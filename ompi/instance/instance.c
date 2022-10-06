@@ -125,6 +125,7 @@ opal_hash_table_t ompi_mpi_f90_complex_hashtable = {{0}};
 OBJ_CLASS_INSTANCE(ompi_mpi_instance_pset_t, opal_object_t, pset_constructor, pset_destructor);
 static size_t  ompi_mpi_instance_num_pmix_psets;
 static opal_list_t ompi_mpi_instance_pmix_psets;
+static char  ** ompi_mpi_instance_pmix_pset_names;
 
 inline ompi_rc_op_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op){
     switch(mpi_pset_op){
@@ -942,8 +943,8 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
 #endif
 
 #define MPI_MALLEABLE 1
-pmix_proc_t *fence_procs=NULL;
-size_t fence_nprocs=0;
+pmix_proc_t *fence_procs = NULL;
+size_t fence_nprocs = 0;
 #if MPI_MALLEABLE
     ompi_rc_op_type_t rc_op;
     ompi_rc_status_t rc_status;
@@ -951,7 +952,9 @@ size_t fence_nprocs=0;
     char bound_pset[] = "mpi://app";
     int incl = 0;
     //ompi_instance_refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
+
     int res_rc = ompi_instance_get_res_change(ompi_mpi_instance_default, bound_pset, &rc_op, delta_pset, &incl, &rc_status,  NULL, false);
+
     if(rc_op != OMPI_RC_NULL && incl){
         struct timespec ts;
         ts.tv_sec = 0;
@@ -1011,9 +1014,6 @@ size_t fence_nprocs=0;
         }
     }
 
-    if(NULL != fence_procs){
-        free(fence_procs);
-    }
     if(rc_op != OMPI_RC_NULL){
         ompi_instance_free_pset_membership(delta_pset);
     }
@@ -1170,13 +1170,17 @@ size_t fence_nprocs=0;
             active = true;
             OPAL_POST_OBJECT(&active);
             PMIX_INFO_LOAD(&info[0], PMIX_COLLECT_DATA, &flag, PMIX_BOOL);
-            if (PMIX_SUCCESS != (rc = PMIx_Fence_nb(NULL, 0, info, 1,
+            if (PMIX_SUCCESS != (rc = PMIx_Fence_nb(fence_procs, fence_nprocs, info, 1,
                                                     fence_release, (void*)&active))) {
                 ret = opal_pmix_convert_status(rc);
                 return ompi_instance_print_error ("PMIx_Fence_nb() failed", ret);
             }
             OMPI_LAZY_WAIT_FOR_COMPLETION(active);
         }
+    }
+
+    if(NULL != fence_procs){
+        free(fence_procs);
     }
 
     /* check for timing request - get stop time and report elapsed
@@ -1475,29 +1479,28 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
         OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCAL_PEERS,
                               &wildcard_rank, &val, PMIX_STRING);
 
-        if (OPAL_SUCCESS == ret && NULL != val) {
-            char **peers = opal_argv_split(val, ',');
-            free(val);
-            /* remove endpoint information for all local peers */
-            for (i=0; NULL != peers[i]; i++) {
-		    
-                ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
-
-		if(OMPI_PROC_MY_NAME->vpid == local_rank){
-                    continue;
-                }
-                ompi_proc_name.jobid=OMPI_PROC_MY_NAME->jobid;
-                ompi_proc_name.vpid=local_rank;
-                bool is_new;
-                proc = ompi_proc_find_and_add(&ompi_proc_name, &is_new);
-                
-                MCA_PML_CALL(del_procs(&proc,1)); 
-            }
-            /* also delete endpoint information for ourself */
-            MCA_PML_CALL(del_procs(&ompi_proc_local_proc,1));
-            
-            opal_argv_free(peers);
-        }
+        //if (OPAL_SUCCESS == ret && NULL != val) {
+        //    char **peers = opal_argv_split(val, ',');
+        //    free(val);
+        //    /* remove endpoint information for all local peers */
+        //    for (i=0; NULL != peers[i]; i++) {
+		//    
+        //        ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
+//
+		//        if(OMPI_PROC_MY_NAME->vpid == local_rank){
+        //                continue;
+        //        }
+        //        ompi_proc_name.jobid=OMPI_PROC_MY_NAME->jobid;
+        //        ompi_proc_name.vpid=local_rank;
+        //        bool is_new;
+        //        proc = ompi_proc_find_and_add(&ompi_proc_name, &is_new);
+        //        MCA_PML_CALL(del_procs(&proc,1)); 
+        //    }
+        //    
+        //    /* also delete endpoint information for ourself */
+        //    MCA_PML_CALL(del_procs(&ompi_proc_local_proc,1));
+        //    opal_argv_free(peers);
+        //}
         
         
         /* now we destrcut all ompi_proc's that are removed by the resource res change. This will never include ourself */
@@ -2060,7 +2063,7 @@ int ompi_instance_get_num_psets (ompi_instance_t *instance, int *npset_names)
 
 int ompi_instance_get_nth_pset (ompi_instance_t *instance, int n, int *len, char *pset_name)
 {
-    if (NULL == ompi_mpi_instance_pmix_psets && n >= ompi_instance_builtin_count) {
+    if (NULL == ompi_mpi_instance_pmix_pset_names && n >= ompi_instance_builtin_count) {
         ompi_instance_refresh_pmix_psets (PMIX_QUERY_PSET_NAMES);
     }
 
@@ -2072,7 +2075,7 @@ int ompi_instance_get_nth_pset (ompi_instance_t *instance, int n, int *len, char
         if (n < ompi_instance_builtin_count) {
             *len = strlen(ompi_instance_builtin_psets[n]) + 1;
         } else {
-            *len = strlen (ompi_mpi_instance_pmix_psets[n - ompi_instance_builtin_count]) + 1;
+            *len = strlen (ompi_mpi_instance_pmix_pset_names[n - ompi_instance_builtin_count]) + 1;
         }
         return OMPI_SUCCESS;
     }
@@ -2080,7 +2083,7 @@ int ompi_instance_get_nth_pset (ompi_instance_t *instance, int n, int *len, char
     if (n < ompi_instance_builtin_count) {
         strncpy (pset_name, ompi_instance_builtin_psets[n], *len);
     } else {
-        strncpy (pset_name, ompi_mpi_instance_pmix_psets[n - ompi_instance_builtin_count], *len);
+        strncpy (pset_name, ompi_mpi_instance_pmix_pset_names[n - ompi_instance_builtin_count], *len);
     }
 
     return OMPI_SUCCESS;
@@ -2399,7 +2402,7 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
         }
         return MPI_ERR_INTERN;
     }
-    group = ompi_group_allocate (pset_nmembers);
+    group = ompi_group_allocate (NULL, pset_nmembers);
     if (OPAL_UNLIKELY(NULL == group)) {
         return OMPI_ERR_OUT_OF_RESOURCE;
     }

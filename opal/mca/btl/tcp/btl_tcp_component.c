@@ -1307,6 +1307,7 @@ mca_btl_base_module_t **mca_btl_tcp_component_init(int *num_btl_modules,
     if (OPAL_SUCCESS != (ret = mca_btl_tcp_component_exchange())) {
         return 0;
     }
+
     btls = (mca_btl_base_module_t **) malloc(mca_btl_tcp_component.tcp_num_btls
                                              * sizeof(mca_btl_base_module_t *));
     if (NULL == btls) {

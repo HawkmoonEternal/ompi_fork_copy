@@ -397,6 +397,7 @@ mca_btl_tcp_proc_t *mca_btl_tcp_proc_create(opal_proc_t *proc)
     /* lookup tcp parameters exported by this proc */
     OPAL_MODEX_RECV(rc, &mca_btl_tcp_component.super.btl_version, &proc->proc_name,
                     (uint8_t **) &remote_addrs, &size);
+
     if (OPAL_SUCCESS != rc) {
         if (OPAL_ERR_NOT_FOUND != rc) {
             BTL_ERROR(("opal_modex_recv: failed with return value=%d", rc));

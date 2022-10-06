@@ -587,7 +587,7 @@ typedef struct {
             OPAL_MODEX_RECV_STRING((r), _key, (p), (d), (sz));                       \
             free(_key);                                                              \
         }                                                                            \
-    } while (0);
+    } while (0);                                                                     \
 
 #define PMIX_ERROR_LOG(r) \
     opal_output(0, "[%s:%d] PMIx Error: %s", __FILE__, __LINE__, PMIx_Error_string((r)))
