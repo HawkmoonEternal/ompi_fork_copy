@@ -358,12 +358,12 @@ int ompi_coll_base_barrier_intra_basic_linear(struct ompi_communicator_t *comm,
 
     /* All non-root send & receive zero-length message. */
     if (rank > 0) {
-        printf("rank %d: send\n", rank);
+        //printf("rank %d: send\n", rank);
         err = MCA_PML_CALL(send (NULL, 0, MPI_BYTE, 0,
                                  MCA_COLL_BASE_TAG_BARRIER,
                                  MCA_PML_BASE_SEND_STANDARD, comm));
         if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
-        printf("rank %d: recv\n", rank);
+        //printf("rank %d: recv\n", rank);
         err = MCA_PML_CALL(recv (NULL, 0, MPI_BYTE, 0,
                                  MCA_COLL_BASE_TAG_BARRIER,
                                  comm, MPI_STATUS_IGNORE));
@@ -373,12 +373,12 @@ int ompi_coll_base_barrier_intra_basic_linear(struct ompi_communicator_t *comm,
     /* The root collects and broadcasts the messages. */
 
     else {
-        printf("rank %d: get_reqs\n", rank);
+        //printf("rank %d: get_reqs\n", rank);
         requests = ompi_coll_base_comm_get_reqs(module->base_data, size);
         if( NULL == requests ) { err = OMPI_ERR_OUT_OF_RESOURCE; line = __LINE__; goto err_hndl; }
         
         for (i = 1; i < size; ++i) {
-            printf("rank %d: i_recv: %d\n", rank, i);
+            //printf("rank %d: i_recv: %d\n", rank, i);
             err = MCA_PML_CALL(irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
                                      MCA_COLL_BASE_TAG_BARRIER, comm,
                                      &(requests[i])));
@@ -389,14 +389,14 @@ int ompi_coll_base_barrier_intra_basic_linear(struct ompi_communicator_t *comm,
         requests = NULL;  /* we're done the requests array is clean */
 
         for (i = 1; i < size; ++i) {
-            printf("rank %d: send: %d\n", rank, i);
+            //printf("rank %d: send: %d\n", rank, i);
             err = MCA_PML_CALL(send(NULL, 0, MPI_BYTE, i,
                                     MCA_COLL_BASE_TAG_BARRIER,
                                     MCA_PML_BASE_SEND_STANDARD, comm));
             if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
         }
     }
-    printf("rank %d: All done\n", rank);
+    //printf("rank %d: All done\n", rank);
     /* All done */
     return MPI_SUCCESS;
  err_hndl:

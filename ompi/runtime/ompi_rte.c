@@ -1096,7 +1096,6 @@ int ompi_rte_refresh_peers(bool self){
                           &pname, &val, PMIX_STRING);
     if (PMIX_SUCCESS == rc && NULL != val) {
         peers = opal_argv_split(val, ',');
-        printf("refreshed peers to: %s\n", val);
         free(val);
     } else {
         ret = opal_pmix_convert_status(rc);
