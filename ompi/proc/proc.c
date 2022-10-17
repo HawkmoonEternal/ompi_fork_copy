@@ -325,6 +325,7 @@ int ompi_proc_complete_init(void)
         for (i=0; NULL != peers[i]; i++) {
             ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
             uint16_t u16, *u16ptr = &u16;
+            printf("PMIx Rank %d: Adding rank %d\n", OMPI_PROC_MY_NAME->vpid, local_rank);
             if (OMPI_PROC_MY_NAME->vpid == local_rank) {
                 continue;
             }

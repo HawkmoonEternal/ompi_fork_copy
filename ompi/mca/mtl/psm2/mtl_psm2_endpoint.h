@@ -61,6 +61,7 @@ static inline mca_mtl_psm2_endpoint_t *ompi_mtl_psm2_get_endpoint (struct mca_mt
 {
     if (OPAL_UNLIKELY(NULL == ompi_proc->proc_endpoints[OMPI_PROC_ENDPOINT_TAG_MTL])) {
         int rc;
+        printf("Debug: mtl_send add proc\n");
         if (OPAL_UNLIKELY(OMPI_SUCCESS != (rc = MCA_PML_CALL(add_procs(&ompi_proc, 1))))) {
             ompi_rte_abort(rc,"Error in ompi_mtl_psm2_get_endpoint.\n");
         }

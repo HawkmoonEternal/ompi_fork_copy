@@ -1025,6 +1025,7 @@ int ompi_rte_refresh_job_size(){
         }
     }
     opal_process_info.univ_size = u32;
+    printf("new job size is: %d\n", opal_process_info.num_procs);
     return OPAL_SUCCESS;
 
     error:
@@ -1095,6 +1096,7 @@ int ompi_rte_refresh_peers(bool self){
                           &pname, &val, PMIX_STRING);
     if (PMIX_SUCCESS == rc && NULL != val) {
         peers = opal_argv_split(val, ',');
+        printf("refreshed peers to: %s\n", val);
         free(val);
     } else {
         ret = opal_pmix_convert_status(rc);

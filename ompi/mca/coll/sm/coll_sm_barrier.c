@@ -60,7 +60,7 @@ int mca_coll_sm_barrier_intra(struct ompi_communicator_t *comm,
     opal_atomic_uint32_t *parent;
     int uint_control_size;
     mca_coll_sm_module_t *sm_module = (mca_coll_sm_module_t*) module;
-
+    printf("sm_coll\n");
     /* Lazily enable the module the first time we invoke a collective
        on it */
     if (!sm_module->enabled) {

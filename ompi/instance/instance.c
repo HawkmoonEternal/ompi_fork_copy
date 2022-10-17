@@ -1416,7 +1416,7 @@ int ompi_mpi_instance_finalize (ompi_instance_t **instance)
 
 /* Apply the specified resource change to the ompi internal data */
 int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, char *pset_name, ompi_rc_op_type_t rc_type, char *result_pset, bool root){
-    int ret, i;
+    int ret, i, j;
     pmix_status_t rc;
 
     size_t nprocs;
@@ -1432,12 +1432,10 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
 
     ompi_instance_get_pset_membership(instance, pset_name, &pset_procs, &nprocs);
     
-    if(NULL == pset_procs)printf("pset procs are null\n");
     //opal_mutex_lock(&tracking_structures_lock);   
 	//printf("RANK %d: member: %d, type:%d!\n", opal_process_info.myprocid.rank, opal_is_pset_member(pset_procs, nprocs, opal_process_info.myprocid.rank), rc_type);    
     /* if this process is to be removed don't update the instance as it should finalize anyways */
     if(opal_is_pset_member(pset_procs, nprocs, opal_process_info.my_name) && rc_type == OMPI_RC_SUB){
-	//printf("RANK %d: I am a member of the delta_pset!\n", opal_process_info.myprocid.rank);
         ompi_instance_free_pset_membership(pset_name);
         //opal_mutex_unlock(&tracking_structures_lock);
 
@@ -1457,6 +1455,10 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
         (void)snprintf(lookup_data.key, PMIX_MAX_KEYLEN, "%s:finalize", pset_name);
         
         rc = PMIx_Lookup(&lookup_data, 1, lookup_info, 2);
+        if(rc != PMIX_SUCCESS){
+            printf("Lookup failed\n");
+            exit(1);
+        }
 
         PMIX_INFO_FREE(lookup_info, 2);
         PMIX_PDATA_DESTRUCT(&lookup_data);
@@ -1468,43 +1470,54 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
     }
 
     
-    /* If the resource change type is MPI_RC_SUB we need to remove all local endppoints a */
+    /* If the resource change type is MPI_RC_SUB we need to remove all local endpoints 
+     * NOTE: We assume only local procs with highest rank are removed so for now we only remove these endpoints
+    //*/
     if(rc_type == OMPI_RC_SUB){
-        /* first we remove all endpoints as the local ranks could have changed. TDOD: only do it if they really changed */
-        ompi_proc_t *proc;
-        wildcard_rank.jobid = OMPI_PROC_MY_NAME->jobid;
-        wildcard_rank.vpid = OMPI_NAME_WILDCARD->vpid;
-        /* retrieve the local peers */
-        char *val = NULL;
-        OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCAL_PEERS,
-                              &wildcard_rank, &val, PMIX_STRING);
-
-        //if (OPAL_SUCCESS == ret && NULL != val) {
-        //    char **peers = opal_argv_split(val, ',');
-        //    free(val);
-        //    /* remove endpoint information for all local peers */
-        //    for (i=0; NULL != peers[i]; i++) {
-		//    
-        //        ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
+    //    /* first we remove all endpoints as the local ranks could have changed. TDOD: only do it if they really changed */
+       ompi_proc_t *proc;
+    //    wildcard_rank.jobid = OMPI_PROC_MY_NAME->jobid;
+    //    wildcard_rank.vpid = OMPI_NAME_WILDCARD->vpid;
+    //    /* retrieve the local peers */
+    //    char *val = NULL;
+    //    OPAL_MODEX_RECV_VALUE(ret, PMIX_LOCAL_PEERS,
+    //                          &wildcard_rank, &val, PMIX_STRING);
 //
-		//        if(OMPI_PROC_MY_NAME->vpid == local_rank){
-        //                continue;
-        //        }
-        //        ompi_proc_name.jobid=OMPI_PROC_MY_NAME->jobid;
-        //        ompi_proc_name.vpid=local_rank;
-        //        bool is_new;
-        //        proc = ompi_proc_find_and_add(&ompi_proc_name, &is_new);
-        //        MCA_PML_CALL(del_procs(&proc,1)); 
-        //    }
-        //    
-        //    /* also delete endpoint information for ourself */
-        //    MCA_PML_CALL(del_procs(&ompi_proc_local_proc,1));
-        //    opal_argv_free(peers);
-        //}
-        
-        
-        /* now we destrcut all ompi_proc's that are removed by the resource res change. This will never include ourself */
-        for(i=0; i < nprocs; i++){
+    //    if (OPAL_SUCCESS == ret && NULL != val) {
+    //        char **peers = opal_argv_split(val, ',');
+    //        free(val);
+    //        /* remove endpoint information for all local peers */
+    //        for (i=0; NULL != peers[i]; i++) {
+	//	    
+    //            ompi_vpid_t local_rank = strtoul(peers[i], NULL, 10);
+//
+    //            bool to_remove = 0;
+    //            for(j = 0; j < nprocs; j++){
+    //                if(local_rank == pset_procs[j].vpid){
+    //                    to_remove = true;
+    //                    break;
+    //                }
+    //            }
+    //            if(!to_remove)continue;
+//
+	//	        //if(OMPI_PROC_MY_NAME->vpid == local_rank){
+    //            //        continue;
+    //            //}
+    //            ompi_proc_name.jobid=OMPI_PROC_MY_NAME->jobid;
+    //            ompi_proc_name.vpid=local_rank;
+    //            bool is_new;
+    //            proc = ompi_proc_find_and_add(&ompi_proc_name, &is_new);
+    //            MCA_PML_CALL(del_procs(&proc,1)); 
+    //        }
+    //        
+    //        /* also delete endpoint information for ourself */
+    //        //MCA_PML_CALL(del_procs(&ompi_proc_local_proc,1));
+    //        opal_argv_free(peers);
+    //    }
+    //    
+    //    
+    //    /* now we destruct all ompi_proc's that are removed by the resource res change. This will never include ourself */
+        for(i = 0; i < nprocs; i++){
 
             /* look for existing ompi_proc_t that matches this name */
             proc = (ompi_proc_t *) ompi_proc_lookup (pset_procs[i]);
@@ -1512,6 +1525,7 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
                 ompi_proc_destruct(proc);
             }
         }
+
     }
 
     /* now we need to update the job info */
@@ -1549,9 +1563,17 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
 
             (void) ompi_proc_for_name (pset_procs[i]);
         }
+        
         ompi_proc_list_sort();
     }
     ompi_instance_free_pset_membership(pset_name);
+
+    //ompi_instance_get_pset_membership(instance, result_pset, &pset_procs, &nprocs);
+    //for(int i = 0; i < nprocs; ++i){
+    //    (void) ompi_proc_for_name (pset_procs[i]);
+    //}
+    //ompi_instance_free_pset_membership(result_pset);
+    //ompi_proc_list_sort();
 
     if(rc_type == OMPI_RC_SUB){
         ompi_instance_get_pset_membership(instance, result_pset, &pset_procs, &nprocs);
@@ -1572,13 +1594,8 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
         printf("ompi_proc_get_allocated () failed\n");
     }
 
-	//printf("Rank %d: have allocated %d procs\n",opal_process_info.myprocid.rank,nprocs);
-
     ret = MCA_PML_CALL(add_procs(ompi_procs, nprocs));
     free(ompi_procs);
-
-    //printf("Rank %d: MCA_PML_CALL status: %d\n",opal_process_info.myprocid.rank, ret);
-
 
 
     if(root && rc_type == OMPI_RC_SUB){
@@ -1587,9 +1604,7 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
         PMIX_INFO_CONSTRUCT(&publish_data);
         (void)snprintf(publish_data.key, PMIX_MAX_KEYLEN, "%s:finalize", pset_name);
         PMIX_VALUE_LOAD(&publish_data.value, result_pset, PMIX_STRING);
-        //printf("finalize:publish\n");
         rc = PMIx_Publish(&publish_data, 1);
-        //printf("finalize:publish status %d\n", rc);
         PMIX_PDATA_DESTRUCT(&publish_data);
     }
     opal_mutex_unlock (&instance_lock);
