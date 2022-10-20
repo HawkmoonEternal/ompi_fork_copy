@@ -226,7 +226,7 @@ int ompi_coll_base_barrier_intra_recursivedoubling(struct ompi_communicator_t *c
     /* exchange messages */
     if ( rank < adjsize ) {
         mask = 0x1;
-        printf("rank %d: entering sendrecv_zero\n", rank);
+        //printf("rank %d: entering sendrecv_zero\n", rank);
         while ( mask < adjsize ) {
             remote = rank ^ mask;
             mask <<= 1;
@@ -238,7 +238,7 @@ int ompi_coll_base_barrier_intra_recursivedoubling(struct ompi_communicator_t *c
                                                comm);
             if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl;}
         }
-        printf("rank %d: finished sendrecv_zero\n", rank);
+        //printf("rank %d: finished sendrecv_zero\n", rank);
     }
 
     /* non-power of 2 case */

@@ -1025,7 +1025,6 @@ int ompi_rte_refresh_job_size(){
         }
     }
     opal_process_info.univ_size = u32;
-    printf("new job size is: %d\n", opal_process_info.num_procs);
     return OPAL_SUCCESS;
 
     error:
