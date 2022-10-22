@@ -2757,6 +2757,8 @@ OMPI_DECLSPEC  int PMPI_Session_call_errhandler(MPI_Session session, int errorco
 OMPI_DECLSPEC  int PMPI_Session_confirm_res_change(MPI_Session *session, MPI_Info *info, char delta_pset[], char *result_pset[]);
 OMPI_DECLSPEC  int PMPI_Session_create_errhandler (MPI_Session_errhandler_function *session_errhandler_fn,
                                                    MPI_Errhandler *errhandler);
+OMPI_DECLSPEC  int MPI_Session_dyn_integrate_res_change(MPI_Session *session, MPI_Info info, char *delta_pset, char *pset_buf, int provider, int *terminate);
+OMPI_DECLSPEC  int MPI_Session_dyn_recv_res_change(MPI_Session session, char * assoc_pset, int *type, char *delta_pset, int *incl);
 OMPI_DECLSPEC  int PMPI_Session_finalize (MPI_Session *session);
 OMPI_DECLSPEC  int PMPI_Session_get_errhandler(MPI_Session session, MPI_Errhandler *erhandler);
 OMPI_DECLSPEC  int PMPI_Session_get_info (MPI_Session session, MPI_Info *info_used);

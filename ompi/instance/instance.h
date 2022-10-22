@@ -258,6 +258,8 @@ OMPI_DECLSPEC int ompi_instance_request_res_change(MPI_Session session, int delt
 OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset, bool blocking);
 OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
 
+OMPI_DECLSPEC int ompi_instance_integrate_res_change(ompi_instance_t *instance, char *delta_pset, char *pset_buf, int provider, int *terminate);
+
 
 pmix_proc_t ompi_intance_get_pmixid(void);
 int opal_pmix_proc_array_conv(opal_process_name_t *opal_procs, pmix_proc_t **pmix_procs, size_t nprocs);

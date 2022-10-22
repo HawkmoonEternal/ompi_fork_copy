@@ -373,6 +373,8 @@ interface_profile_sources = \
         session_call_errhandler.c \
         session_confirm_res_change.c \
         session_create_errhandler.c \
+        session_dyn_integrate_res_change.c \
+        session_dyn_recv_res_change.c \
         session_get_errhandler.c \
         session_get_info.c \
         session_get_num_psets.c \
