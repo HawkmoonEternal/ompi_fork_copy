@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.in": "cpp",
-        "type_traits": "c"
+        "type_traits": "c",
+        "request.h": "c"
     }
 }

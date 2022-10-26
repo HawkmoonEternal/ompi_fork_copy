@@ -259,6 +259,7 @@ OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opa
 OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
 
 OMPI_DECLSPEC int ompi_instance_integrate_res_change(ompi_instance_t *instance, char *delta_pset, char *pset_buf, int provider, int *terminate);
+OMPI_DECLSPEC int ompi_instance_integrate_res_change_nb(ompi_instance_t *instance, char *delta_pset, char *pset_buf, int provider, int *terminate, ompi_request_t *request);
 
 
 pmix_proc_t ompi_intance_get_pmixid(void);
@@ -272,6 +273,17 @@ int ompi_instance_get_rc_type(char *delta_pset, ompi_rc_op_type_t *rc_type);
 static void ompi_instance_refresh_pmix_psets (const char *key);
 int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, char *pset_name, ompi_rc_op_type_t rc_type, char *result_pset, bool root);
 
+int ompi_instance_pset_fence_multiple_nb(ompi_instance_t *instance, char **pset_names, int num_psets, ompi_info_t *info, pmix_op_cbfunc_t cbfunc, void *cbdata);
+
+void pmix_op_cb_nb(pmix_status_t status, void *cbdata);
+
+void pmix_lookup_cb_nb(pmix_status_t status, pmix_pdata_t pdata[], size_t ndata, void *cbdata);
+
+void pmix_info_cb_nb( pmix_status_t status, pmix_info_t *info, size_t ninfo, void *cbdata, pmix_release_cbfunc_t release_fn, void *release_cbdata);
+
+int ompi_instance_nb_req_free(ompi_request_t **req);
+
+int ompi_instance_get_pset_membership_nb(ompi_instance_t *instance, char **pset_names, int npsets, pmix_info_cbfunc_t cbfunc, void *cbdata);
 
 /**
  * @brief current number of active instances
