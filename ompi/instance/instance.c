@@ -187,6 +187,7 @@ typedef enum _nb_chain_stage{
     PUBSUB_STAGE,
     QUERY_MEM_STAGE,
     FENCE_STAGE,
+    REQUEST_RC_STAGE,
     LAST_STAGE
 }nb_chain_stage;
 
@@ -194,6 +195,7 @@ typedef enum _nb_func{
     GET_RC,
     RECV_RC,
     INTEGRATE_RC,
+    REQUEST_RC,
 }nb_func;
 
 typedef struct _nb_chain_info{
@@ -225,6 +227,11 @@ typedef struct _integrate_rc_results{
     char * pset_buf;
     int * terminate;
 }integrate_rc_results;
+
+/* TODO: We might want the request to return info in the future */
+typedef struct request_rc_results{
+    nb_chain_info chain_info;
+}request_rc_results;
 
 int ompi_instance_nb_req_free(ompi_request_t **req){
     if(*req != MPI_REQUEST_NULL){
@@ -617,6 +624,7 @@ void pmix_info_cb_nb( pmix_status_t status, pmix_info_t *info, size_t ninfo,
 
     int rc = OMPI_SUCCESS;
     integrate_rc_results * int_rc_results;
+    request_rc_results * req_rc_results;
     nb_chain_info * chain_info = (nb_chain_info *)cbdata;
     
     nb_func func = chain_info->func;
@@ -627,6 +635,7 @@ void pmix_info_cb_nb( pmix_status_t status, pmix_info_t *info, size_t ninfo,
 
 
     switch(func){
+        /* MPI_Session_dyn_integrate_res_change */
         case INTEGRATE_RC: 
 
             if(PMIX_SUCCESS == status){
@@ -675,6 +684,27 @@ void pmix_info_cb_nb( pmix_status_t status, pmix_info_t *info, size_t ninfo,
                 free(chain_info->stages);
             }
             break;
+        /* MPI_Session_dyn_request_res_change */
+        case REQUEST_RC:
+            if(PMIX_SUCCESS == status){
+            
+                req_rc_results = (request_rc_results *)cbdata;
+
+                if(next_stage == LAST_STAGE){
+                    opal_atomic_wmb();
+                    
+                    chain_info->req->req_complete = REQUEST_COMPLETED;
+                    chain_info->req->req_status.MPI_ERROR = rc;
+                    chain_info->req->req_state = OMPI_REQUEST_INVALID;
+                    free(chain_info->stages);
+                    free(req_rc_results);
+                }
+            }else{
+                chain_info->req->req_status.MPI_ERROR = status;
+                chain_info->req->req_state = OMPI_REQUEST_INVALID;
+                free(chain_info->stages);                
+            }
+
         default: 
             break;
     }
@@ -3393,6 +3423,33 @@ int ompi_instance_request_res_changes_v23(ompi_instance_t * instance, ompi_insta
     if(0 < nresults){
         PMIX_INFO_FREE(results, nresults);
     }
+
+    return rc;
+}
+
+int ompi_instance_request_res_changes_nb_v23(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle, ompi_request_t *request){
+
+    pmix_status_t rc;
+    pmix_info_t *info, *results;
+    size_t nresults;
+
+    request_rc_results *req_rc_results = malloc(sizeof(request_rc_results));
+    nb_chain_info *chain_info = &req_rc_results->chain_info;
+
+    chain_info->func = REQUEST_RC;
+    chain_info->nstages = 2;
+    chain_info->cur_stage = 0;
+    chain_info->stages = malloc(5 * sizeof(nb_chain_stage));
+    chain_info->stages[0] = REQUEST_RC_STAGE;
+    chain_info->stages[1] = LAST_STAGE;
+    chain_info->req = request;
+
+    PMIX_INFO_CREATE(info, 1);
+    rc_op_handle_serialize(rc_op_handle, info);
+
+    rc = PMIx_Allocation_request_nb(MPI_ALLOC_SET_REQUEST, info, 1, pmix_info_cb_nb, (void *) req_rc_results);
+
+    PMIX_INFO_FREE(info, 1);
 
     return rc;
 }
