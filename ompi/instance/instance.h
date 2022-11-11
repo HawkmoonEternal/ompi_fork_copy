@@ -56,6 +56,7 @@ static void pset_constructor(ompi_mpi_instance_pset_t *pset){
     pset->members = NULL;
 }
 
+
 ompi_mpi_instance_pset_t * get_pset_by_name(char *name);
 
 void pset_define_handler(size_t evhdlr_registration_id, pmix_status_t status,
@@ -87,9 +88,6 @@ typedef enum{
     RC_FINALIZED 
 } ompi_rc_status_t;
 
-
-
-
 struct ompi_resource_change_t{
     opal_list_item_t super;
     ompi_mpi_instance_pset_t *delta_pset;
@@ -97,7 +95,6 @@ struct ompi_resource_change_t{
     ompi_rc_op_type_t type;
     ompi_rc_status_t status;
 };
-
 
 typedef struct ompi_resource_change_t ompi_mpi_instance_resource_change_t;
 
@@ -116,7 +113,128 @@ static void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t sta
                        pmix_info_t results[], size_t nresults,
                        pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata);
 
-OBJ_CLASS_DECLARATION(ompi_mpi_instance_pset_t);
+
+/* Resource change / Setop handles*/
+
+typedef struct opal_pmix_info_list_item_t{
+    opal_list_item_t super;
+    pmix_info_t info;
+}opal_pmix_info_list_item_t;
+
+struct ompi_instance_set_op_info_t{
+    opal_list_item_t super;
+    char ** input_names;
+    size_t n_input_names;
+    char ** output_names;
+    size_t n_output_names;
+
+    pmix_info_t *op_info;
+    size_t n_op_info;
+
+    opal_list_t * pset_info_lists; 
+    size_t n_pset_info_lists;
+};
+
+typedef struct ompi_instance_set_op_info_t ompi_instance_set_op_info_t;
+
+static void ompi_instance_set_op_info_constructor(ompi_instance_set_op_info_t *op_info){
+
+    op_info->input_names = NULL;
+    op_info->output_names = NULL;
+    op_info->op_info = NULL;
+    op_info->pset_info_lists = NULL;
+
+    op_info->n_input_names = 0;
+    op_info->n_output_names = 0;
+    op_info->n_op_info = 0;
+    op_info->n_pset_info_lists = 0;
+}
+
+static void ompi_instance_set_op_info_destructor(ompi_instance_set_op_info_t *op_info){
+
+    if(NULL != op_info->input_names){
+        for(int n = 0; n < op_info->n_input_names; n++){
+            free(op_info->input_names[n]);
+        }
+        free(op_info->input_names);
+    }
+
+    if(NULL != op_info->output_names){
+        for(int n = 0; n < op_info->n_output_names; n++){
+            free(op_info->output_names[n]);
+        }
+        free(op_info->output_names);
+    }
+
+    if(NULL != op_info->op_info){
+        PMIX_INFO_FREE(op_info->op_info, op_info->n_op_info);
+    }
+
+    if(NULL != op_info->pset_info_lists){
+        for(int n = 0; n < op_info->n_pset_info_lists; n++){
+            OBJ_DESTRUCT(&op_info->pset_info_lists[n]);
+        }
+        free(op_info->pset_info_lists);
+    }
+}
+
+OBJ_CLASS_DECLARATION(ompi_instance_set_op_info_t);
+
+struct ompi_instance_set_op_handle_t{
+    opal_list_item_t super;
+    ompi_psetop_type_t psetop;
+    ompi_instance_set_op_info_t set_op_info;
+};
+typedef struct ompi_instance_set_op_handle_t ompi_instance_set_op_handle_t;
+
+static void ompi_instance_set_op_handle_constructor(ompi_instance_set_op_handle_t *set_op){
+    
+    set_op->psetop = OMPI_PSETOP_NULL;
+    OBJ_CONSTRUCT(&set_op->set_op_info, ompi_instance_set_op_info_t);
+}
+
+static void ompi_instance_set_op_handle_destructor(ompi_instance_set_op_handle_t *set_op){
+    set_op->psetop = OMPI_PSETOP_NULL;
+    OBJ_DESTRUCT(&set_op->set_op_info);
+}
+
+OBJ_CLASS_DECLARATION(ompi_instance_set_op_handle_t);
+
+struct ompi_instance_rc_op_handle_t{
+    opal_list_item_t super;
+    ompi_rc_op_type_t rc_type;
+    ompi_instance_set_op_info_t rc_op_info;
+    opal_list_t set_ops;
+};
+
+typedef struct ompi_instance_rc_op_handle_t ompi_instance_rc_op_handle_t;
+
+
+static void ompi_instance_rc_op_handle_constructor(ompi_instance_rc_op_handle_t *rc_op){
+    rc_op->rc_type = OMPI_RC_NULL;
+    
+    OBJ_CONSTRUCT(&rc_op->rc_op_info, ompi_instance_set_op_info_t);
+    OBJ_CONSTRUCT(&rc_op->set_ops, opal_list_t);    
+}
+
+static void ompi_instance_rc_op_handle_destructor(ompi_instance_rc_op_handle_t *rc_op){
+    
+    rc_op->rc_type = OMPI_RC_NULL;
+    OBJ_DESTRUCT(&rc_op->rc_op_info);
+    OBJ_DESTRUCT(&rc_op->set_ops);
+}
+
+OBJ_CLASS_DECLARATION(ompi_instance_rc_op_handle_t);
+
+
+#define PREDEFINED_RC_HANDLE_PAD 512
+struct ompi_predefined_rc_op_handle_t {
+    ompi_instance_rc_op_handle_t rc_op_handle;
+    char padding[PREDEFINED_RC_HANDLE_PAD - sizeof(ompi_instance_rc_op_handle_t)];
+};
+typedef struct ompi_predefined_rc_op_handle_t ompi_predefined_rc_op_handle_t;
+
+OMPI_DECLSPEC extern ompi_predefined_rc_op_handle_t ompi_mpi_rc_op_handle_null;
 
 struct ompi_group_t;
 
@@ -255,12 +373,18 @@ OMPI_DECLSPEC int ompi_instance_pset_fence(ompi_instance_t *instance, char *pset
 OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pref_name, char *pset_result, ompi_psetop_type_t op);
 OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char *delta_pset, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool return_info);
 OMPI_DECLSPEC int ompi_instance_request_res_change(MPI_Session session, int delta, char *delta_pset, ompi_rc_op_type_t rc_type, MPI_Info *info);
+OMPI_DECLSPEC int ompi_instance_request_res_changes_v23(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle);
 OMPI_DECLSPEC int ompi_instance_accept_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char* new_pset, bool blocking);
 OMPI_DECLSPEC int ompi_instance_confirm_res_change(ompi_instance_t *instance, opal_info_t **info_used, char *delta_pset, char **new_pset);
 
 OMPI_DECLSPEC int ompi_instance_integrate_res_change(ompi_instance_t *instance, char *delta_pset, char *pset_buf, int provider, int *terminate);
 OMPI_DECLSPEC int ompi_instance_integrate_res_change_nb(ompi_instance_t *instance, char *delta_pset, char *pset_buf, int provider, int *terminate, ompi_request_t *request);
 
+OMPI_DECLSPEC int ompi_instance_rc_op_handle_create(  ompi_instance_t *instance, ompi_rc_op_type_t rc_type, 
+                                        char **input_names, size_t n_input_names, 
+                                        char **ouput_names, size_t n_output_names, 
+                                        ompi_info_t *info, ompi_instance_rc_op_handle_t **rc_op_handle);
+OMPI_DECLSPEC int ompi_instance_rc_op_handle_free(ompi_instance_t * instance, ompi_instance_rc_op_handle_t ** rc_op_handle);
 
 pmix_proc_t ompi_intance_get_pmixid(void);
 int opal_pmix_proc_array_conv(opal_process_name_t *opal_procs, pmix_proc_t **pmix_procs, size_t nprocs);

@@ -462,6 +462,9 @@ typedef struct mca_base_pvar_handle_t *MPI_T_pvar_handle;
 typedef struct mca_base_pvar_session_t *MPI_T_pvar_session;
 typedef struct ompi_instance_t *MPI_Session;
 
+typedef struct ompi_instance_rc_op_handle_t *MPI_RC_handle;
+typedef struct ompi_instance_set_op_handle_t *MPI_Set_op_handle;
+
 /*
  * MPI_Status
  */
@@ -943,6 +946,7 @@ enum {
  * NULL handles
  */
 #define MPI_SESSION_NULL OMPI_PREDEFINED_GLOBAL(MPI_Session, ompi_mpi_instance_null)
+#define MPI_RC_HANDLE_NULL OMPI_PREDEFINED_GLOBAL(MPI_RC_handle, ompi_mpi_rc_op_handle_null)
 #define MPI_GROUP_NULL OMPI_PREDEFINED_GLOBAL(MPI_Group, ompi_mpi_group_null)
 #define MPI_COMM_NULL OMPI_PREDEFINED_GLOBAL(MPI_Comm, ompi_mpi_comm_null)
 #define MPI_REQUEST_NULL OMPI_PREDEFINED_GLOBAL(MPI_Request, ompi_request_null)
@@ -1077,6 +1081,8 @@ OMPI_DECLSPEC extern struct ompi_predefined_group_t ompi_mpi_group_empty;
 OMPI_DECLSPEC extern struct ompi_predefined_group_t ompi_mpi_group_null;
 
 OMPI_DECLSPEC extern struct ompi_predefined_instance_t ompi_mpi_instance_null;
+
+OMPI_DECLSPEC extern struct ompi_predefined_rc_op_handle_t ompi_mpi_rc_op_handle_null;
 
 OMPI_DECLSPEC extern struct ompi_predefined_request_t ompi_request_null;
 
@@ -2761,6 +2767,7 @@ OMPI_DECLSPEC  int MPI_Session_dyn_integrate_res_change(MPI_Session *session, MP
 OMPI_DECLSPEC  int MPI_Session_dyn_integrate_res_change_nb  (MPI_Session *session, MPI_Info info, char *delta_pset, char *pset_buf, 
                                                             int provider, int *terminate, MPI_Request *req);
 OMPI_DECLSPEC  int MPI_Session_dyn_recv_res_change(MPI_Session session, char * assoc_pset, int *type, char *delta_pset, int *incl);
+OMPI_DECLSPEC  int MPI_Session_dyn_request_res_change(MPI_Session session, MPI_RC_handle rc_handle);
 OMPI_DECLSPEC  int PMPI_Session_finalize (MPI_Session *session);
 OMPI_DECLSPEC  int PMPI_Session_get_errhandler(MPI_Session session, MPI_Errhandler *erhandler);
 OMPI_DECLSPEC  int PMPI_Session_get_info (MPI_Session session, MPI_Info *info_used);
@@ -2774,6 +2781,9 @@ OMPI_DECLSPEC  int PMPI_Session_init (MPI_Info info, MPI_Errhandler errhandler,
 OMPI_DECLSPEC  MPI_Session PMPI_Session_f2c (MPI_Fint session);
 OMPI_DECLSPEC  int PMPI_Session_pset_create_op(MPI_Session session, int op, char *pset1, char *pset2, 
                                               char *pset_result, MPI_Info *info);
+OMPI_DECLSPEC  int MPI_Session_rc_handle_create(  MPI_Session session, int rc_type, char **input_names, int n_input_names, 
+                                                  char **output_names, int n_output_names, MPI_Info info, MPI_RC_handle *rc_op_handle);
+OMPI_DECLSPEC  int MPI_Session_rc_handle_free(MPI_Session session, MPI_RC_handle *rc_op_handle);                                                  
 OMPI_DECLSPEC  int PMPI_Session_request_res_change(MPI_Session session, int delta, char *delta_pset, int rc_type, MPI_Info *info);
 OMPI_DECLSPEC  int PMPI_Session_set_errhandler(MPI_Session session, MPI_Errhandler erhandler);
 OMPI_DECLSPEC  int PMPI_Session_set_info (MPI_Session session, MPI_Info info);
