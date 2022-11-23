@@ -2,6 +2,18 @@
     "files.associations": {
         "*.in": "cpp",
         "type_traits": "c",
-        "request.h": "c"
+        "request.h": "c",
+        "base.h": "c",
+        "mpool_base_tree.h": "c",
+        "dpm.h": "c",
+        "op.h": "c",
+        "pml_base_bsend.h": "c",
+        "interlib.h": "c",
+        "params.h": "c",
+        "instance_op_handle.h": "c",
+        "info_subscriber.h": "c",
+        "timings.h": "c",
+        "instance_psets.h": "c",
+        "instance_res_changes.h": "c"
     }
 }

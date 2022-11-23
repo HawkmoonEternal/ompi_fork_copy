@@ -29,6 +29,11 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
     char d_pset[PMIX_MAX_KEYLEN];
     ompi_rc_op_type_t rc_type = OMPI_RC_NULL;
 
+    /* Throw-away variables */
+    char _delta_pset[256];
+    ompi_rc_status_t rc_status;
+    int incl;
+
     *terminate = 0;
 
     /* check if user whishes to disconnect from comm */
@@ -58,7 +63,8 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
                     blocking = true;
                 }
             }
-            ompi_instance_get_rc_type(delta_pset,  &rc_type);
+            //get_res_change_type(delta_pset,  &rc_type);
+            ompi_instance_get_res_change(session, delta_pset, &rc_type, _delta_pset, &incl, &rc_status, NULL, false);
             rc = ompi_instance_accept_res_change(session, (opal_info_t**)info, delta_pset, result_pset, blocking);
         }
         MPI_Bcast(&rc, 1, MPI_INT, 0, *comm);

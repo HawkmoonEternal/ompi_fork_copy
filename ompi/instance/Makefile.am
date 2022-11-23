@@ -21,6 +21,16 @@
 
 # This makefile.am does not stand on its own - it is included from ompi/Makefile.am
 
-headers += instance/instance.h
+headers +=  instance/instance.h \
+            instance/instance_collective.h \
+            instance/instance_nb.h \
+            instance/instance_op_handle.h \
+            instance/instance_psets.h \
+            instance/instance_res_changes.h 
 
-lib@OMPI_LIBMPI_NAME@_la_SOURCES += instance/instance.c
+lib@OMPI_LIBMPI_NAME@_la_SOURCES += instance/instance.c \
+                                    instance/instance_collective.c \
+                                    instance/instance_nb.c \
+                                    instance/instance_op_handle.c \
+                                    instance/instance_psets.c \
+                                    instance/instance_res_changes.c

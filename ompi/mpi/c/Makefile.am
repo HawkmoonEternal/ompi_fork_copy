@@ -376,6 +376,7 @@ interface_profile_sources = \
         session_dyn_integrate_res_change.c \
         session_dyn_integrate_res_change_nb.c \
         session_dyn_recv_res_change.c \
+        session_dyn_recv_res_change_coll.c \
         session_dyn_request_res_change.c \
         session_dyn_request_res_change_nb.c \
         session_get_errhandler.c \
@@ -383,6 +384,7 @@ interface_profile_sources = \
         session_get_num_psets.c \
         session_get_nth_pset.c \
         session_get_pset_info.c \
+        session_get_pset_info_v23.c \
         session_get_res_change.c \
         session_init.c \
         session_f2c.c \
@@ -393,6 +395,7 @@ interface_profile_sources = \
         session_request_res_change.c \
         session_set_errhandler.c \
         session_set_info.c \
+        session_set_pset_info.c \
         ssend_init.c \
         ssend.c \
         start.c \
