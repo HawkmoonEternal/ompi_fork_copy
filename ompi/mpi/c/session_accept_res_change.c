@@ -30,7 +30,8 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
     ompi_rc_op_type_t rc_type = OMPI_RC_NULL;
 
     /* Throw-away variables */
-    char _delta_pset[256];
+    char **_delta_psets = NULL;
+    size_t ndelta_psets = 0, n;
     ompi_rc_status_t rc_status;
     int incl;
 
@@ -64,7 +65,11 @@ int MPI_Session_accept_res_change(MPI_Session *session, MPI_Info *info, char del
                 }
             }
             //get_res_change_type(delta_pset,  &rc_type);
-            ompi_instance_get_res_change(session, delta_pset, &rc_type, _delta_pset, &incl, &rc_status, NULL, false);
+            ompi_instance_get_res_change(session, delta_pset, &rc_type, &_delta_psets, &ndelta_psets, &incl, &rc_status, NULL, false);
+            for(n = 0; n < ndelta_psets; n++){
+                free(_delta_psets[n]);
+            }
+            free(_delta_psets);
             rc = ompi_instance_accept_res_change(session, (opal_info_t**)info, delta_pset, result_pset, blocking);
         }
         MPI_Bcast(&rc, 1, MPI_INT, 0, *comm);

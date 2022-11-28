@@ -404,7 +404,6 @@ bool is_pset_leader(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc
     size_t n;
     for(n = 0; n < nmembers; n++){
         int nspace_cmp = strcmp(proc.nspace, pset_members[n].nspace);
-        printf("cmp nspace: %s vs %s, ranks %d vs %d \n", proc.nspace, pset_members[n].nspace, pset_members[n].rank, proc.rank);
         if( 0 < nspace_cmp || (0 == nspace_cmp && pset_members[n].rank < proc.rank))return false;
     }
     return true;
@@ -566,7 +565,6 @@ void get_pset_membership_complete(pmix_status_t status, pmix_info_t *results, si
                             OPAL_PMIX_CONVERT_PROCT(rc, &pset->members[i], &members_array[i]);
                         }
                     }
-                    printf("Proc: %d: inserted members for pset %s: nmemer %d\n", opal_process_info.myprocid.rank, pset->name, pset->size);
                 }
             }
         }

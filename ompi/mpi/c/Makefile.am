@@ -390,7 +390,15 @@ interface_profile_sources = \
         session_f2c.c \
         session_finalize.c \
         session_pset_create_op.c \
+        session_pset_barrier.c \
+        session_pset_barrier_nb.c \
+        session_pset_op.c \
+        session_rc_handle_add_op.c \
+        session_rc_handle_add_pset_info.c \
         session_rc_handle_create.c \
+        session_rc_handle_get_num_ops.c \
+        session_rc_handle_get_num_output.c \
+        session_rc_handle_get_output_pset.c \
         session_rc_handle_free.c \
         session_request_res_change.c \
         session_set_errhandler.c \

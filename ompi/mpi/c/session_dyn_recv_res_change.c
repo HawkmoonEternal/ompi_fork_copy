@@ -18,18 +18,18 @@
 static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
 
 
-int MPI_Session_dyn_recv_res_change(MPI_Session session, char * assoc_pset, int *type, char *delta_pset, int *incl){
+int MPI_Session_dyn_recv_res_change(MPI_Session session, char * assoc_pset, int *type, char ***delta_psets, int *num_delta_psets, int *incl, MPI_Info *info){
     int rc;
-    char bound_pset[PMIX_MAX_KEYLEN];
-    int flag = 0;
+
     ompi_rc_op_type_t ompi_rc_op_type;
     ompi_rc_status_t rc_status;
+    size_t num_delta = 0;
     //PARAM CHECK
     if (NULL == session || MPI_SESSION_NULL == session) {
             return MPI_ERR_ARG;
     }
 
-    rc = ompi_instance_get_res_change(session, assoc_pset, &ompi_rc_op_type, delta_pset, incl, &rc_status, NULL, false);
+    rc = ompi_instance_get_res_change(session, assoc_pset, &ompi_rc_op_type, delta_psets, &num_delta, incl, &rc_status, (ompi_info_t **) info, false);
     
     if(rc == OPAL_ERR_NOT_FOUND || rc == OMPI_SUCCESS){
         rc = MPI_SUCCESS;
@@ -37,6 +37,7 @@ int MPI_Session_dyn_recv_res_change(MPI_Session session, char * assoc_pset, int 
     //ERROR HANDLING
     
     *type = MPI_OMPI_CONVT_RC_OP(ompi_rc_op_type);
+    *num_delta_psets = (int) num_delta;
     
     return rc;
 }

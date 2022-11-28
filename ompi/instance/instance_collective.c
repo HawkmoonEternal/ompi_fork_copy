@@ -758,16 +758,12 @@ ompi_instance_collective_t * search_pending_collectives( ompi_function_type_t co
 int execute_collective_callback(ompi_instance_collective_t *coll){
     
     ompi_info_results_t *info_results;
-    printf("coll_cbfunc: %p\n", coll->coll_cbfunc);
-    printf("coll_cbfunc->type %d\n", coll->coll_cbfunc->type);
-    printf("coll_cbfunc->cbfunc.info_cbfunc: %p\n", coll->coll_cbfunc->cbfunc.info_cbfunc);
 
 
     switch(coll->coll_cbfunc->type){
         case OMPI_CBFUNC_INFO:
 
             info_results = &coll->coll_results->results.info_results;
-            printf("info_results ninfo: %d\n", info_results->ninfo);
             coll->coll_cbfunc->cbfunc.info_cbfunc(coll->status, info_results->info, info_results->ninfo, coll->coll_cbdata, NULL, NULL);
 
             break;
@@ -990,13 +986,10 @@ void create_collective_query(ompi_instance_collective_t **coll, pmix_status_t st
         printf("CREATE COLLECTIVE QUERY: CBFUNC\n");
         coll_cbfunc_create(&coll_cbfunc, OMPI_CBFUNC_INFO);
         coll_cbfunc_load_info(coll_cbfunc, info_cbfunc);
-        printf("loaded cbfunc type %d\n,", coll_cbfunc->type);
-        printf("loaded cbfunc info func %p\n", coll_cbfunc->cbfunc);
     }
 
     *coll = OBJ_NEW(ompi_instance_collective_t);
     ompi_instance_collective_assign(*coll, status, coll_procs, OMPI_FUNC_PMIX_QUERY, coll_params, coll_results, coll_cbfunc, cbdata);
-    printf("loaded collective cbfunc: %p\n", (*coll)->coll_cbfunc);
 }
 
 /* Send the results of a PMIx_query_info to the other procs of the collective call */

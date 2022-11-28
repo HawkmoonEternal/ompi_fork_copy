@@ -22,6 +22,7 @@
 #include "ompi/mca/coll/coll.h"
 #include "ompi/info/info.h"
 #include "ompi/proc/proc.h"
+#include "ompi/instance/instance_op_handle.h"
 
 #pragma region non-blocking_utils
 typedef enum _nb_chain_stage{
@@ -38,6 +39,7 @@ typedef enum _nb_func{
     RECV_RC,
     INTEGRATE_RC,
     REQUEST_RC,
+    PSET_FENCE,
 }nb_func;
 
 typedef struct _nb_chain_info{
@@ -60,8 +62,10 @@ typedef struct _get_rc_results{
 
 typedef struct _integrate_rc_results{
     nb_chain_info chain_info;
-    char * delta_pset;
-    char assoc_pset[OPAL_MAX_PSET_NAME_LEN];
+    char ** delta_psets;
+    char **assoc_psets;
+    size_t ndelta_psets;
+    size_t nassoc_psets;
     ompi_rc_op_type_t rc_type;
     ompi_rc_status_t rc_status;
     int incl;
@@ -73,7 +77,12 @@ typedef struct _integrate_rc_results{
 /* TODO: We might want the request to return info in the future */
 typedef struct request_rc_results{
     nb_chain_info chain_info;
+    ompi_instance_rc_op_handle_t *rc_op_handle;
 }request_rc_results;
+
+typedef struct fence_results{
+    nb_chain_info chain_info;
+}fence_results;
 
 void ompi_instance_nb_req_create(ompi_request_t **req);
 
@@ -85,8 +94,8 @@ void pmix_op_cb_nb(pmix_status_t status, void *cbdata);
 void pmix_info_cb_nb( pmix_status_t status, pmix_info_t *info, size_t ninfo, 
                 void *cbdata, pmix_release_cbfunc_t release_fn, void *release_cbdata);
 int integrate_res_change_pubsub_nb(int provider, char *delta_pset, char *pset_buf, void *cbdata);
-int integrate_res_change_fence_nb(char *delta_pset, char *assoc_pset, void *cbdata);
-int ompi_instance_pset_fence_multiple_nb(char **pset_names, int num_psets, ompi_info_t *info, pmix_op_cbfunc_t cbfunc, void *cbdata);
+int integrate_res_change_fence_nb(char **delta_pset, size_t ndelta_psets, char **assoc_psets, size_t nassoc_psets, void *cbdata);
+int pset_fence_multiple_nb(char **pset_names, int num_psets, ompi_info_t *info, pmix_op_cbfunc_t cbfunc, void *cbdata);
 int get_pset_membership_nb(char **pset_names, int npsets, pmix_info_cbfunc_t cbfunc, void *cbdata);
 int opal_pmix_lookup_nb(pmix_key_t key, pmix_info_t *lookup_info, size_t ninfo, pmix_lookup_cbfunc_t cbfunc, void *cbdata);
 int opal_pmix_lookup_string_wait_nb(char * key, pmix_lookup_cbfunc_t cbfunc, void *cbdata);

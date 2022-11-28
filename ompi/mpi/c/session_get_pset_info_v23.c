@@ -49,6 +49,6 @@ int MPI_Session_get_pset_info_v23 (MPI_Session session, const char *pset_name, c
         }
     }
 
-    ret = ompi_instance_get_pset_info_by_keys ((ompi_instance_t *) session, NULL, keys, nkeys, wait, (ompi_info_t **) info_used);
+    ret = ompi_instance_get_pset_info_by_keys ((ompi_instance_t *) session, pset_name, keys, nkeys, wait, (opal_info_t **) info_used);
     return OMPI_ERRHANDLER_INVOKE(session, ret, FUNC_NAME);
 }

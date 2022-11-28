@@ -496,7 +496,7 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
         return ret;
     }
 
-    printf("registering event handlers\n");
+
     /* Register the default errhandler callback  */
     /* give it a name so we can distinguish it */
     PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_NAME, "MPI-Default", PMIX_STRING);
@@ -512,7 +512,6 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
         ret = opal_pmix_convert_status(rc);
         return ret;
     }
-    printf("registered err_callback\n");
 
     /* register event handler to track the runtimes actions related to psets */
     pmix_status_t code;
@@ -527,7 +526,6 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
         ret = opal_pmix_convert_status(rc);
         return ret;
     }
-    printf("registered pset_define_handler\n");
 
     code = PMIX_PROCESS_SET_DELETE;
     OPAL_PMIX_CONSTRUCT_LOCK(&mylock);
@@ -571,8 +569,6 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
         ret = opal_pmix_convert_status(rc);
         return ret;
     }
-
-    printf("registered event handlers\n");
 
     /* initialize info */
     if (OMPI_SUCCESS != (ret = ompi_mpiinfo_init_mpi3())) {
@@ -663,11 +659,12 @@ size_t fence_nprocs = 0;
 #if MPI_MALLEABLE
     ompi_rc_op_type_t rc_op;
     ompi_rc_status_t rc_status;
-    char delta_pset[PMIX_MAX_KEYLEN];
+    char **delta_psets = NULL;
     char bound_pset[] = "mpi://SELF"; // Check for resource changes this process is included in
     int incl = 0;
+    size_t ndelta_psets = 0;
 
-    int res_rc = ompi_instance_get_res_change(ompi_mpi_instance_default, bound_pset, &rc_op, delta_pset, &incl, &rc_status,  NULL, false);
+    int res_rc = ompi_instance_get_res_change(ompi_mpi_instance_default, bound_pset, &rc_op, &delta_psets, &ndelta_psets, &incl, &rc_status,  NULL, false);
     if(rc_op != OMPI_RC_NULL && incl){
         struct timespec ts;
         ts.tv_sec = 0;
@@ -675,7 +672,7 @@ size_t fence_nprocs = 0;
         opal_process_name_t *pset_procs;
 
         size_t pset_nprocs;
-        if(PMIX_SUCCESS!= (rc = get_pset_membership(delta_pset, &pset_procs, &pset_nprocs))){
+        if(PMIX_SUCCESS!= (rc = get_pset_membership(delta_psets[0], &pset_procs, &pset_nprocs))){
             ret = opal_pmix_convert_status(rc);
             return ret;  /* TODO: need to fix this */
         }
@@ -729,7 +726,11 @@ size_t fence_nprocs = 0;
     }
 
     if(rc_op != OMPI_RC_NULL){
-        ompi_instance_free_pset_membership(delta_pset);
+        for(size_t n = 0; n < ndelta_psets; n++){
+            ompi_instance_free_pset_membership(delta_psets[n]);
+            free(delta_psets[n]);
+        }
+        free(delta_psets);
     }
 
     OMPI_TIMING_NEXT("modex");
@@ -1079,18 +1080,17 @@ int opal_pmix_lookup_string(char * key, char *val, int val_length){
     return rc;
 }
 
+/* TODO: handle PMIX_PSET_INFO on higher level */
 int opal_pmix_lookup_pset_info(char **keys, size_t nkeys, pmix_info_t *info, size_t ninfo, char *pset_name, pmix_info_t **results, size_t *nresults){
 
-    size_t n, i = 0, rc, info_size;
+    size_t n, i = 0, k, rc, info_size, darray_size;
     pmix_pdata_t *lookup_data;
     pmix_info_t *lookup_info;
-    pmix_info_t *_results;
+    pmix_info_t *_results, *darray_info;
     pmix_value_t *result_value;
 
     *nresults = 0;
     info_size = ninfo + (pset_name == NULL ? 0 : 1);
-
-    printf("Allocated %d infos (%d + 1)\n", info_size, ninfo);
 
     PMIX_PDATA_CREATE(lookup_data, nkeys);
     PMIX_INFO_CREATE(lookup_info, info_size);
@@ -1103,31 +1103,42 @@ int opal_pmix_lookup_pset_info(char **keys, size_t nkeys, pmix_info_t *info, siz
     for(n = 0; n < ninfo; n++){
         PMIX_INFO_XFER(&lookup_info[n], &info[n]);
     }
-    printf("Loading info %d\n", ninfo);
 
     if(NULL != pset_name){
         PMIX_INFO_LOAD(&lookup_info[ninfo], PMIX_PSET_NAME, (void *) pset_name, PMIX_STRING);
     }
 
-    printf("starting PMIx Lookup\n");
     rc = PMIx_Lookup(lookup_data, 1, lookup_info, ninfo);
-    printf("finsihed lookup\n");
-    if(rc != PMIX_SUCCESS || PMIX_ERR_PARTIAL_SUCCESS){
+
+    if(rc != PMIX_SUCCESS && rc != PMIX_ERR_PARTIAL_SUCCESS){
         return rc;
     }
 
     for(n = 0; n < nkeys; n++){
         if(PMIX_UNDEF != lookup_data[n].value.type){
-            ++*nresults;
+            if(0 == strcmp(lookup_data[n].key, PMIX_PSET_INFO)){
+                *nresults += lookup_data[n].value.data.darray->size;
+            }else{
+                 ++*nresults;
+            }
         }
     }
-
     PMIX_INFO_CREATE(_results, *nresults);
     *results = _results;
     for(n = 0; n < *nresults; n++){
         if(PMIX_UNDEF == lookup_data[n].value.type){
             continue;
         }
+        if(0 == strcmp(lookup_data[n].key, PMIX_PSET_INFO)){
+            darray_info = (pmix_info_t *) lookup_data[n].value.data.darray->array;
+            darray_size = lookup_data[n].value.data.darray->size;
+            for(k = 0; k < darray_size; k++){
+                PMIX_INFO_XFER(&_results[i], &darray_info[k]);
+                i++;
+            }
+            continue;
+        }
+
         PMIX_LOAD_KEY( _results[i].key, lookup_data[n].key);
         result_value = &_results[i].value;
         PMIX_VALUE_XFER(rc, result_value, &lookup_data[n].value);
@@ -1135,10 +1146,8 @@ int opal_pmix_lookup_pset_info(char **keys, size_t nkeys, pmix_info_t *info, siz
             PMIX_INFO_FREE(_results, *nresults);
             break;
         }
-
         ++i;
     }
-    
     PMIX_PDATA_FREE(lookup_data, nkeys);
     PMIX_INFO_FREE(lookup_info, info_size);
 
@@ -1189,7 +1198,6 @@ int opal_pmix_publish_pset_info(char **keys, pmix_value_t *values, int nkv, char
     PMIX_INFO_CREATE(publish_data, length);
 
     for(n = 0; n < nkv; n++){
-        printf("load key %s, value %s\n", keys[n], values[n].data.string);
         PMIX_LOAD_KEY(publish_data[n].key, keys[n]);
         PMIX_VALUE_XFER_DIRECT(rc, &publish_data[n].value, &values[n]);
     }
@@ -1202,7 +1210,6 @@ int opal_pmix_publish_pset_info(char **keys, pmix_value_t *values, int nkv, char
     rc = PMIx_Publish(publish_data, length);
 
     PMIX_INFO_FREE(publish_data, length);
-    printf("finished publish pset info with status %d\n", rc);
     return rc;
 }
 
@@ -1534,11 +1541,11 @@ int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, cha
 }
 
 /* Query the runtime for available resource changes given either the delta PSet or the associated PSet */
-int ompi_instance_get_res_change(ompi_instance_t *instance, char *input_name, ompi_rc_op_type_t *type, char *output_name, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
+int ompi_instance_get_res_change(ompi_instance_t *instance, char *input_name, ompi_rc_op_type_t *type, char ***output_names, size_t *noutput_names, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
     
     int rc;
 
-    rc = get_res_change_info(input_name, type, output_name, incl, status, info_used, get_by_delta_name);
+    rc = get_res_change_info(input_name, type, output_names, noutput_names, incl, status, info_used, get_by_delta_name);
 
     return rc;
 }
@@ -1846,15 +1853,24 @@ int ompi_instance_integrate_res_change(ompi_instance_t *instance, char *delta_ps
     ompi_rc_status_t rc_status;
 
     char ** fence_psets;
-    fence_psets = malloc(2 * sizeof(char *));
-    fence_psets[0] = malloc(OPAL_MAX_PSET_NAME_LEN);
-    fence_psets[1] = malloc(OPAL_MAX_PSET_NAME_LEN);
-    char associated_pset[OPAL_MAX_PSET_NAME_LEN];
+    char **associated_psets = NULL;
+    size_t nassociated_psets;
+    char **delta_psets = NULL;
+    size_t ndelta_psets, n;
 
     /* Query the resource change information for the given delta_pset */
-    rc = ompi_instance_get_res_change(instance, delta_pset, &rc_type, associated_pset, &incl, &rc_status, NULL, true);
+    rc = ompi_instance_get_res_change(instance, delta_pset, &rc_type, &associated_psets, &nassociated_psets, &incl, &rc_status, NULL, true);
     /* Just return the error. The other procs will experience an error in Lookup/Fence */
     if(OMPI_SUCCESS != rc){
+        printf("get res change for delta failed with %d\n", rc);
+        return rc;
+    }
+
+    /* Query the resource change information for the given assoc_pset */
+    rc = ompi_instance_get_res_change(instance, associated_psets[0], &rc_type, &delta_psets, &ndelta_psets, &incl, &rc_status, NULL, false);
+    /* Just return the error. The other procs will experience an error in Lookup/Fence */
+    if(OMPI_SUCCESS != rc){
+        printf("get res change failed with %d\n", rc);
         return rc;
     }
 
@@ -1864,10 +1880,10 @@ int ompi_instance_integrate_res_change(ompi_instance_t *instance, char *delta_ps
     /* FIXME:   Unfortunately a PSet name can have size 512, which is already the max length of a PMIx key. 
      *          For now we just put in an assertion and assume PSet names to be shorter than the max length
      */
-    assert(strlen(delta_pset) + strlen(prefix) < PMIX_MAX_KEYLEN);
+    assert(strlen(delta_psets[0]) + strlen(prefix) < PMIX_MAX_KEYLEN);
 
     strcpy(key, prefix);
-    strcat(key, delta_pset);
+    strcat(key, delta_psets[0]);
 
 
     /* The provider needs to publish the Pset name */
@@ -1881,6 +1897,7 @@ int ompi_instance_integrate_res_change(ompi_instance_t *instance, char *delta_ps
 
         /* Just return the error. The other procs will experience an error in Lookup/Fence */
         if(OMPI_SUCCESS != rc){
+            printf("publish failed with %d\n", rc);
             return rc;
         }
     /* The other processes lookup the Pset name */
@@ -1892,14 +1909,22 @@ int ompi_instance_integrate_res_change(ompi_instance_t *instance, char *delta_ps
             rc = opal_pmix_lookup_string_wait(key, pset_buf, OPAL_MAX_PSET_NAME_LEN);
             /* Just return the error. The other procs will experience an error in Lookup/Fence */
             if(OMPI_SUCCESS != rc){
+                printf("lookup failed with %d\n", rc);
                 return rc;
             }
         }
     }
 
-    strcpy(fence_psets[0], delta_pset);
-    strcpy(fence_psets[1], associated_pset);
-    rc = ompi_instance_pset_fence_multiple(fence_psets, 2, NULL);
+    fence_psets = malloc((ndelta_psets + nassociated_psets) * sizeof(char *));
+    for(n = 0; n < ndelta_psets; n++){
+        fence_psets[n] = strdup(delta_psets[n]);
+    }
+    for(n = ndelta_psets; n < ndelta_psets + nassociated_psets; n++){
+        fence_psets[n] = strdup(associated_psets[n - ndelta_psets]);
+    }
+
+    rc = ompi_instance_pset_fence_multiple(fence_psets, ndelta_psets + nassociated_psets, NULL);
+    
     /* Finalize the resource change. TODO: Find a better way. There is not always a provider. */
     if(provider && MPI_RC_ADD == rc_type){
         
@@ -1917,13 +1942,22 @@ int ompi_instance_integrate_res_change(ompi_instance_t *instance, char *delta_ps
 
     ompi_instance_clear_rc_cache(delta_pset);
 
-    free(fence_psets[0]);
-    free(fence_psets[1]);
+    for(n = 0; n < ndelta_psets + nassociated_psets; n++){
+        free(fence_psets[n]);
+    }
     free(fence_psets);
 
+    for(n = 0; n < ndelta_psets; n++){
+        free(delta_psets[n]);
+    }
+    free(delta_psets);
+
+    for(n = 0; n < nassociated_psets; n++){
+        free(associated_psets[n]);
+    }
+    free(associated_psets);
+
     return rc;
-
-
 }
 
 int ompi_instance_integrate_res_change_nb(ompi_instance_t *instance, char *delta_pset, char *pset_buf, int provider, int *terminate, ompi_request_t **request){
@@ -1947,14 +1981,17 @@ int ompi_instance_integrate_res_change_nb(ompi_instance_t *instance, char *delta
     chain_info->stages[4] = LAST_STAGE;
     chain_info->req = *request;
 
-    int_rc_results->delta_pset = delta_pset;
+    /* TODO: We need to do the query non-blocking. So for now we just use one delta pset*/
+    int_rc_results->ndelta_psets = 1;
+    int_rc_results->delta_psets = malloc(sizeof(char*));
+    int_rc_results->delta_psets[0] = strdup(delta_pset);
     int_rc_results->pset_buf = pset_buf;
     int_rc_results->provider = provider;
     int_rc_results->terminate = terminate;
 
     /* Query the  resource change information for the given delta_pset */
     while(OMPI_SUCCESS != rc){
-        rc = ompi_instance_get_res_change(instance, int_rc_results->delta_pset, &int_rc_results->rc_type, int_rc_results->assoc_pset, &int_rc_results->incl, &int_rc_results->rc_status, NULL, true);
+        rc = ompi_instance_get_res_change(instance, int_rc_results->delta_psets[0], &int_rc_results->rc_type, &int_rc_results->assoc_psets, &int_rc_results->nassoc_psets, &int_rc_results->incl, &int_rc_results->rc_status, NULL, true);
         sleep(1);
     }
     /* Just return the error. The other procs will experience an error in Lookup/Fence */
@@ -1971,12 +2008,79 @@ int ompi_instance_integrate_res_change_nb(ompi_instance_t *instance, char *delta
 
 #define MPI_ALLOC_SET_REQUEST PMIX_ALLOC_EXTERNAL + 1
 
-int ompi_instance_rc_op_handle_create(ompi_instance_t *instance, ompi_rc_op_type_t rc_type, char **input_names, size_t n_input_names, char **output_names, size_t n_output_names, ompi_info_t *info, ompi_instance_rc_op_handle_t **rc_op_handle){
+int ompi_instance_rc_op_handle_create(ompi_instance_t *instance, ompi_instance_rc_op_handle_t **rc_op_handle){
     int rc;
 
-    rc = rc_op_handle_create(rc_type, input_names, n_input_names, output_names, n_output_names, info, rc_op_handle);
+    rc = rc_op_handle_create(rc_op_handle);
 
     return rc;
+}
+
+int ompi_instance_rc_op_handle_add_op(ompi_instance_t *instance, ompi_rc_op_type_t rc_type, char **input_names, size_t n_input_names, char **output_names, size_t n_output_names, ompi_info_t *info, ompi_instance_rc_op_handle_t *rc_op_handle){
+    int rc;
+
+    rc = rc_op_handle_add_op(rc_type, input_names, n_input_names, output_names, n_output_names, info, rc_op_handle);
+
+    return rc;
+}
+
+int ompi_instance_rc_op_handle_add_pset_info(ompi_instance_t *instance, ompi_instance_rc_op_handle_t * rc_op_handle, char *pset_name, ompi_info_t * info){
+    int n, nkeys, rc, val_len, flag;
+    pmix_info_t *infos;
+    opal_cstring_t *key, *value;
+
+    if(OMPI_SUCCESS != (rc = ompi_info_get_nkeys(info, &nkeys)) || 1 > nkeys ){
+        printf("get nkeys failed with %d\n", rc);
+        return rc;
+    }
+
+    PMIX_INFO_CREATE(infos, nkeys);
+
+    for(n = 0; n < nkeys; n++){
+        if(OMPI_SUCCESS != (rc = ompi_info_get_nthkey(info, n, &key))){
+            printf("get nthkey failed with %d\n", rc);
+            PMIX_INFO_FREE(infos, nkeys);
+            return rc;
+        }
+
+        if(OMPI_SUCCESS != (rc = ompi_info_get_valuelen(info, key->string, &val_len, &flag))){
+            printf("get val len failed with %d\n", rc);
+            OBJ_RELEASE(key);
+            PMIX_INFO_FREE(infos, nkeys);
+            return rc;
+        }
+
+        if(!flag){
+            printf("key not found\n");
+            OBJ_RELEASE(key);
+            PMIX_INFO_FREE(infos, nkeys);
+            return OMPI_ERR_BAD_PARAM;
+        }
+
+        if(OMPI_SUCCESS != (rc = ompi_info_get(info, key->string, &value, &flag))){
+            printf("info get failed with %d\n", rc);
+            OBJ_RELEASE(key);
+            PMIX_INFO_FREE(infos, nkeys);
+            return rc;
+        }
+
+        if(!flag){
+            printf("value not found\n", key->string);
+            OBJ_RELEASE(key);
+            PMIX_INFO_FREE(infos, nkeys);
+            return OMPI_ERR_BAD_PARAM;
+        }
+
+        PMIX_INFO_LOAD(&infos[n], key->string, value->string, PMIX_STRING);
+
+    }
+
+    rc = rc_op_handle_add_pset_infos(rc_op_handle, pset_name, infos, nkeys);
+
+    PMIX_INFO_FREE(infos, nkeys);
+
+    return rc;
+
 }
 
 int ompi_instance_rc_op_handle_free(ompi_instance_t * instance, ompi_instance_rc_op_handle_t ** rc_op_handle){
@@ -1987,18 +2091,77 @@ int ompi_instance_rc_op_handle_free(ompi_instance_t * instance, ompi_instance_rc
     return rc;
 }
 
+int ompi_instance_rc_op_handle_get_num_ops(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle, size_t *num_ops){
+    int rc;
+
+    *num_ops = rc_op_handle_get_num_ops(rc_op_handle);
+
+    return OMPI_SUCCESS;
+}
+
+int ompi_instance_rc_op_handle_get_num_output(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, size_t *num_output){
+    int rc;
+
+    rc = rc_op_handle_get_num_output(rc_op_handle, op_index, num_output);
+
+    return rc;
+}
+
+int ompi_instance_rc_op_handle_get_ouput_name(ompi_instance_t * instance, ompi_instance_rc_op_handle_t *rc_op_handle, size_t op_index, size_t name_index, int *pset_len, char *pset_name){
+    int rc;
+
+    rc = rc_op_handle_get_ouput_name(rc_op_handle, op_index, name_index, pset_len, pset_name);
+
+    return rc;
+}
+
 int ompi_instance_request_res_changes_v23(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle){
 
     pmix_status_t rc;
     pmix_info_t *info, *results;
-    size_t nresults;
+    pmix_value_t *out_name_vals = NULL;
+    size_t nresults, noutput_names = 0, n, k = 0;
 
     PMIX_INFO_CREATE(info, 1);
     rc_op_handle_serialize(rc_op_handle, info);
 
     rc = PMIx_Allocation_request(MPI_ALLOC_SET_REQUEST, info, 1, &results, &nresults);
 
+    if(PMIX_SUCCESS == rc){
+        /* Get the array of pmix_value_t containing the output names*/
+        for(n = 0; n < nresults; n++){
+            if(PMIX_CHECK_KEY(&results[n], "mpi.set_info.output")){
+                out_name_vals = results[n].value.data.darray->array;
+                noutput_names = results[n].value.data.darray->size;
+            }
+        }
+        if(NULL == out_name_vals){
+            rc = OMPI_ERR_BAD_PARAM;
+            goto CLEANUP;
+        }
+        /* Fill in the output for the "resource operation" */
+        if(0 == rc_op_handle->rc_op_info.n_output_names){
+            rc_op_handle_init_output(rc_op_handle->rc_type, &rc_op_handle->rc_op_info.output_names, &rc_op_handle->rc_op_info.n_output_names);
+        }
+        for(n = 0; n < rc_op_handle->rc_op_info.n_output_names; n++){
+            free(rc_op_handle->rc_op_info.output_names[n]);
+            rc_op_handle->rc_op_info.output_names[n] = strdup(out_name_vals[n].data.string);
+        }
 
+        /* Fill in the output names for the "set operations" */
+        ompi_instance_set_op_handle_t *setop;
+        OPAL_LIST_FOREACH(setop, &rc_op_handle->set_ops, ompi_instance_set_op_handle_t){
+            if(0 == setop->set_op_info.n_output_names){
+                rc_op_handle_init_output(setop->psetop, &setop->set_op_info.output_names, &setop->set_op_info.n_output_names);
+            }
+            for(k = 0; k < setop->set_op_info.n_output_names, n < noutput_names; k++){
+                free(setop->set_op_info.output_names[k]);
+                setop->set_op_info.output_names[k] = strdup(out_name_vals[n++].data.string);
+            }
+        }
+    }
+
+CLEANUP:
     PMIX_INFO_FREE(info, 1);
     if(0 < nresults){
         PMIX_INFO_FREE(results, nresults);
@@ -2026,6 +2189,8 @@ int ompi_instance_request_res_changes_nb_v23(ompi_instance_t * instance, ompi_in
     chain_info->stages[1] = LAST_STAGE;
     chain_info->req = *request;
 
+    req_rc_results->rc_op_handle = rc_op_handle;
+
     PMIX_INFO_CREATE(info, 1);
     rc_op_handle_serialize(rc_op_handle, info);
 
@@ -2037,7 +2202,8 @@ int ompi_instance_request_res_changes_nb_v23(ompi_instance_t * instance, ompi_in
 }
 
 
-/* Collectively query the runtime for available resource changes given either the delta PSet or the associated PSet.
+/* TODO: Triple pointer
+ * Collectively query the runtime for available resource changes given either the delta PSet or the associated PSet.
  * The returned info is guranteed to be equal for all processes in the collective PSet
  */
 int ompi_instance_get_res_change_collective(ompi_instance_t *instance, char *coll_pset_name, char *input_name, ompi_rc_op_type_t *type, char *output_name, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
@@ -2046,8 +2212,11 @@ int ompi_instance_get_res_change_collective(ompi_instance_t *instance, char *col
     pmix_proc_t *coll_procs;
     opal_process_name_t *opal_coll_procs;
     
+    /* TODO!!*/
+    size_t dummy_noutput;
+
     if(0 == strcmp(coll_pset_name, "mpi://SELF")){
-        rc = get_res_change_info(input_name, type, output_name, incl, status, info_used, get_by_delta_name);
+        rc = get_res_change_info(input_name, type, &output_name, &dummy_noutput, incl, status, info_used, get_by_delta_name);
     }else{
 
         rc = get_pset_membership(coll_pset_name, &opal_coll_procs, &n_coll_procs);
@@ -2066,6 +2235,69 @@ int ompi_instance_get_res_change_collective(ompi_instance_t *instance, char *col
     }
     
     return rc;
+}
+
+int ompi_instance_pset_op(ompi_instance_t *session, int op, char **input_sets, int ninput, char *** output_sets, int *noutput, ompi_info_t *info){
+    pmix_status_t rc;
+    pmix_info_t *pmix_info, *results;
+    pmix_data_array_t darray_in, darray_out;
+    pmix_value_t *values;
+    size_t sz, n, k, ninfo, nresults;
+    bool output_provided;
+    int ret;
+    
+    PMIX_DATA_ARRAY_CONSTRUCT(&darray_in, ninput, PMIX_VALUE);
+    PMIX_DATA_ARRAY_CONSTRUCT(&darray_out, *noutput, PMIX_VALUE);
+    values = (pmix_value_t *) darray_in.array;
+    for(n = 0; n < ninput; n++){
+        printf("Loading input_set %s\n", input_sets[n]);
+        PMIX_VALUE_LOAD(&values[n], input_sets[n], PMIX_STRING);
+    }
+    values = (pmix_value_t *) darray_out.array;
+    for(n = 0; n < *noutput; n++){
+        PMIX_VALUE_LOAD(&values[n], (*output_sets)[n], PMIX_STRING);
+    }
+
+    ninfo = 2;
+    PMIX_INFO_CREATE(pmix_info, ninfo);
+    PMIX_INFO_LOAD(&(pmix_info[0]), PMIX_PSETOP_INPUT, &darray_in, PMIX_DATA_ARRAY);
+    PMIX_INFO_LOAD(&(pmix_info[1]), PMIX_PSETOP_OUTPUT, &darray_out, PMIX_DATA_ARRAY);
+
+    PMIX_DATA_ARRAY_DESTRUCT(&darray_in);
+    PMIX_DATA_ARRAY_DESTRUCT(&darray_out);
+
+    /*
+     * TODO: need to handle this better
+     */
+    if (PMIX_SUCCESS != (rc = PMIx_Pset_Op_request(op,
+                                            pmix_info, ninfo, 
+                                            &results, &nresults))) {
+        PMIX_INFO_FREE(pmix_info, ninfo);                                             
+        ret = opal_pmix_convert_status(rc);
+        return ompi_instance_print_error ("PMIx_Fence_nb() failed", ret);
+    }
+
+    for(n=0; n < nresults; n++){
+        if(PMIX_CHECK_KEY(&results[n], PMIX_PSETOP_OUTPUT)){
+            values = (pmix_value_t *) results[n].value.data.darray->array;
+            if(!(output_provided = noutput == 0)){
+                *noutput = results[n].value.data.darray->size;
+                *output_sets = malloc(*noutput * sizeof(char *));
+            }
+
+            for(k = 0; k < *noutput; k++){
+                if(output_provided){
+                    free((*output_sets)[k]);
+                }
+                (*output_sets)[k] = strdup(values[k].data.string);
+            }
+        }
+    }
+
+    PMIX_INFO_FREE(pmix_info, ninfo);
+    PMIX_INFO_FREE(results, nresults);
+
+    return OMPI_SUCCESS;
 }
 
 int ompi_instance_set_pset_info(ompi_instance_t *instance, char *pset_name, opal_info_t *info){
@@ -2125,6 +2357,27 @@ CLEANUP:
         free(keys);
     }
     return rc;    
+}
+
+int ompi_instance_pset_barrier(char **pset_names, int num_psets, ompi_info_t *info){
+    return ompi_instance_pset_fence_multiple(pset_names, num_psets, info);
+}
+
+int ompi_instance_pset_barrier_nb(char ** pset_names, int num_psets, ompi_info_t *info, ompi_request_t **request){
+    fence_results *f_results = malloc(sizeof(request_rc_results));
+
+    ompi_instance_nb_req_create(request);
+    nb_chain_info *chain_info = &f_results->chain_info;
+
+    chain_info->func = PSET_FENCE;
+    chain_info->nstages = 2;
+    chain_info->cur_stage = 0;
+    chain_info->stages = malloc(5 * sizeof(nb_chain_stage));
+    chain_info->stages[0] = FENCE_STAGE;
+    chain_info->stages[1] = LAST_STAGE;
+    chain_info->req = *request;
+
+    return pset_fence_multiple_nb(pset_names, num_psets, info, pmix_op_cb_nb, f_results);
 }
 
 #pragma endregion
@@ -2411,7 +2664,8 @@ int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *
     int mpi_val_length, rc = OMPI_SUCCESS;
     bool b_wait = (1 == wait);
 
-    printf("lookup for pset_name %s, %d keys, first key = %s\n", pset_name, nkeys, keys[0]);
+    *info_used = (opal_info_t *) MPI_INFO_NULL;
+    
 
     if(nkeys < 0){
         return OMPI_ERR_BAD_PARAM;
@@ -2426,10 +2680,10 @@ int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *
         PMIX_INFO_LOAD(&pmix_info[1], PMIX_WAIT, &b_wait, PMIX_BOOL);
     }
 
-    if(0 == nkeys){
+    if(0 == nkeys || NULL == keys){
         _nkeys = 1;
         _keys = malloc(sizeof(char *));
-        *_keys = strdup(PMIX_PSET_INFO);
+        _keys[0] = strdup(PMIX_PSET_INFO);
     }else{
         _nkeys = nkeys;
         _keys = malloc(nkeys * sizeof(char *));
@@ -2437,17 +2691,9 @@ int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *
             _keys[n] = strdup(keys[n]);
         }
     }
-
     if(OMPI_SUCCESS != (rc = opal_pmix_lookup_pset_info(_keys, _nkeys, pmix_info, ninfo, pset_name, &results, &nresults))){
-        goto ERROR;
-    }
-
-    /* If the 'PMIX_PSET_INFO' key was specified, the results are contained in the data array */
-    for(n = 0; n < nresults; n++){
-        if(PMIX_CHECK_KEY(&results[n], PMIX_PSET_INFO)){
-            nresults = results[n].value.data.darray->size;
-            results = (pmix_info_t *) results[n].value.data.darray->size;
-        }
+        ompi_info_free(&info);
+        goto CLEANUP;
     }
 
     /* For now we only support string values */
@@ -2457,27 +2703,30 @@ int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *
         }
         rc = ompi_info_set(info, results[n].key, results[n].value.data.string);
         if(rc != OMPI_SUCCESS){
-            goto ERROR;
+            printf("error in ompi_info_set\n");
+            ompi_info_free(&info);
+            goto CLEANUP;
         }
     }
 
     /* Now handle the MPI specific attributes */
     /* TODO: */
     for(n = 0; n < _nkeys; n++){
-
         /* "mpi_size"*/
         if(0 == strcmp(_keys[n], "mpi_size")){
             if(OMPI_SUCCESS != (rc = get_pset_size(pset_name, &pset_size))){
                 /* "mpi_size" is madatory, so this is an error */
-                goto ERROR;
+                ompi_info_free(&info);
+                goto CLEANUP;
             }
 
             mpi_val_length = snprintf(NULL, 0, "%zu", pset_size);
             mpi_value = malloc(mpi_val_length + 1);
             sprintf(mpi_value, "%zu", pset_size);
-            if(OMPI_SUCCESS != (rc = ompi_info_set(info, "mpi_size", mpi_value))){
+            if(OMPI_SUCCESS != (rc = opal_info_set(&info->super, "mpi_size", mpi_value))){
                 free(mpi_value);
-                goto ERROR;
+                ompi_info_free(&info);
+                goto CLEANUP;
             }
 
             free(mpi_value);
@@ -2487,11 +2736,10 @@ int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *
 
     }
 
+
     *info_used = &info->super;
 
-ERROR:
-    ompi_info_free(&info);
-    *info_used = ompi_mpi_info_null; 
+    
 CLEANUP:
     if(0 != ninfo){
         PMIX_INFO_FREE(pmix_info, ninfo);

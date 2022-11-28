@@ -18,10 +18,10 @@
 static const char FUNC_NAME[] = "MPI_Session_rc_handle_create";
 
 
-int MPI_Session_rc_handle_create(MPI_Session session, MPI_RC_handle *rc_op_handle){
+int MPI_Session_rc_handle_add_op(MPI_Session session, int rc_type, char **input_names, int n_input_names, char **output_names, int n_output_names, MPI_Info info, MPI_RC_handle rc_op_handle){
     int rc;
     
-    rc = ompi_instance_rc_op_handle_create((ompi_instance_t *) session, (ompi_instance_rc_op_handle_t **) rc_op_handle);
+    rc = ompi_instance_rc_op_handle_add_op((ompi_instance_t *) session, MPI_OMPI_CONV_RC_OP(rc_type), input_names, (size_t) n_input_names, output_names, (size_t) n_output_names, (ompi_info_t *) info, (ompi_instance_rc_op_handle_t *) rc_op_handle);
     
     return rc;
 }

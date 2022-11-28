@@ -20,6 +20,7 @@ static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
 
 int MPI_Session_dyn_recv_res_change_coll(MPI_Session session, char *coll_pset, char * assoc_pset, int *type, char *delta_pset, int *incl){
     int rc;
+    size_t _ndelta_psets = 0;
     char bound_pset[PMIX_MAX_KEYLEN];
     int flag = 0;
     ompi_rc_op_type_t ompi_rc_op_type = OMPI_RC_NULL;

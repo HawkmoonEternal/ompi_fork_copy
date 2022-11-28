@@ -162,7 +162,7 @@ OMPI_DECLSPEC int ompi_instance_get_pset_info (ompi_instance_t *instance, const 
 
 OMPI_DECLSPEC int ompi_instance_request_res_change(MPI_Session session, int delta, char *delta_pset, ompi_rc_op_type_t rc_type, MPI_Info *info);
 
-OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char *delta_pset, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool return_info);
+OMPI_DECLSPEC int ompi_instance_get_res_change(ompi_instance_t *instance,char *pset_name, ompi_rc_op_type_t *type, char ***delta_psets, size_t *ndelta_psets, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool return_info);
 
 OMPI_DECLSPEC int ompi_instance_pset_create_op(ompi_instance_t *instance, const char *pset1, const char *pset2, char *pref_name, char *pset_result, ompi_psetop_type_t op);
 
@@ -173,20 +173,28 @@ OMPI_DECLSPEC int ompi_instance_integrate_res_change(ompi_instance_t *instance, 
 OMPI_DECLSPEC int ompi_instance_integrate_res_change_nb(ompi_instance_t *instance, char *delta_pset, char *pset_buf, int provider, int *terminate, ompi_request_t **request);
 
 
-OMPI_DECLSPEC int ompi_instance_rc_op_handle_create(  ompi_instance_t *instance, ompi_rc_op_type_t rc_type, 
-                                        char **input_names, size_t n_input_names, 
-                                        char **ouput_names, size_t n_output_names, 
-                                        ompi_info_t *info, ompi_instance_rc_op_handle_t **rc_op_handle);
+OMPI_DECLSPEC int ompi_instance_pset_op(ompi_instance_t *session, int op, char **input_sets, int ninput, char *** output_sets, int *noutput, ompi_info_t *info);
+OMPI_DECLSPEC int ompi_instance_rc_op_handle_create(  ompi_instance_t *instance, ompi_instance_rc_op_handle_t **rc_op_handle);
+OMPI_DECLSPEC int ompi_instance_rc_op_handle_add_op(    ompi_instance_t *instance, ompi_rc_op_type_t rc_type, 
+                                                        char **input_names, size_t n_input_names, 
+                                                        char **ouput_names, size_t n_output_names, 
+                                                        ompi_info_t *info, ompi_instance_rc_op_handle_t *rc_op_handle);
+OMPI_DECLSPEC int ompi_instance_rc_op_handle_add_pset_info(ompi_instance_t *instance, ompi_instance_rc_op_handle_t * rc_op_handle, char *pset_name, ompi_info_t * info);
 OMPI_DECLSPEC int ompi_instance_rc_op_handle_free(ompi_instance_t * instance, ompi_instance_rc_op_handle_t ** rc_op_handle);
+OMPI_DECLSPEC int ompi_instance_rc_op_handle_get_num_ops(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle, size_t *num_ops);
+OMPI_DECLSPEC int ompi_instance_rc_op_handle_get_num_output(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, size_t *num_output);
+OMPI_DECLSPEC int ompi_instance_rc_op_handle_get_ouput_name(ompi_instance_t * instance, ompi_instance_rc_op_handle_t *rc_op_handle, size_t op_index, size_t name_index, int *pset_len, char *pset_name);
 OMPI_DECLSPEC int ompi_instance_request_res_changes_v23(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle);
 OMPI_DECLSPEC int ompi_instance_request_res_changes_nb_v23(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle, ompi_request_t **request);
 OMPI_DECLSPEC int ompi_instance_get_res_change_collective(  ompi_instance_t *instance, char *coll_pset_name, char *input_name, 
                                                                 ompi_rc_op_type_t *type, char *output_name, int *incl, ompi_rc_status_t *status, 
                                                                 opal_info_t **info_used, bool get_by_delta_name);
 
-
 OMPI_DECLSPEC int ompi_instance_set_pset_info(ompi_instance_t *instance, char *pset_name, opal_info_t *info);
 OMPI_DECLSPEC int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *pset_name, char **keys, int nkeys, int wait, opal_info_t **info_used);
+
+OMPI_DECLSPEC int ompi_instance_pset_barrier(char **pset_names, int num_psets, ompi_info_t *info);
+OMPI_DECLSPEC int ompi_instance_pset_barrier_nb(char ** pset_names, int num_psets, ompi_info_t *info, ompi_request_t **request);
 
 extern ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_rc_op);
 

@@ -43,7 +43,7 @@ struct ompi_instance_set_op_info_t{
     pmix_info_t *op_info;
     size_t n_op_info;
 
-    opal_list_t * pset_info_lists; 
+    void ** pset_info_lists; 
     size_t n_pset_info_lists;
 };
 
@@ -79,14 +79,20 @@ typedef struct ompi_predefined_rc_op_handle_t ompi_predefined_rc_op_handle_t;
 
 OMPI_DECLSPEC extern ompi_predefined_rc_op_handle_t ompi_mpi_rc_op_handle_null;
 
-
-OMPI_DECLSPEC int rc_op_handle_create(ompi_rc_op_type_t rc_type, 
+int rc_op_handle_create(ompi_instance_rc_op_handle_t **rc_op_handle);
+int rc_op_handle_add_op(ompi_rc_op_type_t rc_type, 
                             char **input_names, size_t n_input_names, 
                             char **output_names, size_t n_output_names, 
-                            ompi_info_t *info, ompi_instance_rc_op_handle_t **rc_op_handle
+                            ompi_info_t *info, ompi_instance_rc_op_handle_t *rc_op_handle
                         );
+int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, char * pset_name, pmix_info_t * info, int ninfo);
+int rc_op_handle_free(ompi_instance_rc_op_handle_t ** rc_op_handle);
 
-OMPI_DECLSPEC int rc_op_handle_free(ompi_instance_rc_op_handle_t ** rc_op_handle);
+int rc_op_handle_init_output(ompi_rc_op_type_t type, char ***output_names, size_t *noutput);
+
+size_t rc_op_handle_get_num_ops(ompi_instance_rc_op_handle_t * rc_op_handle);
+int rc_op_handle_get_num_output(ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, size_t *num_output);
+int rc_op_handle_get_ouput_name(ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, size_t name_index, int *pset_len, char* pset_name);
 
 int rc_op_handle_serialize(ompi_instance_rc_op_handle_t *rc_op_handle, pmix_info_t *info);
 
