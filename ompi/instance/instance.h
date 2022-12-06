@@ -186,9 +186,9 @@ OMPI_DECLSPEC int ompi_instance_rc_op_handle_get_num_output(ompi_instance_t * in
 OMPI_DECLSPEC int ompi_instance_rc_op_handle_get_ouput_name(ompi_instance_t * instance, ompi_instance_rc_op_handle_t *rc_op_handle, size_t op_index, size_t name_index, int *pset_len, char *pset_name);
 OMPI_DECLSPEC int ompi_instance_request_res_changes_v23(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle);
 OMPI_DECLSPEC int ompi_instance_request_res_changes_nb_v23(ompi_instance_t * instance, ompi_instance_rc_op_handle_t * rc_op_handle, ompi_request_t **request);
-OMPI_DECLSPEC int ompi_instance_get_res_change_collective(  ompi_instance_t *instance, char *coll_pset_name, char *input_name, 
-                                                                ompi_rc_op_type_t *type, char *output_name, int *incl, ompi_rc_status_t *status, 
-                                                                opal_info_t **info_used, bool get_by_delta_name);
+OMPI_DECLSPEC int ompi_instance_get_res_change_collective(  ompi_instance_t *instance, char *coll_pset_name, char *input_name,
+                                                            ompi_rc_op_type_t *type, char ***output_names, size_t *nouputs, int *incl, ompi_rc_status_t *status, 
+                                                            opal_info_t **info_used, bool get_by_delta_name);
 
 OMPI_DECLSPEC int ompi_instance_set_pset_info(ompi_instance_t *instance, char *pset_name, opal_info_t *info);
 OMPI_DECLSPEC int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *pset_name, char **keys, int nkeys, int wait, opal_info_t **info_used);

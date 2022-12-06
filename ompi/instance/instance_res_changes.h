@@ -26,9 +26,10 @@
 
 /* resource changes */
 typedef uint8_t ompi_rc_op_type_t;
-#define OMPI_RC_NULL PMIX_RES_CHANGE_NULL
-#define OMPI_RC_ADD  PMIX_RES_CHANGE_ADD
-#define OMPI_RC_SUB  PMIX_RES_CHANGE_SUB
+#define OMPI_RC_NULL        PMIX_RES_CHANGE_NULL
+#define OMPI_RC_ADD         PMIX_RES_CHANGE_ADD
+#define OMPI_RC_SUB         PMIX_RES_CHANGE_SUB
+#define OMPI_RC_REPLACE     PMIX_RES_CHANGE_REPLACE
 extern ompi_rc_op_type_t MPI_OMPI_CONV_RC_OP(int mpi_rc_op);
 extern int MPI_OMPI_CONVT_RC_OP(ompi_rc_op_type_t ompi_rc_op_type);
 
@@ -72,7 +73,7 @@ int get_res_change_type(char *delta_pset, ompi_rc_op_type_t *rc_type);
 void ompi_instance_get_res_change_complete (pmix_status_t status, pmix_info_t *results, size_t nresults, void *cbdata, pmix_release_cbfunc_t release_fn, void *release_cbdata);
 
 int get_res_change_info(char *input_name, ompi_rc_op_type_t *type, char ***output_names, size_t *noutput_names, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name);
-int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs, char *input_name, ompi_rc_op_type_t *type, char *output_name, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name);
+int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs, char *input_name, ompi_rc_op_type_t *type, char ***output_names, size_t *noutputs,int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name);
 
 void res_change_clear_cache(char *delta_pset);
 

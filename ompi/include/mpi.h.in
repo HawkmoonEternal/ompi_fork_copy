@@ -764,6 +764,9 @@ enum {
 /* Pset operation constants. Don't change the order of these */
 enum{
    MPI_PSETOP_NULL,
+   MPI_PSETOP_ADD,
+   MPI_PSETOP_SUB,
+   MPI_PSETOP_REPLACE,
    MPI_PSETOP_UNION, 
    MPI_PSETOP_DIFFERENCE,
    MPI_PSETOP_INTERSECTION
@@ -2767,7 +2770,7 @@ OMPI_DECLSPEC  int MPI_Session_dyn_integrate_res_change(MPI_Session *session, MP
 OMPI_DECLSPEC  int MPI_Session_dyn_integrate_res_change_nb  (MPI_Session *session, MPI_Info info, char *delta_pset, char *pset_buf, 
                                                             int provider, int *terminate, MPI_Request *req);
 OMPI_DECLSPEC  int MPI_Session_dyn_recv_res_change(MPI_Session session, char * assoc_pset, int *type, char ***delta_psets, int *num_delta_psets, int *incl, MPI_Info *info);
-OMPI_DECLSPEC  int MPI_Session_dyn_recv_res_change_coll(MPI_Session session, char *coll_pset, char * assoc_pset, int *type, char *delta_pset, int *incl);
+OMPI_DECLSPEC  int MPI_Session_dyn_recv_res_change_coll(MPI_Session session, char *coll_pset, char * input_pset, int *type, char ***output_psets, int *noutput, int *incl);
 OMPI_DECLSPEC  int MPI_Session_dyn_request_res_change(MPI_Session session, MPI_RC_handle rc_handle);
 OMPI_DECLSPEC  int MPI_Session_dyn_request_res_change_nb(MPI_Session session, MPI_RC_handle rc_handle, MPI_Request *req);
 OMPI_DECLSPEC  int PMPI_Session_finalize (MPI_Session *session);

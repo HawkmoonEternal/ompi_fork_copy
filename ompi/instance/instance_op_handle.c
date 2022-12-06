@@ -115,67 +115,67 @@ int set_op_info_serialize(ompi_instance_set_op_info_t *op_info, pmix_info_t *inf
     pmix_info_t *info_ptr, *info_ptr2;
     pmix_value_t *val_ptr;
 
-    n_infos =   ((0 < op_info->n_input_names)        ?   1 : 0) + 
-                ((0 < op_info->n_output_names)       ?   1 : 0) +
-                ((0 < op_info->n_op_info)            ?   1 : 0) +
-                ((0 < op_info->n_pset_info_lists)    ?   1 : 0);
+    //n_infos =   ((0 < op_info->n_input_names)        ?   1 : 0) + 
+    //            ((0 < op_info->n_output_names)       ?   1 : 0) +
+    //            ((0 < op_info->n_op_info)            ?   1 : 0) +
+    //            ((0 < op_info->n_pset_info_lists)    ?   1 : 0);
+
+    n_infos = 4;
     
     PMIX_DATA_ARRAY_CREATE(darray_set_op_info, n_infos, PMIX_INFO);
     info_ptr = (pmix_info_t *) darray_set_op_info->array;
 
     /* Load the input names */
-    if(0 < op_info->n_input_names){
-        PMIX_DATA_ARRAY_CREATE(darray_tmp, op_info->n_input_names, PMIX_VALUE);
-        val_ptr = (pmix_value_t *) darray_tmp->array;
 
-        for(n = 0; n < op_info->n_input_names; n++){
-            PMIX_VALUE_LOAD(&val_ptr[n], op_info->input_names[n], PMIX_STRING);
-        }
+    PMIX_DATA_ARRAY_CREATE(darray_tmp, op_info->n_input_names, PMIX_VALUE);
+    val_ptr = (pmix_value_t *) darray_tmp->array;
 
-        PMIX_INFO_LOAD(info_ptr++, "mpi.op_info.input", darray_tmp, PMIX_DATA_ARRAY);
-        PMIX_DATA_ARRAY_FREE(darray_tmp);
+    for(n = 0; n < op_info->n_input_names; n++){
+        PMIX_VALUE_LOAD(&val_ptr[n], op_info->input_names[n], PMIX_STRING);
     }
+
+    PMIX_INFO_LOAD(info_ptr++, "mpi.op_info.input", darray_tmp, PMIX_DATA_ARRAY);
+    PMIX_DATA_ARRAY_FREE(darray_tmp);
+
+
 
     /* Load the output names */
-    if(0 < op_info->n_output_names){
-        PMIX_DATA_ARRAY_CREATE(darray_tmp, op_info->n_output_names, PMIX_VALUE);
-        val_ptr = (pmix_value_t *) darray_tmp->array;
+    PMIX_DATA_ARRAY_CREATE(darray_tmp, op_info->n_output_names, PMIX_VALUE);
+    val_ptr = (pmix_value_t *) darray_tmp->array;
 
-        for(n = 0; n < op_info->n_output_names; n++){
-            PMIX_VALUE_LOAD(&val_ptr[n], op_info->output_names[n], PMIX_STRING);
-        }
-
-        PMIX_INFO_LOAD(info_ptr++, "mpi.op_info.output", darray_tmp, PMIX_DATA_ARRAY);
-        PMIX_DATA_ARRAY_FREE(darray_tmp);
+    for(n = 0; n < op_info->n_output_names; n++){
+        PMIX_VALUE_LOAD(&val_ptr[n], op_info->output_names[n], PMIX_STRING);
     }
+
+    PMIX_INFO_LOAD(info_ptr++, "mpi.op_info.output", darray_tmp, PMIX_DATA_ARRAY);
+    PMIX_DATA_ARRAY_FREE(darray_tmp);
+
+
     /* Load the op_infos */
-    if(0 < op_info->n_op_info){
-        PMIX_DATA_ARRAY_CREATE(darray_tmp, op_info->n_op_info, PMIX_INFO);
-        info_ptr2 = (pmix_info_t *) darray_tmp->array;
 
-        for(n = 0; n < op_info->n_op_info; n++){
-            PMIX_INFO_XFER(info_ptr2++, &op_info->op_info[n]);
-        }
+    PMIX_DATA_ARRAY_CREATE(darray_tmp, op_info->n_op_info, PMIX_INFO);
+    info_ptr2 = (pmix_info_t *) darray_tmp->array;
 
-        PMIX_INFO_LOAD(info_ptr++, "mpi.op_info.info", darray_tmp, PMIX_DATA_ARRAY);
-        PMIX_DATA_ARRAY_FREE(darray_tmp);
+    for(n = 0; n < op_info->n_op_info; n++){
+        PMIX_INFO_XFER(info_ptr2++, &op_info->op_info[n]);
     }
+
+    PMIX_INFO_LOAD(info_ptr++, "mpi.op_info.info", darray_tmp, PMIX_DATA_ARRAY);
+    PMIX_DATA_ARRAY_FREE(darray_tmp);
+
 
     /* Load the set infos in a darray of PMIX_VALUE which are darrays of PMIX_INFO */
-    if(0 < op_info->n_pset_info_lists){
-        PMIX_DATA_ARRAY_CREATE(darray_tmp, op_info->n_pset_info_lists, PMIX_VALUE);
-        val_ptr = (pmix_value_t *) darray_tmp->array;
+    PMIX_DATA_ARRAY_CREATE(darray_tmp, op_info->n_pset_info_lists, PMIX_VALUE);
+    val_ptr = (pmix_value_t *) darray_tmp->array;
 
-        for(n = 0; n < op_info->n_pset_info_lists; n++){
-            PMIX_INFO_LIST_CONVERT(rc, op_info->pset_info_lists[n], &darray_tmp2);
-            printf("List cnvert: %d\n", rc);
-            PMIX_VALUE_LOAD(&val_ptr[n], &darray_tmp2, PMIX_DATA_ARRAY);
-            PMIX_DATA_ARRAY_DESTRUCT(&darray_tmp2);
-        }
-
-        PMIX_INFO_LOAD(info_ptr++, "mpi.op_info.set_info", darray_tmp, PMIX_DATA_ARRAY);
-        PMIX_DATA_ARRAY_FREE(darray_tmp);
+    for(n = 0; n < op_info->n_pset_info_lists; n++){
+        PMIX_INFO_LIST_CONVERT(rc, op_info->pset_info_lists[n], &darray_tmp2);
+        PMIX_VALUE_LOAD(&val_ptr[n], &darray_tmp2, PMIX_DATA_ARRAY);
+        PMIX_DATA_ARRAY_DESTRUCT(&darray_tmp2);
     }
+
+    PMIX_INFO_LOAD(info_ptr++, "mpi.op_info.set_info", darray_tmp, PMIX_DATA_ARRAY);
+    PMIX_DATA_ARRAY_FREE(darray_tmp);
 
 
     PMIX_INFO_LOAD(info, "mpi.op_info", darray_set_op_info, PMIX_DATA_ARRAY);
@@ -203,9 +203,9 @@ OBJ_CLASS_INSTANCE(ompi_instance_set_op_handle_t, opal_list_item_t, ompi_instanc
 
 /* Serialize a pset op handle into a single nested PMIx info object: 
  *- "mpi.set_op_handles"  :   darray(n_set_ops, PMIX_INFO)
- *          - "pmix.psetop.directive"   :   psetop_directive
+ *          - PMIX_RC_TYPE   :   psetop_directive
  *          - "mpi.op_info"             :   darray(4, PMIX_INFO)    ** see above ** 
-*/
+ */
 int set_op_handle_serialize(ompi_instance_set_op_handle_t *set_op_handle, pmix_info_t *info){
     int n, k;
     pmix_data_array_t *darray_set_op;
@@ -213,12 +213,13 @@ int set_op_handle_serialize(ompi_instance_set_op_handle_t *set_op_handle, pmix_i
 
     PMIX_DATA_ARRAY_CREATE(darray_set_op, 2, PMIX_INFO);
     info_ptr = (pmix_info_t *) darray_set_op->array;
-
     /* Load the op directive */
-    PMIX_INFO_LOAD(info_ptr++, "pmix.psetop.directive", &set_op_handle->psetop, PMIX_UINT8);
+    PMIX_INFO_LOAD(info_ptr++, PMIX_RC_TYPE, &set_op_handle->psetop, PMIX_UINT8);
 
     /* Load the op info */
     set_op_info_serialize(&set_op_handle->set_op_info, info_ptr++);
+
+    PMIX_INFO_LOAD(info, "mpi.setop", darray_set_op, PMIX_DATA_ARRAY);
 
     PMIX_DATA_ARRAY_FREE(darray_set_op);
 
@@ -246,6 +247,9 @@ OBJ_CLASS_INSTANCE(ompi_instance_rc_op_handle_t, opal_list_item_t, ompi_instance
 
 int rc_op_handle_init_output(ompi_rc_op_type_t type, char ***output_names, size_t *noutput){
     switch(type){
+        case OMPI_PSETOP_UNION:
+        case OMPI_PSETOP_DIFFERENCE:
+        case OMPI_PSETOP_INTERSECTION:
         case OMPI_RC_ADD:
         case OMPI_RC_SUB:
             *output_names = malloc(sizeof(char *));
@@ -273,7 +277,6 @@ int rc_op_handle_add_op(ompi_rc_op_type_t rc_type, char **input_names, size_t n_
     ompi_instance_rc_op_handle_t * rc_op_handle_ptr;
     ompi_instance_set_op_info_t *set_op_info;
     bool append = false;
-    
     
     if(rc_op_handle->rc_type == OMPI_RC_NULL){
         rc_op_handle_ptr = rc_op_handle;
@@ -305,7 +308,6 @@ int rc_op_handle_add_op(ompi_rc_op_type_t rc_type, char **input_names, size_t n_
             strcpy(set_op_info->output_names[n], output_names[n]);
         }
     }
-    printf("add op: nouput = %d\n", set_op_info->n_output_names);
 
     /* If they provided operation info copy it to the handle */
     if(NULL != info && MPI_INFO_NULL != info){
@@ -385,7 +387,6 @@ int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, cha
                         if(PMIX_SUCCESS != rc){
                             return rc;
                         }
-                        printf("added info [%s:%s] for pset %s\n", info[k].key, info[k].value.data.string, set_op_handle->set_op_info.output_names[n]);
                     }
                     break;
                 }
@@ -418,16 +419,14 @@ int rc_op_handle_get_num_output(ompi_instance_rc_op_handle_t * rc_op_handle, siz
     ompi_instance_set_op_handle_t *setop;
 
     num_ops = rc_op_handle_get_num_ops(rc_op_handle);
-    printf("get_num_output for %d\n", op_index);
+
     if(op_index >= num_ops){
         return OMPI_ERR_BAD_PARAM;
     }else if(0 == op_index){
-        printf("INDEX 0: %d\n", rc_op_handle->rc_op_info.n_output_names);
         *num_output = rc_op_handle->rc_op_info.n_output_names;
     }else{
         index = 1;
         OPAL_LIST_FOREACH(setop, &rc_op_handle->set_ops, ompi_instance_set_op_handle_t){
-            printf("INDEX %d: %d\n", index, setop->set_op_info.n_output_names);
             if(index == op_index){
                 *num_output = setop->set_op_info.n_output_names;
                 break;
@@ -476,7 +475,6 @@ int rc_op_handle_get_ouput_name(ompi_instance_rc_op_handle_t * rc_op_handle, siz
         *pset_len = strlen(out_pset_name) + 1;
         return OMPI_SUCCESS;
     }
-    printf("strncpy pset_len = %d\n", *pset_len);
     strncpy (pset_name, out_pset_name, *pset_len);
 
     return OMPI_SUCCESS;
@@ -514,10 +512,10 @@ int rc_op_handle_serialize(ompi_instance_rc_op_handle_t *rc_op_handle, pmix_info
     info_ptr = (pmix_info_t *) darray_rc_op->array;
 
     /* Load the op type */
-    PMIX_INFO_LOAD(info_ptr++, PMIX_RC_TYPE, &rc_op_handle->rc_type, PMIX_UINT8);
+    PMIX_INFO_LOAD(&info_ptr[0], PMIX_RC_TYPE, &rc_op_handle->rc_type, PMIX_UINT8);
 
     /* Load the op info */
-    set_op_info_serialize(&rc_op_handle->rc_op_info, info_ptr++);
+    set_op_info_serialize(&rc_op_handle->rc_op_info, &info_ptr[1]);
 
     /* Load the set ops */
     PMIX_DATA_ARRAY_CREATE(darray_set_op, rc_op_handle->set_ops.opal_list_length, PMIX_INFO);
@@ -527,7 +525,7 @@ int rc_op_handle_serialize(ompi_instance_rc_op_handle_t *rc_op_handle, pmix_info
         set_op_handle_serialize(set_op_handle, info_ptr2++);
     }
 
-    PMIX_INFO_LOAD(info_ptr, "mpi.set_op_handles", darray_set_op, PMIX_DATA_ARRAY);
+    PMIX_INFO_LOAD(&info_ptr[2], "mpi.set_op_handles", darray_set_op, PMIX_DATA_ARRAY);
     PMIX_DATA_ARRAY_FREE(darray_set_op);
 
 

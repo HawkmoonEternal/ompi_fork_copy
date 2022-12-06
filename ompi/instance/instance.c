@@ -63,7 +63,16 @@ static opal_recursive_mutex_t tracking_structures_lock;
 
 
 inline ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op){
+    
     switch(mpi_pset_op){
+        case MPI_PSETOP_NULL:
+            return OMPI_PSETOP_NULL;
+        case MPI_PSETOP_ADD:
+            return OMPI_RC_ADD;
+        case MPI_PSETOP_SUB:
+            return OMPI_RC_SUB;
+        case MPI_PSETOP_REPLACE:
+            return OMPI_RC_REPLACE;
         case MPI_PSETOP_UNION:
             return OMPI_PSETOP_UNION;
         case MPI_PSETOP_DIFFERENCE:
@@ -2139,6 +2148,7 @@ int ompi_instance_request_res_changes_v23(ompi_instance_t * instance, ompi_insta
             rc = OMPI_ERR_BAD_PARAM;
             goto CLEANUP;
         }
+
         /* Fill in the output for the "resource operation" */
         if(0 == rc_op_handle->rc_op_info.n_output_names){
             rc_op_handle_init_output(rc_op_handle->rc_type, &rc_op_handle->rc_op_info.output_names, &rc_op_handle->rc_op_info.n_output_names);
@@ -2206,7 +2216,7 @@ int ompi_instance_request_res_changes_nb_v23(ompi_instance_t * instance, ompi_in
  * Collectively query the runtime for available resource changes given either the delta PSet or the associated PSet.
  * The returned info is guranteed to be equal for all processes in the collective PSet
  */
-int ompi_instance_get_res_change_collective(ompi_instance_t *instance, char *coll_pset_name, char *input_name, ompi_rc_op_type_t *type, char *output_name, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
+int ompi_instance_get_res_change_collective(ompi_instance_t *instance, char *coll_pset_name, char *input_name, ompi_rc_op_type_t *type, char ***output_names, size_t *noutputs, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
     int rc;
     size_t n_coll_procs;
     pmix_proc_t *coll_procs;
@@ -2216,7 +2226,7 @@ int ompi_instance_get_res_change_collective(ompi_instance_t *instance, char *col
     size_t dummy_noutput;
 
     if(0 == strcmp(coll_pset_name, "mpi://SELF")){
-        rc = get_res_change_info(input_name, type, &output_name, &dummy_noutput, incl, status, info_used, get_by_delta_name);
+        rc = get_res_change_info(input_name, type, &output_names, &dummy_noutput, incl, status, info_used, get_by_delta_name);
     }else{
 
         rc = get_pset_membership(coll_pset_name, &opal_coll_procs, &n_coll_procs);
@@ -2229,7 +2239,7 @@ int ompi_instance_get_res_change_collective(ompi_instance_t *instance, char *col
 
         ompi_instance_free_pset_membership(coll_pset_name);
         
-        rc = get_res_change_info_collective(coll_procs, n_coll_procs, input_name, type, output_name, incl, status, info_used, get_by_delta_name);
+        rc = get_res_change_info_collective(coll_procs, n_coll_procs, input_name, type, output_names, noutputs, incl, status, info_used, get_by_delta_name);
 
         free(coll_procs);
     }
@@ -2250,7 +2260,6 @@ int ompi_instance_pset_op(ompi_instance_t *session, int op, char **input_sets, i
     PMIX_DATA_ARRAY_CONSTRUCT(&darray_out, *noutput, PMIX_VALUE);
     values = (pmix_value_t *) darray_in.array;
     for(n = 0; n < ninput; n++){
-        printf("Loading input_set %s\n", input_sets[n]);
         PMIX_VALUE_LOAD(&values[n], input_sets[n], PMIX_STRING);
     }
     values = (pmix_value_t *) darray_out.array;
@@ -2578,10 +2587,10 @@ static int ompi_instance_group_pmix_pset (ompi_instance_t *instance, const char 
             group->grp_proc_pointers[size] = (ompi_proc_t *) ompi_proc_name_to_sentinel (name);
         } else {
             OBJ_RETAIN (group->grp_proc_pointers[size]);
-        }
-        
+        }  
         ++size;
     }
+    
 
     ompi_set_group_rank (group, ompi_proc_local());
 

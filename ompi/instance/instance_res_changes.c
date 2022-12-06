@@ -374,9 +374,6 @@ int get_res_change_info(char *input_name, ompi_rc_op_type_t *type, char ***outpu
     pmix_query_t query;
     opal_pmix_lock_t lock;
     bool refresh = true;
-    if(NULL != info_used){
-        printf("in recv: info ptr = %p\n", *info_used);
-    }
 
     ompi_instance_get_res_change_fn_t get_res_change_active_local = get_by_delta_name ? get_res_change_active_for_name : get_res_change_active_for_bound_name;
     ompi_instance_get_res_change_fn_t get_res_change_local = get_by_delta_name ? get_res_change_for_name : get_res_change_for_bound_name;
@@ -426,9 +423,6 @@ int get_res_change_info(char *input_name, ompi_rc_op_type_t *type, char ***outpu
         OPAL_PMIX_DESTRUCT_LOCK(&lock);
         ompi_instance_lock_rc_and_psets();
     }
-    if(NULL != info_used){
-        printf("in recv2: info ptr = %p\n", *info_used);
-    }
 
     /* if we did not find an active res change with a delta pset then at least search for invalid ones.
      * If there still aren't any resource changes found return an error.
@@ -444,34 +438,17 @@ int get_res_change_info(char *input_name, ompi_rc_op_type_t *type, char ***outpu
         }
     }
 
-    if(NULL != info_used){
-        printf("in recv3: info ptr = %p\n", *info_used);
-    }
     /* lookup requested properties of the resource change */
     *type = res_change->type;
     *status = res_change->status;
     *incl = 0;
-    if(NULL != info_used){
-        printf("in recv3.1: info ptr = %p\n", *info_used);
-    }
+
     if(get_by_delta_name){
         *noutput_names = res_change->nbound_psets;
         *output_names = malloc(res_change->nbound_psets * sizeof(char *));
     }else{
-        printf("ndelta_psets = %zu\n", res_change->ndelta_psets);
         *noutput_names = res_change->ndelta_psets;
-        printf("noutput_names = %zu\n", *noutput_names);
-        if(NULL != info_used){
-            printf("in recv3.2: info ptr = %p\n", *info_used);
-        }
         *output_names = malloc(res_change->ndelta_psets * sizeof(char *));
-        if(NULL != info_used){
-            printf("in recv3.3: info ptr = %p\n", *info_used);
-        }
-    }
-
-    if(NULL != info_used){
-        printf("in recv4: info ptr = %p\n", *info_used);
     }
 
     ompi_mpi_instance_pset_t *delta_pset_ptr;
@@ -502,9 +479,6 @@ int get_res_change_info(char *input_name, ompi_rc_op_type_t *type, char ***outpu
             (*output_names)[n] = strdup(res_change->bound_psets[n]->name);
         }        
     }
-    if(NULL != info_used){
-        printf("in recv5: info ptr = %p\n", *info_used);
-    }
     
     /* reset the res change bound to self. We do this to trigger a lookup next time */
     if(0 == strcmp(input_name, "mpi://SELF")){
@@ -516,8 +490,9 @@ int get_res_change_info(char *input_name, ompi_rc_op_type_t *type, char ***outpu
     return OMPI_SUCCESS;
 }
 
-int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs, char *input_name, ompi_rc_op_type_t *type, char *output_name, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
+int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs, char *input_name, ompi_rc_op_type_t *type, char ***output_names, size_t *noutput_names, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
     int ret = OPAL_SUCCESS;
+    size_t n;
     char pset_search_name[OPAL_MAX_PSET_NAME_LEN];
     pmix_status_t rc;
     pmix_query_t query;
@@ -592,46 +567,59 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
     if(NULL == (res_change = get_res_change_active_local(input_name)) || NULL == res_change->delta_psets || NULL == res_change->bound_psets){
 
         if(NULL == (res_change = get_res_change_local(input_name)) || NULL == res_change->delta_psets || NULL == res_change->bound_psets || RC_FINALIZED == res_change->status){
-
+            
             ompi_instance_unlock_rc_and_psets();
             *type = OMPI_RC_NULL;
             *incl = 0;
-            *status = RC_INVALID;
             return OPAL_ERR_NOT_FOUND;
         }
     }
-
+    
     /* lookup requested properties of the resource change */
     *type = res_change->type;
     *status = res_change->status;
-
-    ompi_mpi_instance_pset_t *delta_pset_ptr;
-    if(NULL != (delta_pset_ptr = res_change->delta_psets)){
-        opal_process_name_t *procs = NULL;
-        size_t nprocs;
-        ompi_instance_unlock_rc_and_psets();
-        int res = get_pset_membership(delta_pset_ptr->name, &procs, &nprocs);
-        ompi_instance_lock_rc_and_psets();
-
-        /* set the output_name */
-        if(get_by_delta_name){
-            ompi_mpi_instance_pset_t *assoc_pset_ptr;
-            if(NULL != (assoc_pset_ptr = res_change->bound_psets)){
-                strcpy(output_name, assoc_pset_ptr->name);
-            }           
-        }else{
-            strcpy(output_name, delta_pset_ptr->name);
-        }
-        *incl = opal_is_pset_member(procs, nprocs, opal_process_info.my_name) ? 1 : 0;
-        ompi_instance_free_pset_membership(delta_pset_ptr->name);
+    *incl = 0;
+    if(get_by_delta_name){
+        *noutput_names = res_change->nbound_psets;
+        *output_names = malloc(res_change->nbound_psets * sizeof(char *));
+    }else{
+        *noutput_names = res_change->ndelta_psets;
+        *output_names = malloc(res_change->ndelta_psets * sizeof(char *));
     }
+    ompi_mpi_instance_pset_t *delta_pset_ptr;
+    for(n = 0; n < res_change->ndelta_psets; n++){
+        if(NULL != (delta_pset_ptr = res_change->delta_psets[n])){
+            opal_process_name_t *procs = NULL;
+            size_t nprocs;
+            ompi_instance_unlock_rc_and_psets();
+            get_pset_membership(delta_pset_ptr->name, &procs, &nprocs);
+            ompi_instance_lock_rc_and_psets();
+            if(*incl != 1){
+                *incl = (opal_is_pset_member(procs, nprocs, opal_process_info.my_name) ? 1 : 0);
+            }
+            ompi_instance_free_pset_membership(delta_pset_ptr->name);
+        }
+        /* If they asked for delta psets, copy it to the output array */
+        if(!get_by_delta_name){
+            
+            (*output_names)[n] = strdup(delta_pset_ptr->name);    
+        }
 
+    }
+    
+    /* If they asked for assoc psets, copy them to the output array */
+    if(get_by_delta_name){
+        for(n = 0; n < res_change->nbound_psets; n++){
+            (*output_names)[n] = strdup(res_change->bound_psets[n]->name);
+        }        
+    }
+    
     /* reset the res change bound to self. We do this to trigger a lookup next time */
     if(0 == strcmp(input_name, "mpi://SELF")){
         res_change_bound_to_self = NULL;
     }
     /* TODO: provide additional information in info object if requested */
-    ompi_instance_unlock_rc_and_psets();
 
+    ompi_instance_unlock_rc_and_psets();
     return OMPI_SUCCESS;
 }

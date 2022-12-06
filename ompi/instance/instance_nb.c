@@ -355,7 +355,7 @@ int integrate_res_change_finalize(integrate_rc_results *int_rc_results){
 
 int alloc_req_v23_nb_complete(pmix_status_t status, pmix_info_t *results, size_t nresults, ompi_instance_rc_op_handle_t *rc_op_handle){
     size_t n, k, noutput_names = 0;
-    pmix_value_t *out_name_vals;
+    pmix_value_t *out_name_vals = NULL;
 
     if(PMIX_SUCCESS == status){
         /* Get the array of pmix_value_t containing the output names*/
