@@ -273,10 +273,14 @@ int rc_op_handle_create(ompi_instance_rc_op_handle_t **rc_op_handle){
 int rc_op_handle_add_op(ompi_rc_op_type_t rc_type, char **input_names, size_t n_input_names, char **output_names, size_t n_output_names, ompi_info_t *info, ompi_instance_rc_op_handle_t *rc_op_handle){
     
     int rc, n, nkeys, flag;
+    char *alias;
     opal_cstring_t *opal_key, *opal_value;
     ompi_instance_rc_op_handle_t * rc_op_handle_ptr;
     ompi_instance_set_op_info_t *set_op_info;
+    ompi_mpi_instance_pset_t *pset_ptr = NULL;
     bool append = false;
+
+    refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
     
     if(rc_op_handle->rc_type == OMPI_RC_NULL){
         rc_op_handle_ptr = rc_op_handle;
@@ -295,7 +299,13 @@ int rc_op_handle_add_op(ompi_rc_op_type_t rc_type, char **input_names, size_t n_
         set_op_info->input_names = malloc(n_input_names * sizeof(char*));
         for(n = 0; n < n_input_names; n++){
             set_op_info->input_names[n] = malloc(OPAL_MAX_PSET_NAME_LEN);
-            strcpy(set_op_info->input_names[n], input_names[n]);
+            pset_ptr = get_pset_by_name(input_names[n]);
+            if(NULL != pset_ptr){
+                strcpy(set_op_info->input_names[n], pset_ptr->name);
+            }else{
+                /* We might not know about this PSet yet. So copy the provided name and let the RTE handle the issue */
+                strcpy(set_op_info->input_names[n], input_names[n]);
+            }
         }
     }
 
@@ -363,9 +373,18 @@ int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, cha
     pmix_info_t *new_info;
     bool found = false;
     ompi_instance_set_op_handle_t *set_op_handle;
+    ompi_mpi_instance_pset_t *pset_ptr;
+
+    refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
+    
+    pset_ptr = get_pset_by_name(pset_name);
+    if(NULL == pset_ptr){
+        return OMPI_ERR_NOT_BOUND;
+    }
+
 
     for(n = 0; n < rc_op_handle->rc_op_info.n_output_names; n++){
-        if(0 == strcmp(rc_op_handle->rc_op_info.output_names[n], pset_name)){
+        if(0 == strcmp(rc_op_handle->rc_op_info.output_names[n], pset_ptr->name)){
             found = true;
             for(k = 0; k < ninfo; k++){
                 PMIX_INFO_LIST_XFER(rc, rc_op_handle->rc_op_info.pset_info_lists[n], &info[k]);
@@ -380,7 +399,7 @@ int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, cha
     if(!found){
         OPAL_LIST_FOREACH(set_op_handle, &rc_op_handle->set_ops, ompi_instance_set_op_handle_t){
             for(n = 0; n < set_op_handle->set_op_info.n_output_names; n++){
-                if(0 == strcmp(set_op_handle->set_op_info.output_names[n], pset_name)){
+                if(0 == strcmp(set_op_handle->set_op_info.output_names[n], pset_ptr->name)){
                     found = true;
                     for(k = 0; k < ninfo; k++){
                         PMIX_INFO_LIST_XFER(rc, set_op_handle->set_op_info.pset_info_lists[n], &info[k]);

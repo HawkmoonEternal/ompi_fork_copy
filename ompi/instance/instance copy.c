@@ -799,6 +799,9 @@ void pmix_info_cb_nb( pmix_status_t status, pmix_info_t *info, size_t ninfo,
                     if(prev_stage == QUERY_MEM_STAGE){
                         integrate_res_change_insert_membership_cb(info, ninfo);
                     }
+                    printf("next: fence\n");
+                    sleep(10);
+                    exit(1);
                     rc = integrate_res_change_fence_nb(int_rc_results->delta_pset, int_rc_results->assoc_pset, cbdata);
                     opal_mutex_unlock(&tracking_structures_lock);
                     
@@ -2459,6 +2462,10 @@ int ompi_instance_free_pset_membership (char *pset_name){
 #pragma region v0
 inline ompi_rc_op_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op){
     switch(mpi_pset_op){
+        case MPI_RC_NULL:
+            return OMPI_RC_NULL;
+        case MPI_PSETOP_NULL:
+            return OMPI_PSETOP_NULL;
         case MPI_PSETOP_UNION:
             return OMPI_PSETOP_UNION;
         case MPI_PSETOP_DIFFERENCE:
@@ -3809,37 +3816,7 @@ static void ompi_instance_get_num_psets_complete (pmix_status_t status,
     OPAL_PMIX_WAKEUP_THREAD(lock);
 }
 
-static void ompi_instance_refresh_pmix_psets (const char *key)
-{
-    pmix_status_t rc;
-    pmix_query_t query;
-    opal_pmix_lock_t lock;
-    bool refresh = true;
 
-    opal_mutex_lock (&instance_lock);
-
-    PMIX_QUERY_CONSTRUCT(&query);
-    PMIX_ARGV_APPEND(rc, query.keys, key);
-    PMIX_INFO_CREATE(query.qualifiers, 1);
-    query.nqual = 1;
-    PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
-
-    OPAL_PMIX_CONSTRUCT_LOCK(&lock);
-
-    /*
-     * TODO: need to handle this better
-     */
-    if (PMIX_SUCCESS != (rc = PMIx_Query_info_nb(&query, 1, 
-                                                 ompi_instance_get_num_psets_complete,
-                                                 (void*)&lock))) {
-       opal_mutex_unlock (&instance_lock);
-    }
-
-    OPAL_PMIX_WAIT_THREAD(&lock);
-    OPAL_PMIX_DESTRUCT_LOCK(&lock);
-
-    opal_mutex_unlock (&instance_lock);
-}
 
 
 int ompi_instance_get_num_psets (ompi_instance_t *instance, int *npset_names)

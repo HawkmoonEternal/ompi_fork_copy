@@ -171,8 +171,9 @@ int pset_fence_multiple_nb(char **pset_names, int num_psets, ompi_info_t *info, 
     size_t max_procs = 0;
     size_t num_fence_procs = 0;
 
+    ompi_mpi_instance_pset_t * pset_ptr;
     opal_process_name_t * opal_proc_names;
-    
+
     /* allocate array of pset sizes */
     nprocs = malloc(num_psets * sizeof(size_t));
 
@@ -181,7 +182,12 @@ int pset_fence_multiple_nb(char **pset_names, int num_psets, ompi_info_t *info, 
     
     for(int i = 0; i < num_psets; i++){
         /* retrieve pset members */
-        rc = get_pset_membership(pset_names[i], &opal_proc_names, &nprocs[i]);
+        if(NULL == (pset_ptr = get_pset_by_name(pset_names[i]))){
+            free(nprocs);
+            free(procs);
+            return OMPI_ERR_NOT_FOUND;
+        }
+        rc = get_pset_membership(pset_ptr->name, &opal_proc_names, &nprocs[i]);
  
         procs[i] = malloc(nprocs[i] * sizeof(pmix_proc_t));
         for(int j = 0; j < nprocs[i]; j++){
@@ -226,7 +232,8 @@ int pset_fence_multiple_nb(char **pset_names, int num_psets, ompi_info_t *info, 
     PMIX_INFO_DESTRUCT(&fence_info);
 
     for(int i = 0; i < num_psets; i++){
-        ompi_instance_free_pset_membership(pset_names[i]);
+        pset_ptr = get_pset_by_name(pset_names[i]);
+        ompi_instance_free_pset_membership(pset_ptr->name);
         free(procs[i]);
     }
 
@@ -366,14 +373,11 @@ int alloc_req_v23_nb_complete(pmix_status_t status, pmix_info_t *results, size_t
             }
         }
 
-        printf("alloc req returned %d output psets\n", noutput_names);
-
         /* Fill in the output for the "resource operation" */
         if(0 == rc_op_handle->rc_op_info.n_output_names){
-            printf("init rc_op_handle\n");
             rc_op_handle_init_output(rc_op_handle->rc_type, &rc_op_handle->rc_op_info.output_names, &rc_op_handle->rc_op_info.n_output_names);
         }
-        printf("noutput_names = %d\n", rc_op_handle->rc_op_info.n_output_names);
+
         for(n = 0; n < rc_op_handle->rc_op_info.n_output_names; n++){
             free(rc_op_handle->rc_op_info.output_names[n]);
             rc_op_handle->rc_op_info.output_names[n] = strdup(out_name_vals[n].data.string);
@@ -408,7 +412,6 @@ void pmix_lookup_cb_nb(pmix_status_t status, pmix_pdata_t pdata[], size_t ndata,
     PMIX_INFO_CREATE(info, 1);
     PMIX_DATA_ARRAY_CONSTRUCT(&darray, ndata, PMIX_PDATA);
     pdata_ptr = (pmix_pdata_t *) darray.array;
-    
     for(n = 0; n < ndata; n++){
         PMIX_PDATA_XFER(&pdata_ptr[n], &pdata[n]);
     }
@@ -485,7 +488,6 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
                             }
                         }                        
                     }
-
                     char **pset_names = malloc((int_rc_results->ndelta_psets + int_rc_results->nassoc_psets) * sizeof(char*));
                     for(n = 0; n < int_rc_results->ndelta_psets; n++){
                         pset_names[n] = strdup(int_rc_results->delta_psets[n]);

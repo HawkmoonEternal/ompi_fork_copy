@@ -38,6 +38,7 @@ typedef uint8_t ompi_psetop_type_t;
 struct ompi_pset_t{
     opal_list_item_t super;
     char name[PMIX_MAX_KEYLEN];
+    char *alias;
     size_t size;
     bool malleable;
     bool active;
@@ -47,6 +48,8 @@ typedef struct ompi_pset_t ompi_mpi_instance_pset_t;
 
 
 int ompi_instance_psets_init();
+
+int ompi_instance_get_launch_pset(char **pset_name, pmix_proc_t *proc);
 
 int ompi_instance_builtin_psets_init(int n_builtin_psets, char **names, opal_process_name_t **members, size_t *nmembers, char **aliases);
 
@@ -59,6 +62,7 @@ void ompi_instance_lock_rc_and_psets();
 void ompi_instance_unlock_rc_and_psets();
 
 void ompi_instance_lock_rc_and_psets();
+
 
 void pset_define_handler(size_t evhdlr_registration_id, pmix_status_t status,
                        const pmix_proc_t *source, pmix_info_t info[], size_t ninfo,

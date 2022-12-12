@@ -97,7 +97,7 @@ bool ompi_instance_psets_initalized(){
 
 int ompi_instance_builtin_psets_init(int n_builtin_psets, char **names, opal_process_name_t **members, size_t *nmembers, char **aliases){
     int n, i;
-    ompi_mpi_instance_pset_t *pset_ptr;
+    ompi_mpi_instance_pset_t *pset_ptr, *alias_pset_ptr;
 
     num_builtin_psets = n_builtin_psets;
     
@@ -120,8 +120,13 @@ int ompi_instance_builtin_psets_init(int n_builtin_psets, char **names, opal_pro
         }
         if(NULL != aliases){
             if(NULL != aliases[n]){
-                /* TODO: Add alias to pset info */
-                i = 1;
+                /* create the alias PSet */
+                alias_pset_ptr = OBJ_NEW(ompi_mpi_instance_pset_t);
+                strcpy(alias_pset_ptr->name, aliases[n]);
+                add_pset(alias_pset_ptr);
+
+                /* Add the alias PSet label to the builtin PSet */
+                pset_ptr->alias = strdup(aliases[n]);
             }
         }
         add_pset(pset_ptr);
@@ -148,15 +153,14 @@ void ompi_instance_unlock_rc_and_psets(){
 #pragma region PSets
 
 static void pset_destructor(ompi_mpi_instance_pset_t *pset){
-    OBJ_DESTRUCT(&pset->super);
-    if(NULL != pset->members){
-        free(pset->members);
-    }
+    free(pset->members);
+    free(pset->alias);
 }
 
 static void pset_constructor(ompi_mpi_instance_pset_t *pset){
-    OBJ_CONSTRUCT(&pset->super, opal_list_item_t);
+    pset->size = 0;
     pset->members = NULL;
+    pset->alias = NULL;
 }
 
 OBJ_CLASS_INSTANCE(ompi_mpi_instance_pset_t, opal_object_t, pset_constructor, pset_destructor);
@@ -279,6 +283,43 @@ int add_pset(ompi_mpi_instance_pset_t *pset){
     return OMPI_SUCCESS;
 }
 
+int ompi_instance_get_launch_pset(char **pset_name, pmix_proc_t *proc){
+    pmix_info_t *results, *info;
+    size_t n_results, ninfo, k, n;
+    pmix_query_t query;
+    pmix_status_t rc;
+
+    PMIX_QUERY_CONSTRUCT(&query);
+    PMIX_ARGV_APPEND(rc, query.keys, PMIX_QUERY_LAUNCH_PSET);
+
+    PMIX_INFO_CREATE(query.qualifiers, 1);
+    PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_PROCID, proc, PMIX_PROC);
+    query.nqual = 1;
+
+    rc = PMIx_Query_info(&query, 1, &results, &n_results);
+    if(PMIX_SUCCESS != rc){
+        return rc;
+    }
+
+    for(n = 0; n < n_results; n++){
+        if(PMIX_CHECK_KEY(&results[n], PMIX_QUERY_RESULTS)){
+            info = results[n].value.data.darray->array;
+            ninfo = results[n].value.data.darray->size;
+
+            for(k = 0; k < ninfo; k++){
+                if(PMIX_CHECK_KEY(&info[k], PMIX_QUERY_LAUNCH_PSET)){
+                    *pset_name = strdup(info[k].value.data.string);
+                    return PMIX_SUCCESS;
+                }
+            }
+
+        }
+    }
+    return PMIX_ERR_NOT_FOUND;
+}
+
+
+
 static void refresh_psets_complete (pmix_status_t status, 
 		                                  pmix_info_t *results,
 		                                  size_t nresults,
@@ -295,7 +336,7 @@ static void refresh_psets_complete (pmix_status_t status,
     pmix_info_t * info;
 
     opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
-
+    printf("Proc %d: refresh, entered callback\n", opal_process_info.myprocid.rank);
     for(k = 0; k < nresults; k++){
         
         if(0 == strcmp(results[k].key, PMIX_QUERY_RESULTS)){
@@ -315,10 +356,10 @@ static void refresh_psets_complete (pmix_status_t status,
 
                     char** names = opal_argv_split (info[n].value.data.string, ',');
                     size_t num_names = opal_argv_count(names);
-
+                    printf("Proc %d: refresh trying to get lock\n", opal_process_info.myprocid.rank);
                     ompi_instance_lock_rc_and_psets();
                     /* add psets we didn't know about before the query*/
-
+                    printf("Proc %d: refresh got lock\n", opal_process_info.myprocid.rank);
                     for(i = 0; i < num_names; i++){
                         if(NULL == get_pset_by_name(names[i])){
                             ompi_mpi_instance_pset_t *new_pset;
@@ -377,7 +418,10 @@ ompi_mpi_instance_pset_t * get_pset_by_name(char *name){
 
     ompi_mpi_instance_pset_t *pset_out = NULL;
     OPAL_LIST_FOREACH(pset_out, &ompi_mpi_instance_psets, ompi_mpi_instance_pset_t){
-        if(0 == strcmp(name,pset_out->name)){
+        if(0 == strcmp(name, pset_out->name)){
+            if(NULL != pset_out->alias){
+                pset_out = get_pset_by_name(pset_out->alias);
+            }
             ompi_instance_unlock_rc_and_psets();
             return pset_out;
         }
@@ -613,18 +657,16 @@ int get_pset_membership (char *pset_name, opal_process_name_t **members, size_t 
         PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PSET_NAME, pset_name, PMIX_STRING);
         /* Send the query */
         if (PMIX_SUCCESS != (rc = PMIx_Query_info(&query, 1, &results, &nresults)) || 0 == nresults) {
-            printf("Rank %d: PMIx query members for PSet name %s Error: %d\n", opal_process_info.myprocid.rank, pset_name, rc);
             ret = opal_pmix_convert_status(rc);
             return ret;                                         
         }
-
         /* set pset members in the list of local PSets */
         ompi_instance_lock_rc_and_psets();
 
         for(k = 0; k < nresults; k++){
 
             if(0 == strcmp(results[k].key, PMIX_QUERY_RESULTS)){
-
+                
                 info = results[k].value.data.darray->array;
                 ninfo = results[k].value.data.darray->size;
 
@@ -748,7 +790,10 @@ int ompi_instance_pset_fence_multiple(char **pset_names, int num_psets, ompi_inf
     size_t max_procs = 0;
     size_t num_fence_procs = 0;
 
+    ompi_mpi_instance_pset_t *pset_ptr;
     opal_process_name_t * opal_proc_names;
+
+    refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
     
     /* allocate array of pset sizes */
     nprocs = malloc(num_psets * sizeof(size_t));
@@ -758,7 +803,12 @@ int ompi_instance_pset_fence_multiple(char **pset_names, int num_psets, ompi_inf
 
     for(int i = 0; i < num_psets; i++){
         /* retrieve pset members */
-        get_pset_membership(pset_names[i], &opal_proc_names, &nprocs[i]);
+        if(NULL == (pset_ptr = get_pset_by_name(pset_names[i]))){
+            free(nprocs);
+            free(procs);
+            return OMPI_ERR_NOT_FOUND;
+        }
+        get_pset_membership(pset_ptr->name, &opal_proc_names, &nprocs[i]);
 
         procs[i] = malloc(nprocs[i] * sizeof(pmix_proc_t));
         for(int j = 0; j < nprocs[i]; j++){
@@ -808,7 +858,8 @@ int ompi_instance_pset_fence_multiple(char **pset_names, int num_psets, ompi_inf
     PMIX_INFO_DESTRUCT(&fence_info);
 
     for(int i = 0; i < num_psets; i++){
-        ompi_instance_free_pset_membership(pset_names[i]);
+        pset_ptr = get_pset_by_name(pset_names[i]);
+        ompi_instance_free_pset_membership(pset_ptr->name);
         free(procs[i]);
     }
 

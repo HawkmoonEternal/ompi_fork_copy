@@ -236,9 +236,10 @@ void coll_results_create(ompi_collective_results_t **coll_results, ompi_results_
 void coll_results_load_info(ompi_collective_results_t *coll_results, pmix_info_t *info, size_t ninfo){
     size_t n;
 
+    coll_results->results.info_results.ninfo = ninfo;
+
     if(0 == ninfo) return;
 
-    coll_results->results.info_results.ninfo = ninfo;
     PMIX_INFO_CREATE(coll_results->results.info_results.info, ninfo);
 
     for(n = 0; n < ninfo; n++){
@@ -519,7 +520,6 @@ int ompi_collective_deserialize(ompi_instance_collective_t ** coll, pmix_info_t 
 
 
     for(n = 0; n < ninfo; n++){
-        printf("Deserialization key = %s\n", info[n].key);
         if(PMIX_CHECK_KEY(&info[n], "ompi.collective.func")){
             function_type = info[n].value.data.integer;
         }else if(PMIX_CHECK_KEY(&info[n], "ompi.collective.status")){
@@ -562,7 +562,6 @@ bool cmp_procs(pmix_proc_t *coll_procs1, size_t n_coll_procs1, pmix_proc_t *coll
     if( n_coll_procs1 != n_coll_procs2){
         return false;
     }
-    printf("ncoll_procs is similar\n");
 
     for(n = 0; n < n_coll_procs1; n++){
         proc1 = coll_procs1[n];
@@ -570,8 +569,6 @@ bool cmp_procs(pmix_proc_t *coll_procs1, size_t n_coll_procs1, pmix_proc_t *coll
         found = false;
         for(m = 0; m < n_coll_procs2; m++){
             proc2 = coll_procs2[m];
-
-            printf("Comparing proca [%s:%d] vs. [%s,%d]\n", proc1.nspace, proc1.rank, proc2.nspace, proc2.rank);
             
             if(PMIX_CHECK_PROCID(&proc1, &proc2)){
                 found = true;
@@ -603,7 +600,6 @@ bool cmp_infos(pmix_info_t *info1, pmix_info_t *info2, size_t ninfo){
              * need to add a parameter for keys to be excluded from the comparison
              */
 
-            printf("comparing Infos %s vs %s\n", info1[n].key, info2[m].key);
             if(PMIX_CHECK_KEY(&info1[n], info2[m].key) && (PMIX_EQUAL == PMIx_Value_compare(&info1[n].value, &info2[m].value))){
                 printf("Info %s cmp found\n", info1[n].key);
                 found = true;
@@ -797,13 +793,14 @@ int ompi_collective_send(ompi_instance_collective_t *coll, pmix_info_t *send_inf
     }
 
     
-    ninfo = n_send_info + 2;
+    ninfo = n_send_info + 3;
 
     PMIX_INFO_CREATE(info, ninfo);
 
     n = 0;
     ompi_collective_serialize(coll, &info[n++]);
 
+    PMIX_INFO_LOAD(&info[n++], PMIX_EVENT_NON_DEFAULT, NULL, PMIX_BOOL);
     PMIX_INFO_LOAD(&info[n++], PMIX_EVENT_CUSTOM_RANGE, darray, PMIX_DATA_ARRAY);
 
     for(k = 0; k < n_send_info; k++){
@@ -905,7 +902,6 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
     if(ret != OMPI_SUCCESS){
         return;
     }
-    printf("Proc %d: Provider event notification deserialized\n", opal_process_info.myprocid.rank);
     /* Lock the list of pending collectives */
     opal_mutex_lock(&collectives_lock);
 
@@ -936,7 +932,7 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
 
         coll->coll_results = coll_in->coll_results;
         coll->status = coll_in->status;
-
+        printf("provider calling receivers callback\n");
         execute_collective_callback(coll);
         coll->coll_results = NULL;
 
@@ -947,6 +943,7 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
             printf("Provider: PMIX_WAKEUP_THREAD\n");
             OPAL_PMIX_WAKEUP_THREAD(&coll->lock);
         }else{
+            printf("receiver was not waiting\n");
             OBJ_RELEASE(coll);
         }
 
@@ -983,7 +980,6 @@ void create_collective_query(ompi_instance_collective_t **coll, pmix_status_t st
     coll_params_load_query(coll_params, query, nqueries);
 
     if(NULL != info_cbfunc){
-        printf("CREATE COLLECTIVE QUERY: CBFUNC\n");
         coll_cbfunc_create(&coll_cbfunc, OMPI_CBFUNC_INFO);
         coll_cbfunc_load_info(coll_cbfunc, info_cbfunc);
     }

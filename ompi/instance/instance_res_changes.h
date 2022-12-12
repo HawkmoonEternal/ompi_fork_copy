@@ -64,9 +64,14 @@ void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
 
 /* get res change local */
 ompi_mpi_instance_resource_change_t * get_res_change_for_name(char *name);
-ompi_mpi_instance_resource_change_t * get_res_change_for_bound_name(char *name);
-ompi_mpi_instance_resource_change_t * get_res_change_active_for_bound_name(char *name);
 ompi_mpi_instance_resource_change_t * get_res_change_active_for_name(char *name);
+
+ompi_mpi_instance_resource_change_t * get_res_change_for_input_name(char *name);
+ompi_mpi_instance_resource_change_t * get_res_change_active_for_input_name(char *name);
+
+ompi_mpi_instance_resource_change_t * get_res_change_for_output_name(char *name);
+ompi_mpi_instance_resource_change_t * get_res_change_active_for_output_name(char *name);
+
 
 int get_res_change_type(char *delta_pset, ompi_rc_op_type_t *rc_type);
 

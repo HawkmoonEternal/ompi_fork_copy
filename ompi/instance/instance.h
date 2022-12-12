@@ -200,7 +200,7 @@ extern ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_rc_op);
 
 pmix_proc_t ompi_intance_get_pmixid(void);
 
-static void ompi_instance_refresh_pmix_psets (const char *key);
+
 int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, char *pset_name, ompi_rc_op_type_t rc_type, char *result_pset, bool root);
 void ompi_instance_clear_rc_cache(char *delta_pset);
 /**
