@@ -368,39 +368,48 @@ interface_profile_sources = \
         send_init.c \
         sendrecv.c \
         sendrecv_replace.c \
-        session_accept_res_change.c \
         session_c2f.c \
         session_call_errhandler.c \
-        session_confirm_res_change.c \
         session_create_errhandler.c \
-        session_dyn_integrate_res_change.c \
-        session_dyn_integrate_res_change_nb.c \
-        session_dyn_recv_res_change.c \
-        session_dyn_recv_res_change_coll.c \
-        session_dyn_request_res_change.c \
-        session_dyn_request_res_change_nb.c \
+        session_dyn_v1_integrate_res_change.c \
+        session_dyn_v1_integrate_res_change_nb.c \
+        session_dyn_v1_psetop.c \
+        session_dyn_v1_psetop_nb.c \
+        session_dyn_v1_recv_res_change.c \
+        session_dyn_v1_recv_res_change_nb.c \
+        session_dyn_v1_request_res_change.c \
+        session_dyn_v1_request_res_change_nb.c \
+        session_dyn_v2a_psetop.c \
+        session_dyn_v2a_psetop_nb.c \
+        session_dyn_v2a_query_psetop.c \
+        session_dyn_v2a_query_psetop_nb.c \
+        session_dyn_v2b_psetop.c \
+        session_dyn_v2b_psetop_nb.c \
+        session_dyn_v2b_query_psetop.c \
+        session_dyn_v2b_query_psetop_nb.c \
+        session_dyn_v2b_rc_handle_add_op.c \
+        session_dyn_v2b_rc_handle_add_pset_info.c \
+        session_dyn_v2b_rc_handle_create.c \
+        session_dyn_v2b_rc_handle_get_num_ops.c \
+        session_dyn_v2b_rc_handle_get_num_output.c \
+        session_dyn_v2b_rc_handle_get_output_pset.c \
+        session_dyn_v2b_rc_handle_free.c \
+        session_dyn_v2c_psetop.c \
+        session_dyn_v2c_psetop_nb.c \
+        session_dyn_v2c_query_psetop.c \
+        session_dyn_v2c_query_psetop_nb.c \
         session_get_errhandler.c \
         session_get_info.c \
         session_get_num_psets.c \
         session_get_nth_pset.c \
         session_get_pset_info.c \
         session_get_pset_info_v23.c \
-        session_get_res_change.c \
         session_init.c \
         session_f2c.c \
         session_finalize.c \
-        session_pset_create_op.c \
         session_pset_barrier.c \
         session_pset_barrier_nb.c \
         session_pset_op.c \
-        session_rc_handle_add_op.c \
-        session_rc_handle_add_pset_info.c \
-        session_rc_handle_create.c \
-        session_rc_handle_get_num_ops.c \
-        session_rc_handle_get_num_output.c \
-        session_rc_handle_get_output_pset.c \
-        session_rc_handle_free.c \
-        session_request_res_change.c \
         session_set_errhandler.c \
         session_set_info.c \
         session_set_pset_info.c \

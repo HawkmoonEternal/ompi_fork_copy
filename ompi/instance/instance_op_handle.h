@@ -27,6 +27,7 @@
 #include "ompi/instance/instance_res_changes.h"
 
 #define PREDEFINED_RC_HANDLE_PAD 512
+#define PSET_INFO_LIST_ARRAY_BASE_SIZE 2
 
 typedef struct opal_pmix_info_list_item_t{
     opal_list_item_t super;

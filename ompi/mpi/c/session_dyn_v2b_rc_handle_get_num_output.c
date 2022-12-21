@@ -15,13 +15,15 @@
 //#define MPI_Session_confirm_res_change PMPI_Session_confirm_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_rc_handle_add_pset_info";
+static const char FUNC_NAME[] = "MPI_Session_rc_handle_get_num_ops";
 
 
-int MPI_Session_rc_handle_add_pset_info(MPI_Session session, MPI_RC_handle rc_op_handle, char *pset_name, MPI_Info info){
+int MPI_Session_dyn_v2b_rc_handle_get_num_output(MPI_Session session, MPI_RC_handle rc_op_handle, int op_index, int *num_psets){
     int rc;
+    size_t n_psets;
+    rc = ompi_instance_dyn_v2b_rc_op_handle_get_num_output((ompi_instance_t *) session, rc_op_handle, op_index, &n_psets);
     
-    rc = ompi_instance_rc_op_handle_add_pset_info((ompi_instance_t *) session, (ompi_instance_rc_op_handle_t *) rc_op_handle, pset_name, (ompi_info_t *) info);
-    
+    *num_psets = n_psets;
+
     return rc;
 }

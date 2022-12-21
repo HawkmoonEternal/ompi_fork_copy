@@ -118,9 +118,9 @@ typedef struct instance_collective_t ompi_instance_collective_t;
 
 OBJ_CLASS_DECLARATION(ompi_instance_collective_t);
 
-int ompi_instance_collectives_init();
+int ompi_instance_collectives_init(void);
 
-int ompi_instance_collectives_finalize();
+int ompi_instance_collectives_finalize(void);
 
 void create_collective_query(ompi_instance_collective_t **coll, pmix_status_t status, pmix_proc_t *procs, size_t nprocs, pmix_query_t *query, size_t nqueries, pmix_info_t *results, size_t nresults, pmix_info_cbfunc_t info_cbfunc, void *cbdata);
 int send_collective_data_query(pmix_proc_t *procs, pmix_status_t status, size_t nprocs, pmix_query_t *query, size_t nqueries, pmix_info_t *results, size_t nresults);

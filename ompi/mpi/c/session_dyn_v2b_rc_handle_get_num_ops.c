@@ -15,11 +15,16 @@
 //#define MPI_Session_confirm_res_change PMPI_Session_confirm_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_dyn_integrate_res_change";
+static const char FUNC_NAME[] = "MPI_Session_rc_handle_get_num_ops";
 
 
-int MPI_Session_dyn_integrate_res_change(MPI_Session *session, MPI_Info info, char *delta_pset, char *pset_buf, int provider, int *terminate){
+int MPI_Session_dyn_v2b_rc_handle_get_num_ops(MPI_Session session, MPI_RC_handle rc_op_handle, int *num_ops){
     int rc;
-    rc = ompi_instance_integrate_res_change(session, delta_pset, pset_buf, provider, terminate);
+    size_t n_ops;
+
+    rc = ompi_instance_dyn_v2b_rc_op_handle_get_num_ops((ompi_instance_t *) session, rc_op_handle, &n_ops);
+    
+    *num_ops = (int) n_ops;
+
     return rc;
 }

@@ -17,20 +17,20 @@
 
 static const char FUNC_NAME[] = "MPI_Session_pset_create_op";
 
-int MPI_Session_pset_create_op(MPI_Session session, int op, char *pset1, char *pset2, char *pset_result, MPI_Info *info){
+int MPI_Session_dyn_v1_psetop_nb(MPI_Session session, int op, char *pset1, char *pset2, char *pset_result, MPI_Info info, MPI_Request *request){
 
     int rc, flag = 0;
     char pref_name[PMIX_MAX_KEYLEN];
     ompi_rc_op_type_t ompi_op = MPI_OMPI_CONV_PSET_OP(op);
     //PARAM CHECK
-    if(NULL != info && MPI_INFO_NULL != *info){
-        MPI_Info_get(*info, "MPI_PSETOP_PREF_NAME", PMIX_MAX_KEYLEN, pref_name, &flag);
+    if(MPI_INFO_NULL != info){
+        MPI_Info_get(info, "MPI_PSETOP_PREF_NAME", PMIX_MAX_KEYLEN, pref_name, &flag);
     }
     if(!flag){
-        rc = ompi_instance_pset_create_op(session, pset1, pset2, NULL, pset_result, ompi_op);
+        rc = ompi_instance_dyn_v1_psetop_nb(session, pset1, pset2, NULL, pset_result, ompi_op, (ompi_request_t **) request);
     }
     else{
-        rc = ompi_instance_pset_create_op(session, pset1, pset2, pref_name, pset_result, ompi_op);
+        rc = ompi_instance_dyn_v1_psetop_nb(session, pset1, pset2, pref_name, pset_result, ompi_op, (ompi_request_t **) request);
     }
     //ERROR HANDLING
     

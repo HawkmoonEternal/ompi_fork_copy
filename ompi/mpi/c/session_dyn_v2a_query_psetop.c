@@ -18,7 +18,7 @@
 static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
 
 
-int MPI_Session_dyn_recv_res_change_coll(MPI_Session session, char *coll_pset, char * input_pset, int *type, char ***output_psets, int *noutput, int *incl){
+int MPI_Session_dyn_v2a_query_psetop(MPI_Session session, char *coll_pset, char * input_pset, int *type, char ***output_psets, int *noutput){
     int rc;
     size_t _noutput = 0;
     char bound_pset[PMIX_MAX_KEYLEN];
@@ -30,14 +30,12 @@ int MPI_Session_dyn_recv_res_change_coll(MPI_Session session, char *coll_pset, c
             return MPI_ERR_ARG;
     }
 
-    rc = ompi_instance_get_res_change_collective((ompi_instance_t *) session, coll_pset, input_pset, &ompi_rc_op_type, output_psets, &_noutput, incl, &rc_status, NULL, false);
+    rc = ompi_instance_dyn_v2a_query_psetop((ompi_instance_t *) session, coll_pset, input_pset, &ompi_rc_op_type, output_psets, &_noutput, false);
 
     //ERROR HANDLING
     
     *type = MPI_OMPI_CONVT_RC_OP(ompi_rc_op_type);
     *noutput = (int) _noutput; 
-
-    printf("received: rc_type = %d, rc_status = %d, incl = %d\n", *type, rc_status, *incl);
     
     return rc;
 }

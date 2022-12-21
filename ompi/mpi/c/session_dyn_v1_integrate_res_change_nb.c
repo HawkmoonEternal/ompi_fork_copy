@@ -15,17 +15,12 @@
 //#define MPI_Session_confirm_res_change PMPI_Session_confirm_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_rc_handle_create";
+static const char FUNC_NAME[] = "MPI_Session_dyn_integrate_res_change";
 
 
-int MPI_Session_rc_handle_free(MPI_Session session, MPI_RC_handle *rc_op_handle){
+int MPI_Session_dyn_v1_integrate_res_change_nb(MPI_Session session, MPI_Info info, char *delta_pset, char *pset_buf, int provider, int *terminate, MPI_Request *req){
     int rc;
-    
-    if(NULL == rc_op_handle){
-        return OMPI_ERRHANDLER_NOHANDLE_INVOKE(MPI_ERR_ARG,
-                                          FUNC_NAME);
-    }
-    rc = ompi_instance_rc_op_handle_free((ompi_instance_t *) session, (ompi_instance_rc_op_handle_t **) rc_op_handle);
-    
+
+    rc = ompi_instance_dyn_v1_integrate_res_change_nb(session, delta_pset, pset_buf, provider, terminate, (ompi_request_t **) req);
     return rc;
 }

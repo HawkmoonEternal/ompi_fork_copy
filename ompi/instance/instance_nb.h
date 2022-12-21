@@ -30,6 +30,7 @@ typedef enum _nb_chain_stage{
     PUBSUB_STAGE,
     QUERY_MEM_STAGE,
     FENCE_STAGE,
+    PSETOP_STAGE,
     REQUEST_RC_STAGE,
     LAST_STAGE
 }nb_chain_stage;
@@ -37,9 +38,14 @@ typedef enum _nb_chain_stage{
 typedef enum _nb_func{
     GET_RC,
     RECV_RC,
+    V1_RECV_RC,
+    V1_REQ_RC,
     INTEGRATE_RC,
-    REQUEST_RC,
+    V2A_PSETOP,
+    V2B_PSETOP,
+    V2C_PSETOP,
     PSET_FENCE,
+    V1_PSETOP
 }nb_func;
 
 typedef struct _nb_chain_info{
@@ -60,6 +66,16 @@ typedef struct _get_rc_results{
     int *incl;
 }get_rc_results;
 
+typedef struct _v1_recv_rc_results{
+    nb_chain_info chain_info;
+    char * input_pset;
+    char * output_pset;
+    int * rc_type;
+    ompi_rc_status_t * rc_status;
+    int *incl;
+    int get_by_delta_pset;
+}v1_recv_rc_results;
+
 typedef struct _integrate_rc_results{
     nb_chain_info chain_info;
     char ** delta_psets;
@@ -74,11 +90,22 @@ typedef struct _integrate_rc_results{
     int * terminate;
 }integrate_rc_results;
 
+typedef struct _v1_psetop_results{
+    nb_chain_info chain_info;
+    char *pset_result;
+}v1_psetop_results;
+
+typedef struct _v2a_psetop_results{
+    nb_chain_info chain_info;
+    char ***output;
+    int *noutput;
+}v2a_psetop_results;
+
 /* TODO: We might want the request to return info in the future */
-typedef struct request_rc_results{
+typedef struct _v2b_psetop_results{
     nb_chain_info chain_info;
     ompi_instance_rc_op_handle_t *rc_op_handle;
-}request_rc_results;
+}v2b_psetop_results;
 
 typedef struct fence_results{
     nb_chain_info chain_info;

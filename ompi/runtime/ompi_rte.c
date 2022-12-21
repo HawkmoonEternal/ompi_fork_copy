@@ -1218,7 +1218,6 @@ int ompi_rte_finalize(void)
     /* cleanup our internal nspace hack */
     opal_pmix_finalize_nspace_tracker();
 
-
     opal_finalize ();
 
     return OMPI_SUCCESS;

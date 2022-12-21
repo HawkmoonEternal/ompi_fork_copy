@@ -782,7 +782,7 @@ int ompi_collective_send(ompi_instance_collective_t *coll, pmix_info_t *send_inf
     target_procs = (pmix_proc_t *) darray->array;
 
     n = 0;
-    for(k = 0; k < coll->coll_procs->nprocs, n < ntarget_procs; k++){
+    for(k = 0; n < ntarget_procs; k++){
         
         if(PMIX_CHECK_PROCID(&coll->coll_procs->procs[k], &opal_process_info.myprocid)){
             continue;

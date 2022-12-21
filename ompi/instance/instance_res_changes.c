@@ -286,7 +286,6 @@ static void get_res_change_as_query_result(ompi_mpi_instance_resource_change_t *
     val_ptr = (pmix_value_t *) darray.array;
     for(n = 0; n < res_change->nbound_psets; n++){
         PMIX_VALUE_LOAD(&val_ptr[n], res_change->bound_psets[n]->name, PMIX_STRING);
-        printf("loaded %s to %s\n", res_change->bound_psets[n]->name, val_ptr[n].data.string);
     }
     PMIX_INFO_LOAD(&info_ptr[1], PMIX_RC_ASSOC, &darray, PMIX_DATA_ARRAY);
     PMIX_DATA_ARRAY_DESTRUCT(&darray);
@@ -368,19 +367,15 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
     bool assoc_self = false;
     pmix_value_t *val_ptr;
 
-    printf("get_res_change_complete with %d results and status %d\n", nresults, status);
-
     pmix_info_t * info;
     ompi_mpi_instance_resource_change_t* res_change = OBJ_NEW(ompi_mpi_instance_resource_change_t);
     if(status == PMIX_SUCCESS){
         for(k = 0; k < nresults; k++){
 
             if(0 == strcmp(results[k].key, PMIX_QUERY_RESULTS)){
-                printf("get_res_change_complete with query results key\n");
                 
                 info = results[k].value.data.darray->array;
                 ninfo = results[k].value.data.darray->size;
-                printf("get_res_change_complete with %d result infos\n", ninfo);
                 if(ninfo >= 4){
                     
                     ompi_instance_lock_rc_and_psets();
@@ -389,7 +384,7 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
 
                         if (0 == strcmp (info[n].key, PMIX_RC_TYPE)) {
                             res_change->type = info[n].value.data.uint8;
-                            printf("Proc %d: insert rc type = %d\n", opal_process_info.myprocid.rank, res_change->type);
+
                         } else if (0 == strcmp(info[n].key, PMIX_RC_DELTA)) {
                             
                             res_change->ndelta_psets = info[n].value.data.darray->size;
@@ -409,7 +404,6 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
 
                                 }
                                 res_change->delta_psets[i] = get_pset_by_name(val_ptr[i].data.string);
-                                printf("Proc %d: insert delta pset = %s\n", opal_process_info.myprocid.rank, res_change->delta_psets[i]->name);
                             }
                         } else if (0 == strcmp(info[n].key, PMIX_RC_ASSOC)) {
                             res_change->nbound_psets = info[n].value.data.darray->size;
@@ -430,7 +424,6 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
                                     add_pset(pset);
                                 }
                                 res_change->bound_psets[i] = get_pset_by_name(val_ptr[i].data.string);
-                                printf("Proc %d: insert bound pset = %s\n", opal_process_info.myprocid.rank, res_change->bound_psets[i]->name);
                             }
                         }
                         else if (0 == strcmp(info[n].key, PMIX_QUERY_QUALIFIERS)){
@@ -452,7 +445,6 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
                     }else{
                         res_change->status = RC_ANNOUNCED;
                         opal_list_append(&ompi_mpi_instance_resource_changes, &res_change->super);
-                        printf("Proc %d: appended res change\n", opal_process_info.myprocid.rank);
                         if(assoc_self){
                             res_change_bound_to_self = res_change;
                         }
@@ -650,7 +642,6 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
 
     /* If there still aren't any resource changes found return an error */
     if(NULL == (res_change = get_res_change_active_for_name(input_name))){
-        printf("get_res_change_active for nam,e returned NULL\n");
         *type = OMPI_RC_NULL;
         *incl = 0;
         return OPAL_ERR_NOT_FOUND;

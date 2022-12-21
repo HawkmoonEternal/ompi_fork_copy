@@ -47,21 +47,21 @@ struct ompi_pset_t{
 typedef struct ompi_pset_t ompi_mpi_instance_pset_t;
 
 
-int ompi_instance_psets_init();
+int ompi_instance_psets_init(void);
 
 int ompi_instance_get_launch_pset(char **pset_name, pmix_proc_t *proc);
 
 int ompi_instance_builtin_psets_init(int n_builtin_psets, char **names, opal_process_name_t **members, size_t *nmembers, char **aliases);
 
-int ompi_instance_psets_finalize();
+int ompi_instance_psets_finalize(void);
 
-bool ompi_instance_sets_initalized();
+bool ompi_instance_sets_initalized(void);
 
-void ompi_instance_lock_rc_and_psets();
+void ompi_instance_lock_rc_and_psets(void);
 
-void ompi_instance_unlock_rc_and_psets();
+void ompi_instance_unlock_rc_and_psets(void);
 
-void ompi_instance_lock_rc_and_psets();
+void ompi_instance_lock_rc_and_psets(void);
 
 
 void pset_define_handler(size_t evhdlr_registration_id, pmix_status_t status,
@@ -93,6 +93,7 @@ ompi_mpi_instance_pset_t * get_pset_by_name(char *name);
 ompi_mpi_instance_pset_t * get_nth_pset(int n);
 bool is_pset_leader(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
 bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc);
+int is_pset_element(char * pset_name, int *flag);
 bool opal_is_pset_member( opal_process_name_t *procs, size_t nprocs, opal_process_name_t proc);
 bool opal_is_pset_member_local( char *pset_name, opal_process_name_t proc);
 int get_pset_size(char *pset_name, size_t *pset_size);

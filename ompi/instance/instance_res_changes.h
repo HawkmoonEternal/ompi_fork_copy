@@ -51,11 +51,11 @@ struct ompi_resource_change_t{
 };
 typedef struct ompi_resource_change_t ompi_mpi_instance_resource_change_t;
 
-int ompi_instance_res_changes_init();
+int ompi_instance_res_changes_init(void);
 
-int ompi_instance_res_changes_finalize();
+int ompi_instance_res_changes_finalize(void);
 
-bool ompi_instance_res_changes_initalized();
+bool ompi_instance_res_changes_initalized(void);
 
 void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
                        const pmix_proc_t *source, pmix_info_t info[], size_t ninfo,
@@ -64,6 +64,8 @@ void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
 
 /* get res change local */
 ompi_mpi_instance_resource_change_t * get_res_change_for_name(char *name);
+ompi_mpi_instance_resource_change_t * get_res_change_active_for_name(char *name);
+
 ompi_mpi_instance_resource_change_t * get_res_change_active_for_name(char *name);
 
 ompi_mpi_instance_resource_change_t * get_res_change_for_input_name(char *name);

@@ -336,7 +336,6 @@ static void refresh_psets_complete (pmix_status_t status,
     pmix_info_t * info;
 
     opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
-    printf("Proc %d: refresh, entered callback\n", opal_process_info.myprocid.rank);
     for(k = 0; k < nresults; k++){
         
         if(0 == strcmp(results[k].key, PMIX_QUERY_RESULTS)){
@@ -356,10 +355,8 @@ static void refresh_psets_complete (pmix_status_t status,
 
                     char** names = opal_argv_split (info[n].value.data.string, ',');
                     size_t num_names = opal_argv_count(names);
-                    printf("Proc %d: refresh trying to get lock\n", opal_process_info.myprocid.rank);
                     ompi_instance_lock_rc_and_psets();
                     /* add psets we didn't know about before the query*/
-                    printf("Proc %d: refresh got lock\n", opal_process_info.myprocid.rank);
                     for(i = 0; i < num_names; i++){
                         if(NULL == get_pset_by_name(names[i])){
                             ompi_mpi_instance_pset_t *new_pset;
@@ -453,11 +450,25 @@ bool is_pset_leader(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc
     return true;
 }
 
+/* Local only! */
+int is_pset_element(char * pset_name, int *flag){
+    opal_process_name_t *procs = NULL;
+    ompi_mpi_instance_pset_t *pset;
+    size_t nprocs;
+
+    if(NULL == (pset = get_pset_by_name(pset_name)) || NULL == pset->members){
+        return OMPI_ERR_NOT_FOUND;
+    }
+
+    get_pset_membership(pset->name, &procs, &nprocs);
+    *flag = (opal_is_pset_member(procs, nprocs, opal_process_info.my_name) ? 1 : 0);
+}
+
 bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc){
 
     size_t n;
     for(n = 0; n < nmembers; n++){
-        if(0==strcmp(proc.nspace,pset_members[n].nspace) && pset_members[n].rank==proc.rank)return true;
+        if(0 == strcmp(proc.nspace,pset_members[n].nspace) && pset_members[n].rank==proc.rank)return true;
     }
     return false;
 }
@@ -637,7 +648,6 @@ int get_pset_membership (char *pset_name, opal_process_name_t **members, size_t 
     pmix_query_t query;
     char *key = PMIX_QUERY_PSET_MEMBERSHIP;
 
-
     ompi_instance_lock_rc_and_psets();
 
     ompi_mpi_instance_pset_t *pset = get_pset_by_name(pset_name);
@@ -655,11 +665,13 @@ int get_pset_membership (char *pset_name, opal_process_name_t **members, size_t 
         PMIX_INFO_CREATE(query.qualifiers, 2);
         PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
         PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PSET_NAME, pset_name, PMIX_STRING);
+
         /* Send the query */
         if (PMIX_SUCCESS != (rc = PMIx_Query_info(&query, 1, &results, &nresults)) || 0 == nresults) {
             ret = opal_pmix_convert_status(rc);
             return ret;                                         
         }
+
         /* set pset members in the list of local PSets */
         ompi_instance_lock_rc_and_psets();
 

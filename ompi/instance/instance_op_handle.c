@@ -352,12 +352,10 @@ int rc_op_handle_add_op(ompi_rc_op_type_t rc_type, char **input_names, size_t n_
     }
 
     /* Initialize the pset info lists */
-    rc_op_handle_ptr->rc_op_info.n_pset_info_lists = n_output_names;
-    if(0 < n_output_names){
-        rc_op_handle_ptr->rc_op_info.pset_info_lists = (void **) malloc(n_output_names * sizeof(void *));
-    }
+    rc_op_handle_ptr->rc_op_info.n_pset_info_lists = PSET_INFO_LIST_ARRAY_BASE_SIZE;
+    rc_op_handle_ptr->rc_op_info.pset_info_lists = (void **) malloc(PSET_INFO_LIST_ARRAY_BASE_SIZE * sizeof(void *));
 
-    for(n = 0; n < n_output_names; n++){
+    for(n = 0; n < PSET_INFO_LIST_ARRAY_BASE_SIZE; n++){
         PMIX_INFO_LIST_START(rc_op_handle_ptr->rc_op_info.pset_info_lists[n]);
     }
 
@@ -370,11 +368,15 @@ int rc_op_handle_add_op(ompi_rc_op_type_t rc_type, char **input_names, size_t n_
 
 int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, char * pset_name, pmix_info_t * info, int ninfo){
     int n, k, rc;
-    pmix_info_t *new_info;
+    size_t old_size, new_size;
+    pmix_info_t *new_info, *info_ptr;
     bool found = false;
     ompi_instance_set_op_handle_t *set_op_handle;
     ompi_mpi_instance_pset_t *pset_ptr;
+    pmix_data_array_t darray;
+    void **old_lists, **new_lists;
 
+    /* Get the right PSet name*/
     refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
     
     pset_ptr = get_pset_by_name(pset_name);
@@ -382,7 +384,92 @@ int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, cha
         return OMPI_ERR_NOT_BOUND;
     }
 
+    /* Try to insert info into the info lists*/
+    for(n = 0; n < rc_op_handle->rc_op_info.n_pset_info_lists; n++){
 
+        PMIX_INFO_LIST_CONVERT(rc, rc_op_handle->rc_op_info.pset_info_lists[n], &darray);
+        if(PMIX_SUCCESS != rc){
+            return rc;
+        }
+        info_ptr = (pmix_info_t *) darray.array;
+
+        /* First check if there is already an info list for this PSet */
+        if( 0 < darray.size){            
+            if(!PMIX_CHECK_KEY(&info_ptr[0], PMIX_PSET_NAME) ||
+            0 != strcmp(info_ptr[0].value.data.string, pset_ptr->name) ){
+                
+                PMIX_DATA_ARRAY_DESTRUCT(&darray);
+                continue;
+            }
+        /* If we reach a list of size 0, there was no PSet list for this name */
+        }else {
+            PMIX_INFO_LIST_ADD(rc, rc_op_handle->rc_op_info.pset_info_lists[n], PMIX_PSET_NAME, pset_ptr->name, PMIX_STRING);
+            if(PMIX_SUCCESS != rc){
+                PMIX_DATA_ARRAY_DESTRUCT(&darray);
+                return rc;
+            }
+
+        }
+
+        /* Insert the PSet infos */
+        for(k = 0; k < ninfo; k++){
+            PMIX_INFO_LIST_XFER(rc, rc_op_handle->rc_op_info.pset_info_lists[n], &info[k]);
+            if(PMIX_SUCCESS != rc){
+                PMIX_DATA_ARRAY_DESTRUCT(&darray);
+                return rc;
+            }
+        }
+
+        PMIX_DATA_ARRAY_DESTRUCT(&darray);
+        return rc;
+    }
+
+    old_lists = rc_op_handle->rc_op_info.pset_info_lists;
+    old_size = rc_op_handle->rc_op_info.n_pset_info_lists;
+    new_size = 2 * old_size;
+    new_lists = malloc(new_size * sizeof (void*));
+
+    /* Transfer the old lists */
+    for(n = 0; n < new_size; n++){
+        new_lists[n] = old_lists[n];
+    }
+
+    /* Start a new one */
+    PMIX_INFO_LIST_START(new_lists[old_size]);
+
+    /* First insert the PSet name*/
+    PMIX_INFO_LIST_ADD(rc, new_lists[old_size], PMIX_PSET_NAME, pset_ptr->name, PMIX_STRING);
+    if(PMIX_SUCCESS != rc){
+        PMIX_INFO_LIST_RELEASE(new_lists[old_size]);
+        free(new_lists);
+        return rc;
+    }
+    /* The insert the PSet infos*/
+    for(k = 0; k < ninfo; k++){
+        PMIX_INFO_LIST_XFER(rc, new_lists[old_size], &info[k]);
+        if(PMIX_SUCCESS != rc){
+            PMIX_INFO_LIST_RELEASE(new_lists[old_size]);
+            free(new_lists);
+            return rc;
+        }
+    }
+
+    /* Now start the remaining lists */
+    for(n = old_size + 1; n < new_size; n++){
+        PMIX_INFO_LIST_START(new_lists[n]);
+    }
+
+    /* Update the op handle */
+    rc_op_handle->rc_op_info.pset_info_lists = new_lists;
+    rc_op_handle->rc_op_info.n_pset_info_lists = new_size;
+    free(old_lists);
+
+
+    
+    /* We reached the end of our pset info list array => double its size and insert new list */
+
+
+    /*
     for(n = 0; n < rc_op_handle->rc_op_info.n_output_names; n++){
         if(0 == strcmp(rc_op_handle->rc_op_info.output_names[n], pset_ptr->name)){
             found = true;
@@ -416,6 +503,8 @@ int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, cha
     if(!found){
         return OMPI_ERR_BAD_PARAM;
     }
+
+    */
 
     return OMPI_SUCCESS;
 
@@ -554,4 +643,166 @@ int rc_op_handle_serialize(ompi_instance_rc_op_handle_t *rc_op_handle, pmix_info
     return OMPI_SUCCESS;
 }
 
+int rc_op_handle_deserialize(pmix_info_t *rc_op_handle_info, ompi_instance_rc_op_handle_t **rc_op_handle){
+    size_t n, k, m, i, ninfo, nsetop_info = 0, ninfo2, index, ninput, noutput;
+    ompi_psetop_type_t setop_type = OMPI_PSETOP_NULL;
+    
+    size_t n_op_output = 0;
+    char ** input, ** output;
+
+    pmix_value_t * val_ptr;
+    pmix_info_t * setop_info = NULL, * info, * info2, *info_ptr, **pset_info_array;
+
+    size_t *pset_info_array_sizes;
+
+    ompi_info_t * op_info;
+
+    rc_op_handle_create(rc_op_handle);
+
+    index = 0;
+    while(true){
+
+        /* Get the next set operation to be deserialized */
+        for(n = 0; n < rc_op_handle_info[0].value.data.darray->size; n++){
+            if(0 == index){
+                setop_info = (pmix_info_t *) rc_op_handle_info[0].value.data.darray->array;
+                nsetop_info = rc_op_handle_info[0].value.data.darray->size;
+            }else{
+                info = (pmix_info_t *) rc_op_handle_info[0].value.data.darray->array;
+                ninfo = rc_op_handle_info[0].value.data.darray->size; 
+
+                for(i = 0; i < ninfo; i++){
+                    if(PMIX_CHECK_KEY(&info[i], "mpi.set_op_handles")){
+
+                        /*set op handles */
+                        info2 = (pmix_info_t *) info[i].value.data.darray->array;
+
+                        if(index - 1 >= info[i].value.data.darray->size){
+                            return OMPI_SUCCESS;
+                        }
+
+                        setop_info = (pmix_info_t *) info2[index - 1].value.data.darray->array;
+                        nsetop_info = info2[index - 1].value.data.darray->size;
+                    }
+                }
+            }
+        }
+
+        output = input = NULL;
+        op_info = NULL;
+        pset_info_array = NULL;
+        pset_info_array_sizes = NULL;
+        noutput = ninput = setop_type = 0;
+
+        /* Retrieve all provided info about the set operation */
+        for(n = 0; n < nsetop_info; n++){
+            if(PMIX_CHECK_KEY(&setop_info[n], PMIX_RC_TYPE)){
+                setop_type = setop_info[n].value.data.uint8;
+            }else if(PMIX_CHECK_KEY(&setop_info[n], "mpi.op_info")){            
+                info2 = (pmix_info_t *) setop_info[n].value.data.darray->array;
+                ninfo2 = setop_info[n].value.data.darray->size;
+                for(k = 0; k < ninfo2; k++){
+                    if(PMIX_CHECK_KEY(&info2[k], "mpi.op_info.info")){                   
+
+                        info_ptr = (pmix_info_t *) info2[k].value.data.darray->array;
+                        op_info = ompi_info_allocate();
+                        for(i = 0; i < info2[k].value.data.darray->size; i++){
+                            ompi_info_set(op_info, info_ptr[i].key, info_ptr[i].value.data.string);
+                        }
+                    }
+                    /* Get the input sets */
+                    else if(PMIX_CHECK_KEY(&info2[k], "mpi.op_info.input")){                    
+                        val_ptr = (pmix_value_t *) info2[k].value.data.darray->array;
+                        if(0 < info2[k].value.data.darray->size){
+                            output = (char **) malloc(info2[k].value.data.darray->size * sizeof(char *));
+                            for(i = 0; i < info2[k].value.data.darray->size; i++){
+                                output[i] = strdup(val_ptr[i].data.string);
+                            }
+                        }
+                    }
+                    /* Get the output sets */
+                    else if(PMIX_CHECK_KEY(&info2[k], "mpi.op_info.output")){
+                        val_ptr = (pmix_value_t *) info2[k].value.data.darray->array;
+                        if(0 < info2[k].value.data.darray->size){
+                            input = (char **) malloc(info2[k].value.data.darray->size * sizeof(char *));
+                            for(i = 0; i < info2[k].value.data.darray->size; i++){
+                                input[i] = strdup(val_ptr[i].data.string);
+                            }
+                        }
+                    }
+                    /* Get the set infos */
+                    else if(PMIX_CHECK_KEY(&info2[k], "mpi.op_info.set_info")){
+
+                        val_ptr = (pmix_value_t *) info2[k].value.data.darray->array;
+                        pset_info_array = (pmix_info_t **) malloc(info2[k].value.data.darray->size * sizeof(pmix_info_t *));
+                        pset_info_array_sizes = (size_t *) malloc(info2[k].value.data.darray->size * sizeof(size_t));
+                        for(i = 0; i < info2[k].value.data.darray->size; i++){
+                            pset_info_array[i] = (pmix_info_t *) val_ptr[i].data.darray->array;
+                            pset_info_array_sizes[i] = val_ptr[i].data.darray->size;
+                        }
+                    }
+                }
+            }
+        }
+
+        /* ERROR: Invalid operation */
+        if(0 == ninput || OMPI_PSETOP_NULL == setop_type){
+            goto ERROR;
+        }
+
+        /* Add the operation to the handle */
+        rc_op_handle_add_op(setop_type, input, ninput, output, noutput, op_info, *rc_op_handle);
+        
+        for(n = 0; n < noutput; n++){
+            rc_op_handle_add_pset_infos(*rc_op_handle, output[n], pset_info_array[n], pset_info_array_sizes[n]);
+        }
+
+        /* cleanup for next iteration */
+        for(n = 0; n < ninput; n++){
+            free(input[n]);
+        }
+        free(input);
+    
+        for(n = 0; n < noutput; n++){
+            free(output[n]);
+        }
+        free(output);
+    
+        free(pset_info_array_sizes);
+        free(pset_info_array);
+    
+        if(NULL != op_info){
+            ompi_info_free(&op_info);
+        }
+
+        index++;
+
+    }
+
+SUCCESS:
+    return OMPI_SUCCESS;   
+ERROR:
+    for(n = 0; n < ninput; n++){
+        free(input[n]);
+    }
+    free(input);
+
+    for(n = 0; n < ninput; n++){
+        free(input[n]);
+    }
+    free(input);
+
+    free(pset_info_array_sizes);
+    free(pset_info_array);
+
+    if(NULL != op_info){
+        ompi_info_free(&op_info);
+    }
+
+    rc_op_handle_free(*rc_op_handle);
+
+    return OMPI_ERR_BAD_PARAM;
+
+
+}
 #pragma endregion
