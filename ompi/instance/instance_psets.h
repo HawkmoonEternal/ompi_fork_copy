@@ -25,7 +25,28 @@
 
 #define PREDEFINED_RC_HANDLE_PAD 512
 
+/*** FLAG OPS ***/
+#define OMPI_PSET_FLAG_SET(p, f)   ((p)->flags |= (f))
+#define OMPI_PSET_FLAG_UNSET(p, f) ((p)->flags &= ~(f))
+#define OMPI_PSET_FLAG_TEST(p, f)  ((p)->flags & (f))
 
+typedef uint16_t ompi_pset_flags_t;
+#define OMPI_PSET_FLAG_NONE             0x0000 // none
+#define OMPI_PSET_FLAG_INIT             0x0001 // pset flags have been set
+#define OMPI_PSET_FLAG_DYN              0x0004 // pset is related to a dynamic process addition
+#define OMPI_PSET_FLAG_INCLUDED         0x0008 // process is included in this PSet
+#define OMPI_PSET_FLAG_PRIMARY          0x0020 // process is the primary process of the PSet
+/*
+#define PRTE_JOB_FLAG_DO_NOT_MONITOR    0x0040 // do not monitor apps for termination
+#define PRTE_JOB_FLAG_FORWARD_COMM      0x0080 //
+#define PRTE_JOB_FLAG_RECOVERABLE       0x0100 // job is recoverable
+#define PRTE_JOB_FLAG_RESTART           0x0200 //
+#define PRTE_JOB_FLAG_PROCS_MIGRATING   0x0400 // some procs in job are migrating from one node to another
+#define PRTE_JOB_FLAG_OVERSUBSCRIBED    0x0800 // at least one node in the job is oversubscribed
+#define PRTE_JOB_FLAG_TOOL              0x1000 // job is a tool and doesn't count against allocations
+#define PRTE_JOB_FLAG_LAUNCHER          0x2000 // job is also a launcher
+#define PRTE_JOB_FLAG_ERR_REPORTED      0x4000 // error report for job has been output
+*/
 
 /* Psets*/
 typedef uint8_t ompi_psetop_type_t;
@@ -40,6 +61,7 @@ struct ompi_pset_t{
     char name[PMIX_MAX_KEYLEN];
     char *alias;
     size_t size;
+    ompi_pset_flags_t flags;
     bool malleable;
     bool active;
     opal_process_name_t *members;
@@ -80,6 +102,7 @@ OBJ_CLASS_DECLARATION(ompi_mpi_instance_pset_t);
 int opal_pmix_proc_array_conv(opal_process_name_t *opal_procs, pmix_proc_t **pmix_procs, size_t nprocs);
 int pmix_opal_proc_array_conv(pmix_proc_t *pmix_procs, opal_process_name_t **opal_procs, size_t nprocs);
 int refresh_pmix_psets (const char *key);
+int pset_init_flags(char *pset_name);
 
 /* PSet Functions */
 size_t get_num_builtin_psets(void);

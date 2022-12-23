@@ -31,10 +31,10 @@
 #define MPI_Session_get_pset_info PMPI_Session_get_pset_info
 #endif
 */
-static const char FUNC_NAME[] = "MPI_Session_set_pset_info";
+static const char FUNC_NAME[] = "MPI_Session_set_pset_data";
 
 
-int MPI_Session_set_pset_info (MPI_Session session, const char *pset_name, MPI_Info info_used)
+int MPI_Session_set_pset_data (MPI_Session session, const char *pset_name, MPI_Info info_used)
 {
     int ret;
 

@@ -1904,7 +1904,7 @@ int ompi_instance_dyn_v1_integrate_res_change(ompi_instance_t *instance, char *d
         PMIX_VALUE_LOAD(&event_info[0].value, &non_default, PMIX_BOOL);
         (void)snprintf(event_info[1].key, PMIX_MAX_KEYLEN, "%s", PMIX_PSET_NAME);
         PMIX_VALUE_LOAD(&event_info[1].value, pset_ptr->name, PMIX_STRING);
-        PMIx_Notify_event(PMIX_RC_FINALIZED, NULL, PMIX_RANGE_NAMESPACE, event_info, 2, NULL, NULL);
+        PMIx_Notify_event(PMIX_RC_FINALIZED, NULL, PMIX_RANGE_RM, event_info, 2, NULL, NULL);
         
         PMIX_INFO_FREE(event_info, 2);
     }
@@ -2023,8 +2023,10 @@ int ompi_instance_dyn_v2a_query_psetop(ompi_instance_t *instance, char *coll_pse
 
         free(coll_procs);
     }
-    
-    return rc;
+    if(rc != OMPI_SUCCESS && rc != OMPI_ERR_NOT_FOUND){
+        return rc;
+    }
+    return OMPI_SUCCESS;
 }
 
 int ompi_instance_dyn_v2a_query_psetop_nb(ompi_instance_t *instance, char *coll_pset_name, char *input_name, ompi_rc_op_type_t *type, char ***output_names, size_t *noutputs, bool get_by_delta_name, ompi_request_t **request){
@@ -2055,13 +2057,13 @@ int ompi_instance_dyn_v2a_pset_op(ompi_instance_t *session, int op, char **input
                 noutput_names = results[n].value.data.darray->size;
             }
         }
-        if(NULL == out_name_vals){
+        if(0 == noutput_names || NULL == out_name_vals){
             rc = OMPI_ERR_BAD_PARAM;
             goto CLEANUP;
         }
 
         /* Fill in the output for the "resource operation" */
-        if(0 == noutput){
+        if(0 == *noutput){
             *noutput = noutput_names;
             *output_sets = (char **) malloc(noutput_names * sizeof(char *));
         }
@@ -2413,6 +2415,34 @@ int ompi_instance_dyn_v2c_psetop_nb(ompi_instance_t * instance, ompi_info_t **in
 
 #pragma endregion
 
+int ompi_instance_dyn_finalize_psetop(ompi_instance_t *instance, char *pset_name){
+    ompi_mpi_instance_pset_t *pset;
+    int rc;
+
+    if(NULL == (pset = get_pset_by_name(pset_name))){
+        if(OMPI_SUCCESS != (rc = refresh_pmix_psets(PMIX_PSET_NAMES))){
+            return rc;
+        }
+
+        if(NULL == (pset = get_pset_by_name(pset_name))){
+            return OMPI_ERR_NOT_FOUND;
+        }
+    }
+        
+    bool non_default = true;
+    pmix_info_t *event_info;
+    PMIX_INFO_CREATE(event_info, 2);
+    (void)snprintf(event_info[0].key, PMIX_MAX_KEYLEN, "%s", PMIX_EVENT_NON_DEFAULT);
+    PMIX_VALUE_LOAD(&event_info[0].value, &non_default, PMIX_BOOL);
+    (void)snprintf(event_info[1].key, PMIX_MAX_KEYLEN, "%s", PMIX_PSET_NAME);
+    PMIX_VALUE_LOAD(&event_info[1].value, pset->name, PMIX_STRING);
+    PMIx_Notify_event(PMIX_RC_FINALIZED, NULL, PMIX_RANGE_RM, event_info, 2, NULL, NULL);
+    
+    PMIX_INFO_FREE(event_info, 2);
+
+
+    ompi_instance_clear_rc_cache(pset->name);
+}
 
 /* TODO: Triple pointer
  * Collectively query the runtime for available resource changes given either the delta PSet or the associated PSet.
@@ -2922,12 +2952,16 @@ int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *
     
     ompi_info_t *info = NULL;
     ompi_mpi_instance_pset_t *pset_ptr;
-    pmix_info_t *pmix_info = NULL, *results;
-    size_t ninfo = 0, nresults = 0, _nkeys = 0, n, pset_size;
+    pmix_info_t *pmix_info = NULL, *results = NULL, *results_info = NULL;
+    ompi_psetop_type_t op_type;
+    pmix_proc_t *pset_members;
+    size_t ninfo = 0, nresults = 0, _nkeys = 0, n, k, i, j, num_mpi_keys = 0, pset_size, nresult_infos = 0;
     char **_keys;
     char *mpi_value;
     int mpi_val_length, rc = OMPI_SUCCESS;
-    bool b_wait = (1 == wait);
+    pmix_query_t query;
+
+    bool b_val, refresh = true, b_wait = (1 == wait);
 
     refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
     if(NULL == (pset_ptr = get_pset_by_name(pset_name))){
@@ -2948,61 +2982,146 @@ int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *
     if(wait){
         PMIX_INFO_LOAD(&pmix_info[1], PMIX_WAIT, &b_wait, PMIX_BOOL);
     }
-
     if(0 == nkeys || NULL == keys){
         _nkeys = 1;
         _keys = malloc(sizeof(char *));
         _keys[0] = strdup(PMIX_PSET_INFO);
     }else{
-        _nkeys = nkeys;
         _keys = malloc(nkeys * sizeof(char *));
-        for(n = 0; n < _nkeys; n++){
-            _keys[n] = strdup(keys[n]);
+        for(n = 0; n < nkeys; n++){
+            if(0 == strncmp(keys[n], "mpi_", 4)){
+                num_mpi_keys++;
+                continue;
+            }
+            _keys[_nkeys] = strdup(keys[n]);
+            _nkeys++;
         }
-    }
-    if(OMPI_SUCCESS != (rc = opal_pmix_lookup_pset_info(_keys, _nkeys, pmix_info, ninfo, pset_ptr->name, &results, &nresults))){
-        ompi_info_free(&info);
-        goto CLEANUP;
     }
 
-    /* For now we only support string values */
-    for(n = 0; n < nresults; n++){
-        if(results[n].value.type != PMIX_STRING){
-            continue;
-        }
-        rc = ompi_info_set(info, results[n].key, results[n].value.data.string);
-        if(rc != OMPI_SUCCESS){
-            printf("error in ompi_info_set\n");
+
+    if(num_mpi_keys != nkeys){
+
+        if(OMPI_SUCCESS != (rc = opal_pmix_lookup_pset_info(_keys, _nkeys, pmix_info, ninfo, pset_ptr->name, &results, &nresults))){
             ompi_info_free(&info);
             goto CLEANUP;
+        }
+
+        /* For now we only support string values */
+        for(n = 0; n < nresults; n++){
+            if(results[n].value.type != PMIX_STRING){
+                continue;
+            }
+            rc = ompi_info_set(info, results[n].key, results[n].value.data.string);
+            if(rc != OMPI_SUCCESS){
+                printf("error in ompi_info_set\n");
+                ompi_info_free(&info);
+                goto CLEANUP;
+            }
         }
     }
 
     /* Now handle the MPI specific attributes */
     /* TODO: */
-    for(n = 0; n < _nkeys; n++){
-        /* "mpi_size"*/
-        if(0 == strcmp(_keys[n], "mpi_size")){
-            if(OMPI_SUCCESS != (rc = get_pset_size(pset_ptr->name, &pset_size))){
-                /* "mpi_size" is madatory, so this is an error */
-                ompi_info_free(&info);
-                goto CLEANUP;
-            }
+    if(0 < num_mpi_keys){
 
-            mpi_val_length = snprintf(NULL, 0, "%zu", pset_size);
-            mpi_value = malloc(mpi_val_length + 1);
-            sprintf(mpi_value, "%zu", pset_size);
-            if(OMPI_SUCCESS != (rc = opal_info_set(&info->super, "mpi_size", mpi_value))){
+        for(n = 0; n < nkeys; n++){
+
+            /* "mpi_size"*/
+            if(0 == strcmp(keys[n], "mpi_size")){
+                if(OMPI_SUCCESS != (rc = get_pset_size(pset_ptr->name, &pset_size))){
+                    /* "mpi_size" is madatory, so this is an error */
+                    ompi_info_free(&info);
+                    goto CLEANUP;
+                }
+
+                mpi_val_length = snprintf(NULL, 0, "%zu", pset_size);
+                mpi_value = malloc(mpi_val_length + 1);
+                sprintf(mpi_value, "%zu", pset_size);
+                if(OMPI_SUCCESS != (rc = opal_info_set(&info->super, "mpi_size", mpi_value))){
+                    free(mpi_value);
+                    ompi_info_free(&info);
+                    goto CLEANUP;
+                }
+
                 free(mpi_value);
-                ompi_info_free(&info);
-                goto CLEANUP;
+
+            }else if (0 == strncmp(keys[n], "mpi_", 4) && !OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_INIT)){
+                PMIX_QUERY_CONSTRUCT(&query);
+                PMIX_INFO_CREATE(query.qualifiers, 2);
+                query.nqual = 2;
+                PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
+                PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PSET_NAME, pset_ptr->name, PMIX_STRING);
+                PMIX_ARGV_APPEND(rc, query.keys, PMIX_QUERY_PSET_MEMBERSHIP);
+                PMIX_ARGV_APPEND(rc, query.keys, PMIX_PSET_SOURCE_OP);
+
+                if(PMIX_SUCCESS != (rc = PMIx_Query_info(&query, 1, &results, &nresults))){
+                    return rc;
+                }
+                OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_INIT);
+
+                for(k = 0; k < nresults; k++){
+                    if(0 == strcmp(results[k].key, PMIX_QUERY_RESULTS)){
+                        
+                        results_info = results[k].value.data.darray->array;
+                        nresult_infos = results[k].value.data.darray->size;
+                        if(nresult_infos >= 2){
+
+                            ompi_instance_lock_rc_and_psets();
+
+                            for (i = 0; i < nresult_infos; i++) {
+
+                                if (0 == strcmp (results_info[i].key, PMIX_QUERY_PSET_MEMBERSHIP)) {
+                                    pset_ptr->size = results_info[i].value.data.darray->size;
+                                    pset_members = (pmix_proc_t *) results_info[i].value.data.darray->array;
+
+                                    for(j = 0; j < pset_ptr->size; j++){
+                                        if(PMIX_CHECK_PROCID(&pset_members[j], &opal_process_info.myprocid)){
+                                            OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_INCLUDED);
+                                            if(j == 0){
+                                                OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_PRIMARY);
+                                            }
+                                        }
+                                    }
+
+                                } else if (0 == strcmp(results_info[i].key, PMIX_PSET_SOURCE_OP)) {
+                                    op_type = results_info[i].value.data.uint8;
+                                    if(MPI_RC_ADD == op_type){
+                                        OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_DYN);
+                                    }
+                                }
+                            }
+                            ompi_instance_unlock_rc_and_psets();
+                        }
+                    }
+                }
             }
-
-            free(mpi_value);
-            
+                
+            /* ... */
+            if(0 == strcmp(keys[n], "mpi_dyn")){
+                rc = ompi_info_set(info, "mpi_dyn", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_DYN) ? "True" : "False");
+                if(rc != OMPI_SUCCESS){
+                    printf("error in ompi_info_set\n");
+                    ompi_info_free(&info);
+                    goto CLEANUP;
+                }
+            }
+            else if(0 == strcmp(keys[n], "mpi_included")){
+                rc = ompi_info_set(info, "mpi_included", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_INCLUDED) ? "True" : "False");
+                if(rc != OMPI_SUCCESS){
+                    printf("error in ompi_info_set\n");
+                    ompi_info_free(&info);
+                    goto CLEANUP;
+                }
+            }
+            else if(0 == strcmp(keys[n], "mpi_primary")){
+                rc = ompi_info_set(info, "mpi_primary", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_PRIMARY) ? "True" : "False");
+                if(rc != OMPI_SUCCESS){
+                    printf("error in ompi_info_set\n");
+                    ompi_info_free(&info);
+                    goto CLEANUP;
+                }
+            }
         }
-        /* ... */
-
     }
 
 
@@ -3014,7 +3133,7 @@ CLEANUP:
         PMIX_INFO_FREE(pmix_info, ninfo);
     }
     if(0 != nresults){
-        PMIX_INFO_FREE(pmix_info, ninfo);
+        PMIX_INFO_FREE(results, nresults);
     }
     if(NULL != _keys){
         for(n = 0; n < _nkeys; n++){

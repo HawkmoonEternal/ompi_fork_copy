@@ -576,7 +576,6 @@ bool cmp_procs(pmix_proc_t *coll_procs1, size_t n_coll_procs1, pmix_proc_t *coll
             }
         }
         if(!found){
-            printf("Did not find proc %d\n", proc1.rank);
             return false;
         }
     }
@@ -601,7 +600,6 @@ bool cmp_infos(pmix_info_t *info1, pmix_info_t *info2, size_t ninfo){
              */
 
             if(PMIX_CHECK_KEY(&info1[n], info2[m].key) && (PMIX_EQUAL == PMIx_Value_compare(&info1[n].value, &info2[m].value))){
-                printf("Info %s cmp found\n", info1[n].key);
                 found = true;
                 break;
             }
@@ -636,7 +634,6 @@ bool compare_keys(char **keys1, char **keys2){
     for (p1 = keys1; *p1; p1++){
         found = false;
         for (p2 = keys2; *p2; p2++){
-            printf("comparing keys: %s vs. %s\n", *p1, *p2);
             if(0 == strcmp(*p1, *p2)){
                 found = true;
                 break;
@@ -658,7 +655,6 @@ bool cmp_query_params(ompi_query_parameters_t *params1, ompi_query_parameters_t 
     if(params1->nqueries != params2->nqueries){
         return false;
     }
-    printf("nqueries similar\n");
 
     for(n = 0; n < params1->nqueries; n++){
         query1 = &params1->query[n];
@@ -670,16 +666,12 @@ bool cmp_query_params(ompi_query_parameters_t *params1, ompi_query_parameters_t 
             if(query1->nqual != query2->nqual){
                 continue;
             }
-            printf("nqual similar\n");
-
             if(!compare_keys(query1->keys, query2->keys)){
                 continue;
             }
-            printf("keys similar\n");
 
             if(cmp_infos(query1->qualifiers, query2->qualifiers, query1->nqual)){
                 found = true;
-                printf("qualifiers similar\n");
                 break;
             }
         }
@@ -709,29 +701,18 @@ bool cmp_params(ompi_collective_parameters_t *params1, ompi_collective_parameter
 
 bool cmp_collective(ompi_function_type_t coll_func, pmix_proc_t *coll_procs, size_t n_coll_procs, ompi_collective_parameters_t *coll_params, ompi_instance_collective_t *collective){
     
-    printf("compare coll func: %d vs. %d\n", coll_func, collective->coll_func);
     if(coll_func != collective->coll_func){
         return false;
     }
-    printf("after cmp cbfunc\n");
-    printf("after cmp cbfunc: cbfunc = %p\n", collective->coll_cbfunc);
+
     if(!cmp_procs(coll_procs, n_coll_procs, collective->coll_procs->procs, collective->coll_procs->nprocs)){
         return false;
     }
-    printf("after cmp procs: cbfunc = %p\n", collective->coll_cbfunc);
     if(!cmp_params(coll_params, collective->coll_params)){
         return false;
     }
-    printf("after cmp params: cbfunc = %p\n", collective->coll_cbfunc);
     return true;
 
-    /*
-    return (    
-                coll_func == collective->coll_func && 
-                cmp_procs(coll_procs, n_coll_procs, collective->coll_procs->procs, collective->coll_procs->nprocs) && 
-                cmp_params(coll_params, collective->coll_params)
-            );
-    */
 }
 
 
@@ -739,9 +720,7 @@ ompi_instance_collective_t * search_pending_collectives( ompi_function_type_t co
     
     ompi_instance_collective_t *coll_out = NULL;
     OPAL_LIST_FOREACH(coll_out, &ompi_instance_pending_collectives, ompi_instance_collective_t){
-        printf("comparing coll: cbfunc = %p\n", coll_out->coll_cbfunc);
         if(cmp_collective(coll_func, coll_procs->procs, coll_procs->nprocs, coll_params, coll_out)){
-            printf("comparing coll2: cbfunc = %p\n", coll_out->coll_cbfunc);
             return coll_out;
         }
     }
@@ -752,9 +731,8 @@ ompi_instance_collective_t * search_pending_collectives( ompi_function_type_t co
 
 /* Note! The coll->cbfunc is reponsible for freeing the cbdata if desired */
 int execute_collective_callback(ompi_instance_collective_t *coll){
-    
-    ompi_info_results_t *info_results;
 
+    ompi_info_results_t *info_results;
 
     switch(coll->coll_cbfunc->type){
         case OMPI_CBFUNC_INFO:
@@ -806,7 +784,7 @@ int ompi_collective_send(ompi_instance_collective_t *coll, pmix_info_t *send_inf
     for(k = 0; k < n_send_info; k++){
         PMIX_INFO_XFER(&info[n++], &send_info[k]);
     }
-    
+
     ret = PMIx_Notify_event(OMPI_NOTIFY_COLLECTIVE, &opal_process_info.myprocid, PMIX_RANGE_CUSTOM, info, ninfo, NULL, NULL);
 
     PMIX_INFO_FREE(info, ninfo);
@@ -843,9 +821,7 @@ int enter_collective_receiver(ompi_instance_collective_t *coll_in, bool wait){
 
         /* If we waited for the collective to be executed, we are the one to relese it */
         if(wait){
-            printf("Proc %d: waiting for provider\n", opal_process_info.myprocid.rank);
             OPAL_PMIX_WAIT_THREAD(&coll_in->lock);
-            printf("Proc %d: released by provider\n", opal_process_info.myprocid.rank);
 
             OBJ_RELEASE(coll_in);
         }
@@ -882,7 +858,7 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
     size_t n_coll_procs = 0, n_coll_params, n_coll_results;
     bool receiver_is_waiting;
 
-    printf("Proc %d: Provider event notification callback entered with %d infos\n", opal_process_info.myprocid.rank, ninfo);
+    //printf("Proc %d: Provider event notification callback entered with %d infos\n", opal_process_info.myprocid.rank, ninfo);
 
 
     ompi_instance_collective_t *coll, *coll_in;
@@ -902,6 +878,9 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
     if(ret != OMPI_SUCCESS){
         return;
     }
+
+    coll_in->status = OMPI_SUCCESS;
+
     /* Lock the list of pending collectives */
     opal_mutex_lock(&collectives_lock);
 
@@ -918,7 +897,7 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
         opal_mutex_unlock(&collectives_lock);
 
 
-    /* There was a matching pending collective added by the provider 
+    /* There was a matching pending collective added by the receiver 
      * We call the callback using the results from the provider
      */
     }else{
@@ -932,7 +911,6 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
 
         coll->coll_results = coll_in->coll_results;
         coll->status = coll_in->status;
-        printf("provider calling receivers callback\n");
         execute_collective_callback(coll);
         coll->coll_results = NULL;
 
@@ -940,10 +918,8 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
          * If the receiver is not waiting we need to release the collective ourselves
          */
         if(receiver_is_waiting){
-            printf("Provider: PMIX_WAKEUP_THREAD\n");
             OPAL_PMIX_WAKEUP_THREAD(&coll->lock);
         }else{
-            printf("receiver was not waiting\n");
             OBJ_RELEASE(coll);
         }
 
@@ -952,8 +928,7 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
     }
     
     if(NULL != cbfunc){
-        printf("calling cbfunc\n");
-        cbfunc(PMIX_SUCCESS, NULL, 0, NULL, NULL, cbdata);
+        cbfunc(PMIX_EVENT_ACTION_COMPLETE, NULL, 0, NULL, NULL, cbdata);
     }
     
 }

@@ -342,7 +342,13 @@ int print_res_change(char *name){
 void res_change_clear_cache(char *delta_pset){
 
     ompi_instance_lock_rc_and_psets();
-    ompi_mpi_instance_resource_change_t *rc_remove = get_res_change_for_name(delta_pset);
+    ompi_mpi_instance_resource_change_t *rc_remove;
+    
+    if(NULL == (rc_remove = get_res_change_active_for_name(delta_pset))){
+        rc_remove = get_res_change_active_for_output_name(delta_pset);
+    }
+    
+
     if(NULL != rc_remove){
         //opal_list_remove_item(&ompi_mpi_instance_resource_changes, &rc_remove->super);
         rc_remove->status = RC_FINALIZED;

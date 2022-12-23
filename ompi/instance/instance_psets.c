@@ -161,6 +161,7 @@ static void pset_constructor(ompi_mpi_instance_pset_t *pset){
     pset->size = 0;
     pset->members = NULL;
     pset->alias = NULL;
+    pset->flags = OMPI_PSET_FLAG_NONE;
 }
 
 OBJ_CLASS_INSTANCE(ompi_mpi_instance_pset_t, opal_object_t, pset_constructor, pset_destructor);
@@ -410,6 +411,70 @@ int refresh_pmix_psets (const char *key)
     return rc;
 }
 
+int pset_init_flags(char *pset_name){
+    pmix_query_t query;
+    ompi_mpi_instance_pset_t *pset_ptr;
+    ompi_psetop_type_t op_type;
+    pmix_info_t *results, *result_infos;
+    pmix_proc_t * pset_members;
+    int rc;
+    bool refresh = true;
+
+    size_t nresults, nresult_infos, ninfo, k, i, j;
+    if(NULL == (pset_ptr = get_pset_by_name(pset_name))){
+        refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
+    }
+    if(NULL == (pset_ptr = get_pset_by_name(pset_name))){
+        return OMPI_ERR_NOT_FOUND;
+    }
+
+    PMIX_QUERY_CONSTRUCT(&query);
+    PMIX_INFO_CREATE(query.qualifiers, 2);
+    query.nqual = 2;
+    PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
+    PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PSET_NAME, pset_ptr->name, PMIX_STRING);
+    PMIX_ARGV_APPEND(rc, query.keys, PMIX_QUERY_PSET_MEMBERSHIP);
+    PMIX_ARGV_APPEND(rc, query.keys, PMIX_PSET_SOURCE_OP);
+
+    if(PMIX_SUCCESS != (rc = PMIx_Query_info(&query, 1, &results, &nresults))){
+        return rc;
+    }
+    
+    for(k = 0; k < nresults; k++){
+        if(0 == strcmp(results[k].key, PMIX_QUERY_RESULTS)){
+            
+            result_infos = (pmix_info_t *) results[k].value.data.darray->array;
+            nresult_infos = results[k].value.data.darray->size;
+            if(nresult_infos >= 3){
+                ompi_instance_lock_rc_and_psets();
+                OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_INIT);
+                for (i = 0; i < nresult_infos; i++) {
+                    if (0 == strcmp (result_infos[i].key, PMIX_QUERY_PSET_MEMBERSHIP)) {
+                        pset_ptr->size = result_infos[i].value.data.darray->size;
+                        pset_members = (pmix_proc_t *) result_infos[i].value.data.darray->array;
+                        for(j = 0; j < pset_ptr->size; j++){
+                            if(PMIX_CHECK_PROCID(&pset_members[j], &opal_process_info.myprocid)){
+                                OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_INCLUDED);
+                                if(j == 0){
+                                    OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_PRIMARY);
+                                }
+                            }
+                        }
+                    } else if (0 == strcmp(result_infos[i].key, PMIX_PSET_SOURCE_OP)) {
+                        op_type = result_infos[i].value.data.uint8;
+                        if(MPI_RC_ADD == op_type){
+                            OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_DYN);
+                        }
+                    }
+                }
+                ompi_instance_unlock_rc_and_psets();
+            }
+        }
+    }
+
+    return OMPI_SUCCESS;
+}
+
 ompi_mpi_instance_pset_t * get_pset_by_name(char *name){
     ompi_instance_lock_rc_and_psets();
 
@@ -462,6 +527,8 @@ int is_pset_element(char * pset_name, int *flag){
 
     get_pset_membership(pset->name, &procs, &nprocs);
     *flag = (opal_is_pset_member(procs, nprocs, opal_process_info.my_name) ? 1 : 0);
+
+    return OMPI_SUCCESS;
 }
 
 bool is_pset_member(pmix_proc_t *pset_members, size_t nmembers, pmix_proc_t proc){

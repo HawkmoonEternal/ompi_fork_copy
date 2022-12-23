@@ -2757,6 +2757,8 @@ OMPI_DECLSPEC  MPI_Fint PMPI_Session_c2f (const MPI_Session session);
 OMPI_DECLSPEC  int PMPI_Session_call_errhandler(MPI_Session session, int errorcode);
 OMPI_DECLSPEC  int PMPI_Session_create_errhandler (MPI_Session_errhandler_function *session_errhandler_fn,
                                                    MPI_Errhandler *errhandler);
+OMPI_DECLSPEC  int MPI_Session_dyn_finalize_psetop(MPI_Session session, char * pset_name);    
+                             
 OMPI_DECLSPEC  int MPI_Session_dyn_v1_integrate_res_change (MPI_Session session, MPI_Info info, char *delta_pset, char *pset_buf, int provider, int *terminate);
 OMPI_DECLSPEC  int MPI_Session_dyn_v1_integrate_res_change_nb (MPI_Session session, MPI_Info info, char *delta_pset, char *pset_buf, int provider, int *terminate, MPI_Request *req);
 
@@ -2795,7 +2797,7 @@ OMPI_DECLSPEC  int MPI_Session_dyn_v2c_query_psetop_nb (MPI_Session session, cha
 OMPI_DECLSPEC  int PMPI_Session_finalize (MPI_Session *session);
 OMPI_DECLSPEC  int PMPI_Session_get_errhandler(MPI_Session session, MPI_Errhandler *erhandler);
 OMPI_DECLSPEC  int PMPI_Session_get_info (MPI_Session session, MPI_Info *info_used);
-OMPI_DECLSPEC  int MPI_Session_get_pset_info_v23 (MPI_Session session, const char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used);
+OMPI_DECLSPEC  int MPI_Session_get_pset_data (MPI_Session session, const char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used);
 
 OMPI_DECLSPEC  int PMPI_Session_get_num_psets (MPI_Session session, MPI_Info info, int *npset_names);
 OMPI_DECLSPEC  int PMPI_Session_get_nth_pset (MPI_Session session, MPI_Info info, int n, int *len, char *pset_name);
@@ -2812,7 +2814,7 @@ OMPI_DECLSPEC  int MPI_Session_pset_barrier_nb(MPI_Session session, char **pset_
 OMPI_DECLSPEC  int PMPI_Session_request_res_change(MPI_Session session, int delta, char *delta_pset, int rc_type, MPI_Info *info);
 OMPI_DECLSPEC  int PMPI_Session_set_errhandler(MPI_Session session, MPI_Errhandler erhandler);
 OMPI_DECLSPEC  int PMPI_Session_set_info (MPI_Session session, MPI_Info info);
-OMPI_DECLSPEC  int MPI_Session_set_pset_info (MPI_Session session, const char *pset_name, MPI_Info info_used);
+OMPI_DECLSPEC  int MPI_Session_set_pset_data (MPI_Session session, const char *pset_name, MPI_Info info_used);
 OMPI_DECLSPEC  int PMPI_Ssend_init(const void *buf, int count, MPI_Datatype datatype,
                                    int dest, int tag, MPI_Comm comm,
                                    MPI_Request *request);

@@ -216,6 +216,8 @@ OMPI_DECLSPEC int ompi_instance_dyn_v2c_psetop(ompi_instance_t * instance, ompi_
 OMPI_DECLSPEC int ompi_instance_dyn_v2c_psetop_nb(ompi_instance_t * instance, ompi_info_t **info, size_t ninfo, ompi_request_t **request);
 
 /* other */
+OMPI_DECLSPEC int ompi_instance_dyn_finalize_psetop(ompi_instance_t *instance, char *pset_name);
+
 OMPI_DECLSPEC int ompi_instance_set_pset_info(ompi_instance_t *instance, char *pset_name, opal_info_t *info);
 OMPI_DECLSPEC int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *pset_name, char **keys, int nkeys, int wait, opal_info_t **info_used);
 
