@@ -50,11 +50,13 @@ typedef uint16_t ompi_pset_flags_t;
 
 /* Psets*/
 typedef uint8_t ompi_psetop_type_t;
-#define OMPI_PSETOP_NULL PMIX_PSETOP_NULL
-#define OMPI_PSETOP_UNION PMIX_PSETOP_UNION
-#define OMPI_PSETOP_DIFFERENCE PMIX_PSETOP_DIFFERENCE
-#define OMPI_PSETOP_INTERSECTION PMIX_PSETOP_INTERSECTION
-
+#define OMPI_PSETOP_NULL            PMIX_PSETOP_NULL
+#define OMPI_PSETOP_ADD             PMIX_PSETOP_ADD
+#define OMPI_PSETOP_SUB             PMIX_PSETOP_SUB
+#define OMPI_PSETOP_REPLACE         PMIX_PSETOP_REPLACE
+#define OMPI_PSETOP_UNION           PMIX_PSETOP_UNION
+#define OMPI_PSETOP_DIFFERENCE      PMIX_PSETOP_DIFFERENCE
+#define OMPI_PSETOP_INTERSECTION    PMIX_PSETOP_INTERSECTION
 
 struct ompi_pset_t{
     opal_list_item_t super;
@@ -68,6 +70,14 @@ struct ompi_pset_t{
 };
 typedef struct ompi_pset_t ompi_mpi_instance_pset_t;
 
+
+char * OMPI_PSETOP_TO_STRING(ompi_psetop_type_t ompi_pset_op);
+
+ompi_psetop_type_t OMPI_PSETOP_FROM_STRING(char * mpi_pset_op_type);
+
+ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op);
+
+int MPI_OMPI_CONVT_PSET_OP(ompi_psetop_type_t mpi_pset_op);
 
 int ompi_instance_psets_init(void);
 
@@ -122,6 +132,7 @@ bool opal_is_pset_member_local( char *pset_name, opal_process_name_t proc);
 int get_pset_size(char *pset_name, size_t *pset_size);
 
 /* PSet Membership */
+int get_pset_members (char *pset_name, pmix_proc_t **members, size_t *nmembers);
 int get_pset_membership (char *pset_name, opal_process_name_t **members, size_t *nmembers);
 void get_pset_membership_complete(pmix_status_t status, pmix_info_t *results, size_t nresults, void *cbdata, pmix_release_cbfunc_t release_fn, void *release_cbdata);
 int ompi_instance_free_pset_membership (char *pset_name);

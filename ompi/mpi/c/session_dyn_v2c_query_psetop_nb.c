@@ -18,7 +18,7 @@
 static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
 
 
-int MPI_Session_dyn_v2c_query_psetop_nb(MPI_Session session, char *coll_pset, char *input_pset, MPI_Info *setop_info, MPI_Request *req){
+int MPI_Session_dyn_v2c_query_psetop_nb(MPI_Session session, char *coll_pset, char *input_pset, MPI_Info **setop_info, MPI_Request *req){
     int rc;
 
     //PARAM CHECK
@@ -28,7 +28,6 @@ int MPI_Session_dyn_v2c_query_psetop_nb(MPI_Session session, char *coll_pset, ch
 
     rc = ompi_instance_dyn_v2c_query_psetop_nb((ompi_instance_t *) session, coll_pset, input_pset, (ompi_info_t **) setop_info, (ompi_request_t **) req);
     //ERROR HANDLING
-
     
     return rc;
 }

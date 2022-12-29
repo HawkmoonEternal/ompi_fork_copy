@@ -392,6 +392,7 @@ interface_profile_sources = \
         session_dyn_v2b_rc_handle_add_pset_info.c \
         session_dyn_v2b_rc_handle_create.c \
         session_dyn_v2b_rc_handle_get_num_ops.c \
+        session_dyn_v2b_rc_handle_get_op_type.c \
         session_dyn_v2b_rc_handle_get_num_output.c \
         session_dyn_v2b_rc_handle_get_output_pset.c \
         session_dyn_v2b_rc_handle_free.c \
@@ -405,6 +406,7 @@ interface_profile_sources = \
         session_get_nth_pset.c \
         session_get_pset_info.c \
         session_get_pset_data.c \
+        session_get_pset_data_nb.c \
         session_init.c \
         session_f2c.c \
         session_finalize.c \

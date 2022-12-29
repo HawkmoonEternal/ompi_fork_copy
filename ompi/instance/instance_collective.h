@@ -30,13 +30,15 @@
 
 typedef enum{
     OMPI_FUNC_NONE,
-    OMPI_FUNC_PMIX_QUERY
+    OMPI_FUNC_PMIX_QUERY,
+    OMPI_FUNC_PMIX_LOOKUP
 } ompi_function_type_t;
 
 typedef enum{
     OMPI_PARAMS_NONE,
     OMPI_PARAMS_INFO,
-    OMPI_PARAMS_QUERY
+    OMPI_PARAMS_QUERY,
+    OMPI_PARAMS_PDATA
 } ompi_parameters_type_t;
 
 typedef enum{
@@ -59,6 +61,13 @@ typedef struct{
 }ompi_query_parameters_t;
 
 typedef struct{
+    pmix_pdata_t *pdata;
+    pmix_info_t *info;
+    size_t npdata;
+    size_t ninfo;
+}ompi_pdata_parameters_t;
+
+typedef struct{
     pmix_status_t status;
     pmix_info_t *info;
     size_t ninfo;
@@ -69,6 +78,7 @@ typedef ompi_info_results_t ompi_non_results_t;
 typedef union{
     ompi_info_parameters_t info_params;
     ompi_query_parameters_t query_params;
+    ompi_pdata_parameters_t pdata_params;
 } ompi_parameters_t;
 
 typedef union{
@@ -125,6 +135,11 @@ int ompi_instance_collectives_finalize(void);
 void create_collective_query(ompi_instance_collective_t **coll, pmix_status_t status, pmix_proc_t *procs, size_t nprocs, pmix_query_t *query, size_t nqueries, pmix_info_t *results, size_t nresults, pmix_info_cbfunc_t info_cbfunc, void *cbdata);
 int send_collective_data_query(pmix_proc_t *procs, pmix_status_t status, size_t nprocs, pmix_query_t *query, size_t nqueries, pmix_info_t *results, size_t nresults);
 int recv_collective_data_query(pmix_proc_t *procs, size_t nprocs, pmix_query_t *query, size_t nqueries, pmix_info_cbfunc_t cbfunc, void *cbdata);
+
+void create_collective_lookup(ompi_instance_collective_t **coll, pmix_status_t status, pmix_proc_t *procs, size_t nprocs, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo, pmix_info_t *results, size_t nresults, pmix_info_cbfunc_t info_cbfunc, void *cbdata);
+int send_collective_data_lookup(pmix_proc_t *procs, pmix_status_t status, size_t nprocs, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo, pmix_info_t *results, size_t nresults);
+int recv_collective_data_lookup(pmix_proc_t *procs, size_t nprocs, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo, pmix_info_cbfunc_t cbfunc, void *cbdata);
+int recv_collective_data_lookup_nb(pmix_proc_t *procs, size_t nprocs, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo, pmix_info_cbfunc_t cbfunc, void *cbdata);
 
 void ompi_instance_collective_infocb_send(pmix_status_t status, pmix_info_t *results, size_t nresults, void *cbdata, pmix_release_cbfunc_t release_fn, void *release_cbdata);
 

@@ -21,7 +21,7 @@ int MPI_Session_pset_op(MPI_Session session, int op, char **input_sets, int ninp
 
     int rc, flag = 0;
     char pref_name[PMIX_MAX_KEYLEN];
-    ompi_rc_op_type_t ompi_op = MPI_OMPI_CONV_PSET_OP(op);
+    ompi_psetop_type_t ompi_op = MPI_OMPI_CONV_PSET_OP(op);
     //PARAM CHECK
     if(NULL == input_sets || 0 == ninput || ompi_op == OMPI_PSETOP_NULL){
         return MPI_ERR_ARG;

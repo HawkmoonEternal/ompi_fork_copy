@@ -761,6 +761,18 @@ enum {
    error codes without breaking ABI. */
 #define MPI_ERR_LASTCODE              92
 
+#define MPI_KEY_PSETOP_TYPE   "mpi.psetop.type"
+#define MPI_KEY_PSETOP_INPUT  "mpi.psetop.input"
+#define MPI_KEY_PSETOP_OUTPUT "mpi.psetop.output"
+
+#define MPI_PSETOP_TYPE_NULL            "mpi.psetop.type.null"
+#define MPI_PSETOP_TYPE_ADD             "mpi.psetop.type.add"
+#define MPI_PSETOP_TYPE_SUB             "mpi.psetop.type.sub"
+#define MPI_PSETOP_TYPE_REPLACE         "mpi.psetop.type.replace"
+#define MPI_PSETOP_TYPE_UNION           "mpi.psetop.type.union" 
+#define MPI_PSETOP_TYPE_DIFFERENCE      "mpi.psetop.type.difference"
+#define MPI_PSETOP_TYPE_INTERSECTION    "mpi.psetop.type.intersect"
+
 /* Pset operation constants. Don't change the order of these */
 enum{
    MPI_PSETOP_NULL,
@@ -772,12 +784,7 @@ enum{
    MPI_PSETOP_INTERSECTION
 };
 
-/* Resource change types. Don't change the order of these */
-enum{
-   MPI_RC_NULL,
-   MPI_RC_ADD, 
-   MPI_RC_SUB
-};
+
 
 enum{
    MPI_RC_INVALID,
@@ -2782,7 +2789,9 @@ OMPI_DECLSPEC  int MPI_Session_dyn_v2b_rc_handle_create (MPI_Session session, MP
 OMPI_DECLSPEC  int MPI_Session_dyn_v2b_rc_handle_free (MPI_Session session, MPI_RC_handle *rc_op_handle);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2b_rc_handle_get_num_ops (MPI_Session session, MPI_RC_handle rc_op_handle, int *num_ops);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2b_rc_handle_get_num_output (MPI_Session session, MPI_RC_handle rc_op_handle, int op_index, int *num_psets);
+OMPI_DECLSPEC  int MPI_Session_dyn_v2b_rc_handle_get_op_type(MPI_Session session, MPI_RC_handle rc_op_handle, int op_index, int *op_type);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2b_rc_handle_get_output_pset (MPI_Session session, MPI_RC_handle rc_op_handle, int op_index, int name_index, int *pset_len, char *pset_name);                                                 
+
 
 OMPI_DECLSPEC  int MPI_Session_dyn_v2b_psetop (MPI_Session session, MPI_RC_handle rc_handle);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2b_psetop_nb (MPI_Session session, MPI_RC_handle rc_handle, MPI_Request *req);
@@ -2791,13 +2800,15 @@ OMPI_DECLSPEC  int MPI_Session_dyn_v2b_query_psetop_nb (MPI_Session session, cha
 
 OMPI_DECLSPEC  int MPI_Session_dyn_v2c_psetop (MPI_Session session, MPI_Info *setop_infos, int ninfo);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2c_psetop_nb (MPI_Session session, MPI_Info *setop_infos, int ninfo, MPI_Request *req);
-OMPI_DECLSPEC  int MPI_Session_dyn_v2c_query_psetop (MPI_Session session, char *coll_pset, char *input_pset, MPI_Info *setop_info);
-OMPI_DECLSPEC  int MPI_Session_dyn_v2c_query_psetop_nb (MPI_Session session, char *coll_pset, char *input_pset, MPI_Info *setop_info, MPI_Request *req);
+OMPI_DECLSPEC  int MPI_Session_dyn_v2c_query_psetop (MPI_Session session, char *coll_pset, char *input_pset, MPI_Info **setop_info);
+OMPI_DECLSPEC  int MPI_Session_dyn_v2c_query_psetop_nb (MPI_Session session, char *coll_pset, char *input_pset, MPI_Info **setop_info, MPI_Request *req);
 
 OMPI_DECLSPEC  int PMPI_Session_finalize (MPI_Session *session);
 OMPI_DECLSPEC  int PMPI_Session_get_errhandler(MPI_Session session, MPI_Errhandler *erhandler);
 OMPI_DECLSPEC  int PMPI_Session_get_info (MPI_Session session, MPI_Info *info_used);
-OMPI_DECLSPEC  int MPI_Session_get_pset_data (MPI_Session session, const char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used);
+//OMPI_DECLSPEC  int MPI_Session_get_pset_data (MPI_Session session, const char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used);
+OMPI_DECLSPEC  int MPI_Session_get_pset_data (MPI_Session session, char *coll_pset_name, char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used);
+OMPI_DECLSPEC  int MPI_Session_get_pset_data_nb (MPI_Session session, char *coll_pset_name, char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used, MPI_Request *req);
 
 OMPI_DECLSPEC  int PMPI_Session_get_num_psets (MPI_Session session, MPI_Info info, int *npset_names);
 OMPI_DECLSPEC  int PMPI_Session_get_nth_pset (MPI_Session session, MPI_Info info, int n, int *len, char *pset_name);

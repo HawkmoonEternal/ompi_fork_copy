@@ -32,10 +32,10 @@
 #endif
 */
 
-static const char FUNC_NAME[] = "MPI_Session_get_pset_data";
+static const char FUNC_NAME[] = "MPI_Session_get_pset_data_nb";
 
 
-int MPI_Session_get_pset_data (MPI_Session session, char *coll_pset_name, char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used)
+int MPI_Session_get_pset_data_nb (MPI_Session session, char *coll_pset_name, char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used, MPI_Request *req)
 {
     int ret;
 
@@ -48,6 +48,6 @@ int MPI_Session_get_pset_data (MPI_Session session, char *coll_pset_name, char *
             return OMPI_ERRHANDLER_INVOKE (session, MPI_ERR_INFO, FUNC_NAME);
         }
     }
-    ret = ompi_instance_get_pset_data ((ompi_instance_t *) session, coll_pset_name, pset_name, keys, nkeys, wait, info_used);
+    ret = ompi_instance_get_pset_data_nb ((ompi_instance_t *) session, coll_pset_name, pset_name, keys, nkeys, wait, info_used, (ompi_request_t **) req);
     return OMPI_ERRHANDLER_INVOKE(session, ret, FUNC_NAME);
 }

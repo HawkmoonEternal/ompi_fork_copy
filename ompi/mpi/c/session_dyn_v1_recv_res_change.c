@@ -21,7 +21,7 @@ static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
 int MPI_Session_dyn_v1_recv_res_change(MPI_Session session, char * assoc_pset, int *type, char *delta_pset, int *incl){
     int rc;
     char **delta_psets = NULL;
-    ompi_rc_op_type_t ompi_rc_op_type;
+    ompi_psetop_type_t ompi_rc_op_type;
     size_t num_delta = 0, n;
     //PARAM CHECK
     if (NULL == session || MPI_SESSION_NULL == session) {
@@ -35,7 +35,7 @@ int MPI_Session_dyn_v1_recv_res_change(MPI_Session session, char * assoc_pset, i
     }
     //ERROR HANDLING
     
-    *type = MPI_OMPI_CONVT_RC_OP(ompi_rc_op_type);
+    *type = MPI_OMPI_CONVT_PSET_OP(ompi_rc_op_type);
 
     return rc;
 }

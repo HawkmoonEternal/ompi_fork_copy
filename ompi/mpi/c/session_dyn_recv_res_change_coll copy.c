@@ -23,7 +23,7 @@ int MPI_Session_dyn_v2_recv_res_change_coll(MPI_Session session, char *coll_pset
     size_t _noutput = 0;
     char bound_pset[PMIX_MAX_KEYLEN];
     int flag = 0;
-    ompi_rc_op_type_t ompi_rc_op_type = OMPI_RC_NULL;
+    ompi_psetop_type_t ompi_rc_op_type = OMPI_PSETOP_NULL;
     ompi_rc_status_t rc_status = RC_INVALID;
     //PARAM CHECK
     if (NULL == session || MPI_SESSION_NULL == session) {
@@ -34,7 +34,7 @@ int MPI_Session_dyn_v2_recv_res_change_coll(MPI_Session session, char *coll_pset
 
     //ERROR HANDLING
     
-    *type = MPI_OMPI_CONVT_RC_OP(ompi_rc_op_type);
+    *type = MPI_OMPI_CONVT_PSET_OP(ompi_rc_op_type);
     *noutput = (int) _noutput; 
 
     printf("received: rc_type = %d, rc_status = %d, incl = %d\n", *type, rc_status, *incl);

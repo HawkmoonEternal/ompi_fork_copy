@@ -98,7 +98,7 @@ int v1_recv_rc_results_complete(char *input_name, char *output_name, int *type, 
 
 
     /* lookup requested properties of the resource change */
-    *type = MPI_OMPI_CONVT_RC_OP(res_change->type);
+    *type = MPI_OMPI_CONVT_PSET_OP(res_change->type);
 
     if(get_by_delta_name){
         strcpy(output_name, res_change->bound_psets[0]->name);
@@ -109,6 +109,97 @@ int v1_recv_rc_results_complete(char *input_name, char *output_name, int *type, 
     get_pset_membership_nb(&output_name, 1, pmix_info_cb_nb, cbdata);
 
     ompi_instance_unlock_rc_and_psets();
+
+    return OMPI_SUCCESS;
+}
+
+int v2a_query_psetop_complete(char *input_name, char ***output, int *noutput, int *type, int get_by_delta_name){
+    size_t n;
+    ompi_mpi_instance_resource_change_t *res_change;
+    
+    /* If there still aren't any resource changes found return an error */
+    if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+        *type = MPI_PSETOP_NULL;
+        *noutput = 0;
+        return OMPI_SUCCESS;
+        
+    }
+
+    ompi_instance_lock_rc_and_psets();
+    /* lookup requested properties of the resource change */
+    *type = (int) res_change->type;
+
+    if(get_by_delta_name){
+        *noutput = res_change->nbound_psets;
+        *output = malloc(res_change->nbound_psets * sizeof(char *));
+    }else{
+        *noutput = res_change->ndelta_psets;
+        *output = malloc(res_change->ndelta_psets * sizeof(char *));
+    }
+    ompi_mpi_instance_pset_t *delta_pset_ptr;
+
+    /* If they asked for delta psets, copy it to the output array */
+    if(!get_by_delta_name){
+        for(n = 0; n < res_change->ndelta_psets; n++){
+            (*output)[n] = strdup(res_change->delta_psets[n]->name);    
+        }
+    }
+    /* If they asked for assoc psets, copy them to the output array */
+    else{
+        for(n = 0; n < res_change->nbound_psets; n++){
+            (*output)[n] = strdup(res_change->bound_psets[n]->name);
+        }        
+    }
+    
+    /* TODO: provide additional information in info object if requested */
+
+    ompi_instance_unlock_rc_and_psets();
+    return OMPI_SUCCESS;
+}
+
+int v2b_query_psetop_complete(char *input_name, ompi_instance_rc_op_handle_t **rc_op_handle){
+    size_t n;
+    int rc;
+    char **input, **output;
+    ompi_mpi_instance_resource_change_t *res_change;
+
+    ompi_instance_lock_rc_and_psets();
+
+    /* If there still aren't any resource changes found return an error */
+    if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+        ompi_instance_unlock_rc_and_psets();
+        *rc_op_handle = MPI_RC_HANDLE_NULL;
+        return OMPI_SUCCESS;
+        
+    }
+
+    if(OMPI_SUCCESS != (rc = rc_op_handle_create(rc_op_handle))){
+        ompi_instance_unlock_rc_and_psets();
+        return rc;
+    }
+
+    input = (char **) malloc(res_change->nbound_psets * sizeof(char *));
+    for(n = 0; n < res_change->nbound_psets; n++){
+        input[n] = strdup(res_change->bound_psets[n]->name);
+    }
+
+    output = (char **) malloc(res_change->ndelta_psets * sizeof(char *));
+    for(n = 0; n < res_change->ndelta_psets; n++){
+        output[n] = strdup(res_change->delta_psets[n]->name);
+    }
+
+    if(OMPI_SUCCESS != (rc = rc_op_handle_add_op(res_change->type, input, res_change->nbound_psets, output, res_change->ndelta_psets, NULL, *rc_op_handle))){
+        ompi_instance_unlock_rc_and_psets();
+        free(input);
+        free(output);
+        return rc;        
+    }
+
+    /* TODO: provide additional information in info object if requested */
+    ompi_instance_unlock_rc_and_psets();
+
+    free(input);
+    free(output);
 
     return OMPI_SUCCESS;
 }
@@ -371,7 +462,7 @@ int opal_pmix_publish_string_nb(char * key, char *val, int val_length, pmix_op_c
 int integrate_res_change_finalize(integrate_rc_results *int_rc_results){
     int rc = PMIX_SUCCESS;
      /* Finalize the resource change. TODO: Find a better way. There is not always a provider. */
-    if(int_rc_results->provider && MPI_RC_ADD == int_rc_results->rc_type){
+    if(int_rc_results->provider && MPI_PSETOP_ADD == int_rc_results->rc_type){
         
         bool non_default = true;
         pmix_info_t *event_info;
@@ -380,14 +471,14 @@ int integrate_res_change_finalize(integrate_rc_results *int_rc_results){
         PMIX_VALUE_LOAD(&event_info[0].value, &non_default, PMIX_BOOL);
         (void)snprintf(event_info[1].key, PMIX_MAX_KEYLEN, "%s", PMIX_PSET_NAME);
         PMIX_VALUE_LOAD(&event_info[1].value, int_rc_results->delta_psets[0], PMIX_STRING);
-        rc = PMIx_Notify_event(PMIX_RC_FINALIZED, NULL, PMIX_RANGE_NAMESPACE, event_info, 2, NULL, NULL);
+        rc = PMIx_Notify_event(PMIX_RC_FINALIZED, NULL, PMIX_RANGE_RM, event_info, 2, NULL, NULL);
         
         PMIX_INFO_FREE(event_info, 2);
     }
 
-    *(int_rc_results->terminate) = (int_rc_results->rc_type == OMPI_RC_SUB && int_rc_results->incl) ? 1 : 0;
+    *(int_rc_results->terminate) = (int_rc_results->rc_type == OMPI_PSETOP_SUB && int_rc_results->incl) ? 1 : 0;
 
-    ompi_instance_clear_rc_cache(int_rc_results->delta_psets[0]);
+    //ompi_instance_clear_rc_cache(int_rc_results->delta_psets[0]);
 
     return rc;
 }
@@ -397,35 +488,42 @@ int v2a_psetop_complete(pmix_status_t status, pmix_info_t *results, size_t nresu
     size_t n, noutput_names = 0;
     pmix_value_t *out_name_vals = NULL;
 
-    if(PMIX_SUCCESS == rc){
+    if(PMIX_SUCCESS == status){
         /* Get the array of pmix_value_t containing the output names*/
         for(n = 0; n < nresults; n++){
             if(PMIX_CHECK_KEY(&results[n], "mpi.set_info.output")){
-                out_name_vals = results[n].value.data.darray->array;
+                out_name_vals = (pmix_value_t *) results[n].value.data.darray->array;
                 noutput_names = results[n].value.data.darray->size;
             }
         }
         if(NULL == out_name_vals){
             rc = OMPI_ERR_BAD_PARAM;
-            goto CLEANUP;
+            return rc;
         }
 
         /* Fill in the output for the "resource operation" */
-        if(0 == noutput){
-            *noutput = noutput_names;
+        if(0 == *noutput){
             *output = (char **) malloc(noutput_names * sizeof(char *));
+        }else{
+            for(n = 0; n < *noutput; n++){
+                free((*output)[n]);
+            }            
         }
+
         for(n = 0; n < noutput_names; n++){
             (*output)[n] = strdup(out_name_vals[n].data.string);
         }
+        *noutput = noutput_names;
+    }else{
+        if(PMIX_ERR_EXISTS == status || PMIX_ERR_OUT_OF_RESOURCE == status){
+            *noutput = 0;
+            return OMPI_SUCCESS;
+        }
+        return status;
+
     }
 
-CLEANUP:
-    if(0 < nresults){
-        PMIX_INFO_FREE(results, nresults);
-    }
-
-    return rc;
+    return OMPI_SUCCESS;
 }
 
 int v2b_psetop_complete(pmix_status_t status, pmix_info_t *results, size_t nresults, ompi_instance_rc_op_handle_t *rc_op_handle){
@@ -462,6 +560,14 @@ int v2b_psetop_complete(pmix_status_t status, pmix_info_t *results, size_t nresu
                 setop->set_op_info.output_names[k] = strdup(out_name_vals[n++].data.string);
             }
         }
+    }else{
+        if(PMIX_ERR_EXISTS == status || PMIX_ERR_OUT_OF_RESOURCE == status){
+            /* FIXME. Need a better way to indicate failure */
+            rc_op_handle->rc_type = MPI_PSETOP_NULL;
+            return OMPI_SUCCESS;
+        }
+        return status;
+
     }
     return PMIX_SUCCESS;
 }
@@ -510,21 +616,33 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
                 pmix_release_cbfunc_t release_fn, void *release_cbdata){
 
     int rc = OMPI_SUCCESS;
-    size_t n, i;
+    size_t n, i, ndata;
     pmix_value_t *val_ptr;
+    ompi_mpi_instance_pset_t *pset_ptr;
+
+    nb_chain_info * chain_info;
+    nb_func func;
+    nb_chain_stage prev_stage;
+    nb_chain_stage next_stage;
+    
     integrate_rc_results * int_rc_results;
+    v1_recv_rc_results * v1_recv_rc_res;
+    v2a_query_psetop_results * v2a_query_psetop_res;
+    v2b_query_psetop_results * v2b_query_psetop_res;
+    v1_psetop_results * v1_psetop_res;
     v2a_psetop_results * v2a_psetop_res;
     v2b_psetop_results * v2b_psetop_res;
-    v1_recv_rc_results * v1_recv_rc_res;
-    v1_psetop_results * v1_psetop_res;
-    nb_chain_info * chain_info = (nb_chain_info *)cbdata;
-    
-    nb_func func = chain_info->func;
-    chain_info->status = status;
-    nb_chain_stage prev_stage = chain_info->stages[chain_info->cur_stage];
-    nb_chain_stage next_stage = chain_info->stages[++chain_info->cur_stage];
 
-    //printf("Proc %d: next_stage: %d, status %d\n", opal_process_info.myprocid.rank, next_stage, status);
+    pset_data_results * pdata_results;
+
+    chain_info = (nb_chain_info *)cbdata;
+    
+    func = chain_info->func;
+    chain_info->status = status;
+    prev_stage = chain_info->stages[chain_info->cur_stage];
+    next_stage = chain_info->stages[++chain_info->cur_stage];
+
+    //printf("nb_switchyard: Proc %d, func %d, next_stage %d, status %d\n", opal_process_info.myprocid.rank, func, next_stage, status);
 
     switch(func){
         /* MPI_Session_dyn_integrate_res_change */
@@ -550,7 +668,7 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
                         for(n = 0; n < ninfo; n++){
                             if(PMIX_CHECK_KEY(&info[n], "mpi_instance_nb_lookup_data")){
                                 pmix_pdata_t *pdata = (pmix_pdata_t *) info[n].value.data.darray->array;
-                                size_t ndata = info[n].value.data.darray->size;
+                                ndata = info[n].value.data.darray->size;
 
                                 char key[PMIX_MAX_KEYLEN + 1];
                                 char *prefix = "mpi_integrate:";
@@ -614,14 +732,67 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
                 free(chain_info->stages);
             }
             break;
+        case V2A_QUERY_PSETOP:
+            v2a_query_psetop_res = (v2a_query_psetop_results *)cbdata;
+            if(PMIX_SUCCESS == status || PMIX_ERR_NOT_FOUND == status){
+                if(next_stage == LAST_STAGE){
+
+                    ompi_instance_get_res_change_complete(status, info, ninfo, NULL, NULL, NULL);
+
+                    rc = v2a_query_psetop_complete(v2a_query_psetop_res->input_name, v2a_query_psetop_res->output, v2a_query_psetop_res->noutput, v2a_query_psetop_res->type, v2a_query_psetop_res->get_by_delta_name);
+
+                    opal_atomic_wmb();
+                    
+                    chain_info->req->req_complete = REQUEST_COMPLETED;
+                    chain_info->req->req_status.MPI_ERROR = rc;
+                    chain_info->req->req_state = OMPI_REQUEST_INVALID;
+                    free(chain_info->stages);
+                    free(v2a_query_psetop_res);
+
+                }
+            }else{
+                chain_info->req->req_status.MPI_ERROR = status;
+                chain_info->req->req_state = OMPI_REQUEST_INVALID;
+                free(chain_info->stages);
+                free(v2a_query_psetop_res);                  
+            }
+            break;
+        case V2B_QUERY_PSETOP:
+            v2b_query_psetop_res = (v2b_query_psetop_results *)cbdata;
+            if(PMIX_SUCCESS == status || PMIX_ERR_NOT_FOUND == status){
+                if(next_stage == LAST_STAGE){
+
+                    ompi_instance_get_res_change_complete(status, info, ninfo, NULL, NULL, NULL);
+
+                    rc = v2b_query_psetop_complete(v2b_query_psetop_res->input_name, v2b_query_psetop_res->rc_op_handle);
+
+                    opal_atomic_wmb();
+                                   
+                    chain_info->req->req_status.MPI_ERROR = rc;
+                    chain_info->req->req_complete = REQUEST_COMPLETED;
+                    chain_info->req->req_state = OMPI_REQUEST_INVALID;
+                    free(chain_info->stages);
+                    free(v2a_query_psetop_res);
+
+                }
+            }else{
+                chain_info->req->req_status.MPI_ERROR = status;
+                chain_info->req->req_complete = REQUEST_COMPLETED;
+                chain_info->req->req_state = OMPI_REQUEST_INVALID;
+                free(chain_info->stages);
+                free(v2a_query_psetop_res);                  
+            }
+            break;
+            
         case V2A_PSETOP:
-            if(PMIX_SUCCESS == status){
+
+            if(PMIX_SUCCESS == status || PMIX_ERR_EXISTS == status || PMIX_ERR_OUT_OF_RESOURCE == status){
             
                 v2a_psetop_res = (v2a_psetop_results *)cbdata;
 
                 if(next_stage == LAST_STAGE){
                     
-                    v2a_psetop_complete(status, info, ninfo, v2a_psetop_res->output, v2a_psetop_res->noutput);
+                    rc = v2a_psetop_complete(status, info, ninfo, v2a_psetop_res->output, v2a_psetop_res->noutput);
 
                     opal_atomic_wmb();
                     
@@ -632,14 +803,16 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
                     free(v2a_psetop_res);
                 }
             }else{
+
                 chain_info->req->req_status.MPI_ERROR = status;
+                chain_info->req->req_complete = REQUEST_COMPLETED;
                 chain_info->req->req_state = OMPI_REQUEST_INVALID;
                 free(chain_info->stages);                
             }
             break;
         /* MPI_Session_dyn_v2b_psetop */
         case V2B_PSETOP:
-            if(PMIX_SUCCESS == status){
+            if(PMIX_SUCCESS == status || PMIX_ERR_EXISTS == status || PMIX_ERR_OUT_OF_RESOURCE == status){
             
                 v2b_psetop_res = (v2b_psetop_results *)cbdata;
 
@@ -658,6 +831,7 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
                 }
             }else{
                 chain_info->req->req_status.MPI_ERROR = status;
+                chain_info->req->req_complete = REQUEST_COMPLETED;
                 chain_info->req->req_state = OMPI_REQUEST_INVALID;
                 free(chain_info->stages);                
             }
@@ -672,7 +846,7 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
                     rc = v1_recv_rc_results_complete(v1_recv_rc_res->input_pset, v1_recv_rc_res->output_pset, v1_recv_rc_res->rc_type, v1_recv_rc_res->get_by_delta_pset, (void *) v1_recv_rc_res);
 
                     if(rc == OMPI_ERR_NOT_FOUND){
-                        *v1_recv_rc_res->rc_type = OMPI_RC_NULL;
+                        *v1_recv_rc_res->rc_type = OMPI_PSETOP_NULL;
                         *v1_recv_rc_res->incl = 0;
                         rc = OMPI_SUCCESS;
                         next_stage = chain_info->stages[++chain_info->cur_stage];
@@ -730,7 +904,7 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
         /* nb funcs without output */
         case PSET_FENCE:
         case V1_REQ_RC:
-            if(PMIX_SUCCESS == status){
+            if(PMIX_SUCCESS == status || PMIX_ERR_EXISTS == status || PMIX_ERR_OUT_OF_RESOURCE == status){
 
                 if(next_stage == LAST_STAGE){
                     opal_atomic_wmb();
@@ -740,7 +914,66 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
                     free(chain_info->stages);
                 }
             }else{
-                chain_info->req->req_status.MPI_ERROR = OMPI_SUCCESS;
+                chain_info->req->req_status.MPI_ERROR = status;
+                chain_info->req->req_complete = REQUEST_COMPLETED;
+                chain_info->req->req_state = OMPI_REQUEST_INVALID;
+                free(chain_info->stages);                
+            }
+            break;
+        case GET_PSET_DATA:
+            pdata_results = (pset_data_results *)cbdata;
+
+            if(PMIX_SUCCESS == status && NULL != (pset_ptr = get_pset_by_name(pdata_results->coll_pset))){
+                
+                if(next_stage == LAST_STAGE){
+
+                    if(OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_PRIMARY)){
+
+                        send_collective_data_lookup(pdata_results->coll_procs, status, pdata_results->n_coll_procs, pdata_results->pdata, pdata_results->nkeys, pdata_results->pmix_info, pdata_results->ninfo, info, ninfo);
+                    }
+
+                    ndata = 0;
+                    for(n = 0; n < ninfo; n++){
+                        if(PMIX_CHECK_KEY(&info[n], "mpi_instance_nb_lookup_data")){
+
+                            pmix_pdata_t *pdata = (pmix_pdata_t *) info[n].value.data.darray->array;
+                            ndata = info[n].value.data.darray->size;
+
+                            for(i = 0; i < ndata; i++){
+                                if(PMIX_STRING == pdata[i].value.type){
+                                    ompi_info_set(pdata_results->info, pdata[i].key, pdata[i].value.data.string);
+                                }
+                            }
+                        }
+                    }
+
+                    if(ndata == pdata_results->nkeys){
+                        *(pdata_results->info_used) = pdata_results->info;
+                    }else{
+                        ompi_info_free(&pdata_results->info);
+                    }
+
+                    PMIX_PROC_FREE(pdata_results->coll_procs, pdata_results->n_coll_procs);
+                    PMIX_INFO_FREE(pdata_results->pmix_info, pdata_results->ninfo);
+                    PMIX_PDATA_FREE(pdata_results->pdata, pdata_results->nkeys);
+                    
+                    opal_atomic_wmb();
+                    chain_info->req->req_complete = REQUEST_COMPLETED;
+                    chain_info->req->req_status.MPI_ERROR = OMPI_SUCCESS;
+                    chain_info->req->req_state = OMPI_REQUEST_INVALID;
+                    free(chain_info->stages);
+                }
+            }else{
+                if(status == PMIX_ERR_NOT_FOUND){
+                    status = OMPI_SUCCESS;
+                }else{
+                    ompi_info_free(&pdata_results->info);
+                }
+                PMIX_PROC_FREE(pdata_results->coll_procs, pdata_results->n_coll_procs);
+                PMIX_INFO_FREE(pdata_results->pmix_info, pdata_results->ninfo);
+                PMIX_PDATA_FREE(pdata_results->pdata, pdata_results->nkeys);
+
+                chain_info->req->req_status.MPI_ERROR = status;
                 chain_info->req->req_complete = REQUEST_COMPLETED;
                 chain_info->req->req_state = OMPI_REQUEST_INVALID;
                 free(chain_info->stages);                
@@ -757,6 +990,6 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
     if(NULL != release_fn){
         release_fn(release_cbdata);
     }                               
-                                    
+                            
 }
 

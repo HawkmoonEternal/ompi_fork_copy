@@ -67,6 +67,95 @@ static opal_recursive_mutex_t res_changes_and_psets_lock;
 size_t num_pmix_psets = 0;
 size_t num_builtin_psets = 0;
 
+
+char * OMPI_PSETOP_TO_STRING(ompi_psetop_type_t ompi_pset_op){
+    
+    switch(ompi_pset_op){
+        case OMPI_PSETOP_NULL:
+            return MPI_PSETOP_TYPE_NULL;
+        case OMPI_PSETOP_ADD:
+            return MPI_PSETOP_TYPE_ADD;
+        case OMPI_PSETOP_SUB:
+            return MPI_PSETOP_TYPE_SUB;
+        case OMPI_PSETOP_REPLACE:
+            return MPI_PSETOP_TYPE_REPLACE;
+        case OMPI_PSETOP_UNION:
+            return MPI_PSETOP_TYPE_UNION;
+        case OMPI_PSETOP_DIFFERENCE:
+            return MPI_PSETOP_TYPE_DIFFERENCE;
+        case OMPI_PSETOP_INTERSECTION:
+            return MPI_PSETOP_TYPE_INTERSECTION;
+        default:
+            return MPI_PSETOP_TYPE_NULL;
+    }
+}
+
+ompi_psetop_type_t OMPI_PSETOP_FROM_STRING(char * mpi_pset_op_type){
+    
+
+    if(0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_NULL)){
+        return OMPI_PSETOP_NULL;
+    }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_ADD)){
+        return OMPI_PSETOP_ADD;
+    }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_SUB)){
+        return OMPI_PSETOP_SUB;
+    }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_REPLACE)){
+        return OMPI_PSETOP_REPLACE;
+    }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_UNION)){
+        return OMPI_PSETOP_UNION;
+    }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_DIFFERENCE)){
+        return OMPI_PSETOP_DIFFERENCE;
+    }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_INTERSECTION)){
+        return OMPI_PSETOP_INTERSECTION;
+    }else{
+        return OMPI_PSETOP_NULL;
+    }
+}
+
+ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op){
+
+    switch(mpi_pset_op){
+        case MPI_PSETOP_NULL:
+            return OMPI_PSETOP_NULL;
+        case MPI_PSETOP_ADD:
+            return OMPI_PSETOP_ADD;
+        case MPI_PSETOP_SUB:
+            return OMPI_PSETOP_SUB;
+        case MPI_PSETOP_REPLACE:
+            return OMPI_PSETOP_REPLACE;
+        case MPI_PSETOP_UNION:
+            return OMPI_PSETOP_UNION;
+        case MPI_PSETOP_DIFFERENCE:
+            return OMPI_PSETOP_DIFFERENCE;
+        case MPI_PSETOP_INTERSECTION:
+            return OMPI_PSETOP_INTERSECTION;
+        default:
+            return OMPI_PSETOP_NULL;
+    }
+}
+
+int MPI_OMPI_CONVT_PSET_OP(ompi_psetop_type_t mpi_pset_op){
+    
+    switch(mpi_pset_op){
+        case OMPI_PSETOP_NULL:
+            return MPI_PSETOP_NULL;
+        case OMPI_PSETOP_ADD:
+            return MPI_PSETOP_ADD;
+        case OMPI_PSETOP_SUB:
+            return MPI_PSETOP_SUB;
+        case OMPI_PSETOP_REPLACE:
+            return MPI_PSETOP_REPLACE;
+        case OMPI_PSETOP_UNION:
+            return MPI_PSETOP_UNION;
+        case OMPI_PSETOP_DIFFERENCE:
+            return MPI_PSETOP_DIFFERENCE;
+        case OMPI_PSETOP_INTERSECTION:
+            return MPI_PSETOP_INTERSECTION;
+        default:
+            return OMPI_PSETOP_NULL;
+    }
+}
+
 int ompi_instance_psets_init(){
 
     if(ompi_instance_psets_ref_count == 0){
@@ -434,7 +523,7 @@ int pset_init_flags(char *pset_name){
     PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
     PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PSET_NAME, pset_ptr->name, PMIX_STRING);
     PMIX_ARGV_APPEND(rc, query.keys, PMIX_QUERY_PSET_MEMBERSHIP);
-    PMIX_ARGV_APPEND(rc, query.keys, PMIX_PSET_SOURCE_OP);
+    PMIX_ARGV_APPEND(rc, query.keys, PMIX_QUERY_PSET_SOURCE_OP);
 
     if(PMIX_SUCCESS != (rc = PMIx_Query_info(&query, 1, &results, &nresults))){
         return rc;
@@ -445,7 +534,7 @@ int pset_init_flags(char *pset_name){
             
             result_infos = (pmix_info_t *) results[k].value.data.darray->array;
             nresult_infos = results[k].value.data.darray->size;
-            if(nresult_infos >= 3){
+            if(nresult_infos >= 2){
                 ompi_instance_lock_rc_and_psets();
                 OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_INIT);
                 for (i = 0; i < nresult_infos; i++) {
@@ -460,9 +549,9 @@ int pset_init_flags(char *pset_name){
                                 }
                             }
                         }
-                    } else if (0 == strcmp(result_infos[i].key, PMIX_PSET_SOURCE_OP)) {
+                    } else if (0 == strcmp(result_infos[i].key, PMIX_QUERY_PSET_SOURCE_OP)) {
                         op_type = result_infos[i].value.data.uint8;
-                        if(MPI_RC_ADD == op_type){
+                        if(MPI_PSETOP_ADD == op_type){
                             OMPI_PSET_FLAG_SET(pset_ptr, OMPI_PSET_FLAG_DYN);
                         }
                     }
@@ -700,6 +789,97 @@ void get_pset_membership_complete(pmix_status_t status, pmix_info_t *results, si
     }
 
 }
+
+/* get the members of the specified PSet 
+ * This function will allocate a members array in the list of PSet structs 
+ * The 'members' array should be freed using ompi_instance_free_pset_membership
+ */
+int get_pset_members (char *pset_name, pmix_proc_t **members, size_t *nmembers){
+    
+    pmix_status_t rc;
+    int ret;
+    opal_pmix_lock_t lock;
+    bool refresh = true;
+    pmix_info_t *info, *results;
+    size_t i, n, k, ninfo, nresults;
+    pmix_query_t query;
+    char *key = PMIX_QUERY_PSET_MEMBERSHIP;
+
+    ompi_instance_lock_rc_and_psets();
+
+    ompi_mpi_instance_pset_t *pset = get_pset_by_name(pset_name);
+    bool new_pset = (pset == NULL);
+
+    /* query the runtime if we do not yet have the PSet membership stored in the list of PSet structs */
+    if(NULL == pset || NULL == pset->members || 0 == pset->size){ 
+        ompi_instance_unlock_rc_and_psets();
+
+        /* set query keys */
+        PMIX_QUERY_CONSTRUCT(&query);
+        PMIX_ARGV_APPEND(rc, query.keys, key);
+
+        query.nqual = 2;
+        PMIX_INFO_CREATE(query.qualifiers, 2);
+        PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
+        PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PSET_NAME, pset->name, PMIX_STRING);
+
+        /* Send the query */
+        if (PMIX_SUCCESS != (rc = PMIx_Query_info(&query, 1, &results, &nresults)) || 0 == nresults) {
+            ret = opal_pmix_convert_status(rc);
+            return ret;                                         
+        }
+        /* set pset members in the list of local PSets */
+        ompi_instance_lock_rc_and_psets();
+
+        for(k = 0; k < nresults; k++){
+
+            if(0 == strcmp(results[k].key, PMIX_QUERY_RESULTS)){
+                
+                info = results[k].value.data.darray->array;
+                ninfo = results[k].value.data.darray->size;
+
+                for(n = 0; n < ninfo; n++){
+                    if(0 == strcmp(info[n].key, key)){
+                        if(new_pset){
+                            pset = OBJ_NEW(ompi_mpi_instance_pset_t);
+                            strcpy(pset->name, pset_name);
+                        }
+
+                        pmix_data_array_t *data_array = info[n].value.data.darray;
+                        pmix_proc_t *members_array = (pmix_proc_t*) data_array->array;
+                        pset->size = data_array->size;
+                        *nmembers = pset->size;
+                        PMIX_PROC_CREATE(*members, *nmembers);
+                        for(i = 0; i < *nmembers; i++){
+                            PMIX_PROC_LOAD(&(*members)[i], members_array[i].nspace, members_array[i].rank);
+                        }
+
+                        if(new_pset){
+                            opal_list_append(&ompi_mpi_instance_psets, &pset->super);
+                        }
+                    }
+                }
+            }
+        }
+        PMIX_INFO_FREE(results, nresults);   
+
+    /* If we already have this membership, do a lookup in the local list of PSet structs */    
+    }else{
+        if(NULL == pset->members){
+            ompi_instance_unlock_rc_and_psets();
+            return PMIX_ERR_NOT_FOUND;
+        }
+        *nmembers = pset->size;
+        PMIX_PROC_CREATE(*members, *nmembers);
+        for(i = 0; i < *nmembers; i++){
+            OPAL_PMIX_CONVERT_JOBID((*members)[i].nspace, pset->members[i].jobid);
+            OPAL_PMIX_CONVERT_VPID((*members)[i].rank, pset->members[i].vpid);
+        }
+    }
+    ompi_instance_unlock_rc_and_psets();
+    return OMPI_SUCCESS;
+}
+
 /* get the members of the specified PSet 
  * This function will allocate a members array in the list of PSet structs 
  * The 'members' array should be freed using ompi_instance_free_pset_membership
@@ -731,7 +911,7 @@ int get_pset_membership (char *pset_name, opal_process_name_t **members, size_t 
         query.nqual = 2;
         PMIX_INFO_CREATE(query.qualifiers, 2);
         PMIX_INFO_LOAD(&query.qualifiers[0], PMIX_QUERY_REFRESH_CACHE, &refresh, PMIX_BOOL);
-        PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PSET_NAME, pset_name, PMIX_STRING);
+        PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PSET_NAME, pset->name, PMIX_STRING);
 
         /* Send the query */
         if (PMIX_SUCCESS != (rc = PMIx_Query_info(&query, 1, &results, &nresults)) || 0 == nresults) {

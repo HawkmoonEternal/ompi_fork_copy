@@ -21,7 +21,7 @@ int MPI_Session_dyn_v1_psetop_nb(MPI_Session session, int op, char *pset1, char 
 
     int rc, flag = 0;
     char pref_name[PMIX_MAX_KEYLEN];
-    ompi_rc_op_type_t ompi_op = MPI_OMPI_CONV_PSET_OP(op);
+    ompi_psetop_type_t ompi_op = MPI_OMPI_CONV_PSET_OP(op);
     //PARAM CHECK
     if(MPI_INFO_NULL != info){
         MPI_Info_get(info, "MPI_PSETOP_PREF_NAME", PMIX_MAX_KEYLEN, pref_name, &flag);

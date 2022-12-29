@@ -18,6 +18,7 @@
         "errhandler.h": "c",
         "info.h": "c",
         "bindings.h": "c",
-        "instance_nb.h": "c"
+        "instance_nb.h": "c",
+        "constants.h": "c"
     }
 }

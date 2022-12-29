@@ -145,6 +145,14 @@ static void pmix_query_xfer(pmix_query_t *dest, pmix_query_t *src){
 
 }
 
+static void pmix_pdata_xfer(pmix_pdata_t *dest, pmix_pdata_t *src){
+    size_t m;
+    int rc;
+    PMIX_LOAD_KEY(dest, src->key);
+    PMIX_VALUE_XFER_DIRECT(rc, &(dest->value), (pmix_value_t *) &(src->value));
+    PMIX_PROC_LOAD(&dest->proc, src->proc.nspace, src->proc.rank);
+}
+
 void coll_params_create(ompi_collective_parameters_t **coll_params, ompi_parameters_type_t type){
     *coll_params = (ompi_collective_parameters_t *) malloc(sizeof(ompi_collective_parameters_t));
     (*coll_params)->type = type;
@@ -164,7 +172,7 @@ void coll_params_load_info(ompi_collective_parameters_t *coll_params, pmix_info_
 
 void coll_params_load_query(ompi_collective_parameters_t *coll_params, pmix_query_t *query, size_t nqueries){
     
-    size_t n, m;
+    size_t n;
     coll_params->params.query_params.nqueries = nqueries;
     PMIX_QUERY_CREATE(coll_params->params.query_params.query, nqueries);
     for(n = 0; n < nqueries; n++){
@@ -172,6 +180,25 @@ void coll_params_load_query(ompi_collective_parameters_t *coll_params, pmix_quer
     }
 
 }
+
+void coll_params_load_pdata(ompi_collective_parameters_t *coll_params, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo){
+    
+    size_t n;
+
+    coll_params->params.pdata_params.npdata = npdata;
+    PMIX_PDATA_CREATE(coll_params->params.pdata_params.pdata, npdata);
+    for(n = 0; n < npdata; n++){
+        pmix_pdata_xfer(&coll_params->params.pdata_params.pdata[n], &pdata[n]);
+    }
+
+    coll_params->params.pdata_params.ninfo = ninfo;
+    PMIX_INFO_CREATE(coll_params->params.pdata_params.info, ninfo);
+    for(n = 0; n < ninfo; n++){
+        PMIX_INFO_XFER(&coll_params->params.pdata_params.info[n], &info[n]);
+    }
+
+}
+
 
 void info_params_release(ompi_info_parameters_t *params){
     if(0 < params->ninfo){
@@ -182,6 +209,15 @@ void info_params_release(ompi_info_parameters_t *params){
 void query_params_release(ompi_query_parameters_t *params){
     if(0 < params->nqueries){
         PMIX_QUERY_FREE(params->query, params->nqueries);
+    }
+}
+
+void pdata_params_release(ompi_pdata_parameters_t *params){
+    if(0 < params->npdata){
+        PMIX_PDATA_FREE(params->pdata, params->npdata);
+    }
+    if(0 < params->ninfo){
+        PMIX_INFO_FREE(params->info, params->ninfo);
     }
 }
 
@@ -341,13 +377,16 @@ void ompi_results_serialize(ompi_collective_results_t *coll_results, pmix_info_t
 void ompi_params_serialize(ompi_collective_parameters_t *coll_params, pmix_info_t *info){
     char *key_params_outer = "ompi.collective.params";
     char *key_params_type = "ompi.collective.params.type";
-    char *key_params_inner = "ompi.collective.params.params";
+    char *key_params_inner1 = "ompi.collective.params.params1";
+    char *key_params_inner2 = "ompi.collective.params.params2";
+
     size_t n;
     pmix_data_array_t *darray_ptr, *darray_ptr_outer;
     pmix_info_t *info_ptr, *info_ptr_outer;
     pmix_query_t *query_ptr;
+    pmix_pdata_t *pdata_ptr;
 
-    PMIX_DATA_ARRAY_CREATE(darray_ptr_outer, 2, PMIX_INFO);
+    PMIX_DATA_ARRAY_CREATE(darray_ptr_outer, 3, PMIX_INFO);
     info_ptr_outer = (pmix_info_t *) darray_ptr_outer->array;
 
     PMIX_INFO_LOAD(&info_ptr_outer[0], key_params_type, &coll_params->type, PMIX_INT);
@@ -360,7 +399,7 @@ void ompi_params_serialize(ompi_collective_parameters_t *coll_params, pmix_info_
         for(n = 0; n < coll_params->params.info_params.ninfo; n++){
             PMIX_INFO_XFER(&info_ptr[n], &coll_params->params.info_params.info[n]);
         }
-        PMIX_INFO_LOAD(&info_ptr_outer[1], key_params_inner, darray_ptr, PMIX_DATA_ARRAY);
+        PMIX_INFO_LOAD(&info_ptr_outer[1], key_params_inner1, darray_ptr, PMIX_DATA_ARRAY);
         PMIX_DATA_ARRAY_FREE(darray_ptr);
         break;
     case OMPI_PARAMS_QUERY:
@@ -369,8 +408,26 @@ void ompi_params_serialize(ompi_collective_parameters_t *coll_params, pmix_info_
         for(n = 0; n < coll_params->params.query_params.nqueries; n++){
             pmix_query_xfer(&query_ptr[n], &coll_params->params.query_params.query[n]);
         }
-        PMIX_INFO_LOAD(&info_ptr_outer[1], key_params_inner, darray_ptr, PMIX_DATA_ARRAY);
+        PMIX_INFO_LOAD(&info_ptr_outer[1], key_params_inner1, darray_ptr, PMIX_DATA_ARRAY);
         PMIX_DATA_ARRAY_FREE(darray_ptr);
+        break;
+    case OMPI_PARAMS_PDATA:
+        PMIX_DATA_ARRAY_CREATE(darray_ptr, coll_params->params.pdata_params.npdata, PMIX_PDATA);
+        pdata_ptr = (pmix_pdata_t *)darray_ptr->array;
+        for(n = 0; n < coll_params->params.pdata_params.npdata; n++){
+            pmix_pdata_xfer(&pdata_ptr[n], &coll_params->params.pdata_params.pdata[n]);
+        }
+        PMIX_INFO_LOAD(&info_ptr_outer[1], key_params_inner1, darray_ptr, PMIX_DATA_ARRAY);
+        PMIX_DATA_ARRAY_FREE(darray_ptr);
+
+        PMIX_DATA_ARRAY_CREATE(darray_ptr, coll_params->params.pdata_params.ninfo, PMIX_INFO);
+        info_ptr = (pmix_info_t *)darray_ptr->array;
+        for(n = 0; n < coll_params->params.pdata_params.ninfo; n++){
+            PMIX_INFO_XFER(&info_ptr[n], &coll_params->params.pdata_params.info[n]);
+        }
+        PMIX_INFO_LOAD(&info_ptr_outer[2], key_params_inner2, darray_ptr, PMIX_DATA_ARRAY);
+        PMIX_DATA_ARRAY_FREE(darray_ptr);
+
         break;    
     default:
         break;
@@ -447,9 +504,10 @@ int ompi_results_deserialize(ompi_collective_results_t **coll_results, pmix_info
 }
 
 int ompi_params_deserialize(ompi_collective_parameters_t **coll_params, pmix_info_t *coll_params_info){
-    size_t size, size_outer, n;
+    size_t size, size2, size_outer, n;
     pmix_info_t *info_ptr, *info_ptr_outer;
     pmix_query_t *query_ptr;
+    pmix_pdata_t *pdata_ptr;
     ompi_parameters_type_t params_type;
     
     info_ptr_outer = (pmix_info_t *) coll_params_info[0].value.data.darray->array;
@@ -459,7 +517,6 @@ int ompi_params_deserialize(ompi_collective_parameters_t **coll_params, pmix_inf
     params_type = info_ptr_outer[0].value.data.integer;
 
     coll_params_create(coll_params, params_type);
-
     switch (params_type)
     {
     case OMPI_PARAMS_INFO:
@@ -476,6 +533,14 @@ int ompi_params_deserialize(ompi_collective_parameters_t **coll_params, pmix_inf
         size = info_ptr_outer[1].value.data.darray->size;
 
         coll_params_load_query(*coll_params, query_ptr, size);
+        break;
+    case OMPI_PARAMS_PDATA:
+        pdata_ptr = (pmix_pdata_t *) info_ptr_outer[1].value.data.darray->array;
+        size = info_ptr_outer[1].value.data.darray->size;
+        info_ptr = (pmix_info_t *) info_ptr_outer[2].value.data.darray->array;
+        size2 = info_ptr_outer[2].value.data.darray->size;
+
+        coll_params_load_pdata(*coll_params, pdata_ptr, size, info_ptr, size2);
         break;
     
     default:
@@ -533,7 +598,7 @@ int ompi_collective_deserialize(ompi_instance_collective_t ** coll, pmix_info_t 
         }
 
         if(OMPI_SUCCESS != ret){
-            printf("Error %d for key %s\n", ret, info[n].key);
+            printf("Error %d for deserializing coll info key %s\n", ret, info[n].key);
         }
     }
     ompi_instance_collective_assign(*coll, status, coll_procs, function_type, coll_params, coll_results, NULL, NULL);
@@ -683,6 +748,56 @@ bool cmp_query_params(ompi_query_parameters_t *params1, ompi_query_parameters_t 
     return true;
 }
 
+bool cmp_lookup_params(ompi_pdata_parameters_t *params1, ompi_pdata_parameters_t *params2){
+    size_t n, m, i, k;
+    bool found;
+    pmix_pdata_t *pdata1, *pdata2;
+    pmix_info_t *info1, *info2;
+
+    if(params1->npdata != params2->npdata || params1->ninfo != params2->ninfo){
+        return false;
+    }
+
+    for(n = 0; n < params1->npdata; n++){
+        pdata1 = &params1->pdata[n];
+
+        found = false;
+        for(m = 0; m < params2->npdata; m++){
+            pdata2 = &params2->pdata[m];
+
+            if(!PMIX_CHECK_KEY(pdata1, pdata2->key)){
+                continue;
+            }
+        
+            found = true;
+            break;
+        }
+        
+        if(!found){
+            return false;
+        }
+    }
+
+    for(n = 0; n < params1->ninfo; n++){
+        info1 = &params1->info[n];
+
+        found = false;
+        for(m = 0; m < params2->ninfo; m++){
+            info2 = &params2->info[m];
+
+            if(PMIX_CHECK_KEY(info1, info2->key) && (PMIX_EQUAL == PMIx_Value_compare(&info1->value, &info2->value))){
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool cmp_params(ompi_collective_parameters_t *params1, ompi_collective_parameters_t *params2){
     
     if(params1->type != params2->type){
@@ -694,6 +809,8 @@ bool cmp_params(ompi_collective_parameters_t *params1, ompi_collective_parameter
             return cmp_info_params(&params1->params.info_params, &params2->params.info_params);
         case OMPI_PARAMS_QUERY:
             return cmp_query_params(&params1->params.query_params, &params2->params.query_params);
+        case OMPI_PARAMS_PDATA:
+            return cmp_lookup_params(&params1->params.pdata_params, &params2->params.pdata_params);
         default:
             return false;
     }
@@ -729,6 +846,18 @@ ompi_instance_collective_t * search_pending_collectives( ompi_function_type_t co
 
 #pragma endregion
 
+void print_type(ompi_instance_collective_t *coll){
+    printf("cbfunc Type :%d\n", coll->coll_cbfunc->type);
+}
+
+void print_status(ompi_instance_collective_t *coll){
+    printf("coll status :%d\n", coll->status);
+}
+
+void print_ninfo(ompi_instance_collective_t *coll){
+    printf("ninfo results :%d\n", coll->coll_results->results.info_results.ninfo);
+}
+
 /* Note! The coll->cbfunc is reponsible for freeing the cbdata if desired */
 int execute_collective_callback(ompi_instance_collective_t *coll){
 
@@ -756,6 +885,11 @@ int ompi_collective_send(ompi_instance_collective_t *coll, pmix_info_t *send_inf
     pmix_data_array_t *darray;
 
     ntarget_procs = coll->coll_procs->nprocs - 1;
+
+    if(0 >= ntarget_procs){
+        return OMPI_SUCCESS;
+    }
+
     PMIX_DATA_ARRAY_CREATE(darray, ntarget_procs, PMIX_PROC);
     target_procs = (pmix_proc_t *) darray->array;
 
@@ -812,17 +946,15 @@ int enter_collective_receiver(ompi_instance_collective_t *coll_in, bool wait){
      *  The callback will be called by the provider 
      */
     if(NULL == coll){
-        
         coll_in->is_waiting = wait;
 
         opal_list_append(&ompi_instance_pending_collectives, &coll_in->super);
 
         opal_mutex_unlock(&collectives_lock);
 
-        /* If we waited for the collective to be executed, we are the one to relese it */
+        /* If we waited for the collective to be executed, we are the one to release it */
         if(wait){
             OPAL_PMIX_WAIT_THREAD(&coll_in->lock);
-
             OBJ_RELEASE(coll_in);
         }
 
@@ -879,7 +1011,7 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
         return;
     }
 
-    coll_in->status = OMPI_SUCCESS;
+    //coll_in->status = OMPI_SUCCESS;
 
     /* Lock the list of pending collectives */
     opal_mutex_lock(&collectives_lock);
@@ -887,11 +1019,10 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
     coll = search_pending_collectives(coll_in->coll_func, coll_in->coll_procs, coll_in->coll_params);
 
 
-    /*  There is no pending collective for this request, so we add one.
+    /*  The receiver side has not yet added a pending collective for this request, so we add one.
      *  The callback will be called by the receiver 
      */
-    if(NULL == coll){
-
+    if(NULL == coll || NULL == coll->coll_cbfunc){
 
         opal_list_append(&ompi_instance_pending_collectives, &coll_in->super);
         opal_mutex_unlock(&collectives_lock);
@@ -900,8 +1031,7 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
     /* There was a matching pending collective added by the receiver 
      * We call the callback using the results from the provider
      */
-    }else{
-
+    }else if(NULL != coll->coll_cbfunc){
         /* Remove coll from the list of pending collectives */
         opal_list_remove_item(&ompi_instance_pending_collectives, &coll->super);
 
@@ -911,6 +1041,7 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
 
         coll->coll_results = coll_in->coll_results;
         coll->status = coll_in->status;
+        
         execute_collective_callback(coll);
         coll->coll_results = NULL;
 
@@ -937,6 +1068,31 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
 /*  EXPOSED TO USER */
 
 /* Collective query */
+
+/* Create an ompi_collective_t object corresponding to a PMIx_Lookup call */
+void create_collective_lookup(ompi_instance_collective_t **coll, pmix_status_t status, pmix_proc_t *procs, size_t nprocs, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo, pmix_info_t *results, size_t nresults, pmix_info_cbfunc_t info_cbfunc, void *cbdata){
+    
+    ompi_collective_procs_t *coll_procs;
+    ompi_collective_results_t *coll_results;
+    ompi_collective_parameters_t *coll_params;
+    ompi_collective_cbfunc_t *coll_cbfunc = NULL;
+
+    coll_procs_create(&coll_procs, procs, nprocs);
+
+    coll_results_create(&coll_results, OMPI_RESULTS_INFO);
+    coll_results_load_info(coll_results, results, nresults);
+
+    coll_params_create(&coll_params, OMPI_PARAMS_PDATA);
+    coll_params_load_pdata(coll_params, pdata, npdata, info, ninfo);
+
+    if(NULL != info_cbfunc){
+        coll_cbfunc_create(&coll_cbfunc, OMPI_CBFUNC_INFO);
+        coll_cbfunc_load_info(coll_cbfunc, info_cbfunc);
+    }
+
+    *coll = OBJ_NEW(ompi_instance_collective_t);
+    ompi_instance_collective_assign(*coll, status, coll_procs, OMPI_FUNC_PMIX_LOOKUP, coll_params, coll_results, coll_cbfunc, cbdata);
+}
 
 /* Create an ompi_collective_t object corresponding to a PMIx_query_info call */
 void create_collective_query(ompi_instance_collective_t **coll, pmix_status_t status, pmix_proc_t *procs, size_t nprocs, pmix_query_t *query, size_t nqueries, pmix_info_t *results, size_t nresults, pmix_info_cbfunc_t info_cbfunc, void *cbdata){
@@ -992,6 +1148,47 @@ int recv_collective_data_query(pmix_proc_t *procs, size_t nprocs, pmix_query_t *
     
 }
 
+/* Send the results of a PMIx_Lookup to the other procs of the collective call */
+int send_collective_data_lookup(pmix_proc_t *procs, pmix_status_t status, size_t nprocs, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo, pmix_info_t *results, size_t nresults){
+
+    int ret;
+    ompi_instance_collective_t *coll;
+
+    create_collective_lookup(&coll, status, procs, nprocs, pdata, npdata, info, ninfo, results, nresults, NULL, NULL);
+    
+    ret = ompi_collective_send(coll, NULL, 0);
+
+    OBJ_RELEASE(coll);
+
+    return ret;
+}
+
+/* Receive the results of a PMIx_Lookup collective call */
+int recv_collective_data_lookup(pmix_proc_t *procs, size_t nprocs, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo, pmix_info_cbfunc_t cbfunc, void *cbdata){
+
+    int ret;
+    ompi_instance_collective_t *coll;
+
+    create_collective_lookup(&coll, PMIX_ERR_EMPTY, procs, nprocs, pdata, npdata, info, ninfo, NULL, 0, cbfunc, cbdata);
+    
+    ret = enter_collective_receiver(coll, true);
+    
+    return ret;    
+}
+
+/* Receive the results of a PMIx_Lookup_nb collective call */
+int recv_collective_data_lookup_nb(pmix_proc_t *procs, size_t nprocs, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo, pmix_info_cbfunc_t cbfunc, void *cbdata){
+
+    int ret;
+    ompi_instance_collective_t *coll;
+
+    create_collective_lookup(&coll, PMIX_ERR_EMPTY, procs, nprocs, pdata, npdata, info, ninfo, NULL, 0, cbfunc, cbdata);
+    
+    ret = enter_collective_receiver(coll, false);
+    
+    return ret;    
+}
+
 
 /* Cbfunc to be used for collective functions with results type info */
 void ompi_instance_collective_infocb_send(pmix_status_t status, pmix_info_t *results, size_t nresults, void *cbdata, pmix_release_cbfunc_t release_fn, void *release_cbdata)
@@ -1003,6 +1200,10 @@ void ompi_instance_collective_infocb_send(pmix_status_t status, pmix_info_t *res
     coll_results_load_info(coll->coll_results, results, nresults);
 
     ompi_collective_send(coll, NULL, 0);
-    
+
     coll->coll_cbfunc->cbfunc.info_cbfunc(status, results, nresults, coll->coll_cbdata,  release_fn, release_cbdata);
+
+    OBJ_RELEASE(coll);
 }
+
+

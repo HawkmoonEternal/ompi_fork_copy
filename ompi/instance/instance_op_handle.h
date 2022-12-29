@@ -63,7 +63,7 @@ OBJ_CLASS_DECLARATION(ompi_instance_set_op_handle_t);
 
 struct ompi_instance_rc_op_handle_t{
     opal_list_item_t super;
-    ompi_rc_op_type_t rc_type;
+    ompi_psetop_type_t rc_type;
     ompi_instance_set_op_info_t rc_op_info;
     opal_list_t set_ops;
 };
@@ -81,7 +81,7 @@ typedef struct ompi_predefined_rc_op_handle_t ompi_predefined_rc_op_handle_t;
 OMPI_DECLSPEC extern ompi_predefined_rc_op_handle_t ompi_mpi_rc_op_handle_null;
 
 int rc_op_handle_create(ompi_instance_rc_op_handle_t **rc_op_handle);
-int rc_op_handle_add_op(ompi_rc_op_type_t rc_type, 
+int rc_op_handle_add_op(ompi_psetop_type_t rc_type, 
                             char **input_names, size_t n_input_names, 
                             char **output_names, size_t n_output_names, 
                             ompi_info_t *info, ompi_instance_rc_op_handle_t *rc_op_handle
@@ -89,12 +89,18 @@ int rc_op_handle_add_op(ompi_rc_op_type_t rc_type,
 int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, char * pset_name, pmix_info_t * info, int ninfo);
 int rc_op_handle_free(ompi_instance_rc_op_handle_t ** rc_op_handle);
 
-int rc_op_handle_init_output(ompi_rc_op_type_t type, char ***output_names, size_t *noutput);
+int rc_op_handle_init_output(ompi_psetop_type_t type, char ***output_names, size_t *noutput);
 
 size_t rc_op_handle_get_num_ops(ompi_instance_rc_op_handle_t * rc_op_handle);
+int rc_op_handle_get_get_op_type(ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, ompi_psetop_type_t *op_type);
 int rc_op_handle_get_num_output(ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, size_t *num_output);
 int rc_op_handle_get_ouput_name(ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, size_t name_index, int *pset_len, char* pset_name);
 
 int rc_op_handle_serialize(ompi_instance_rc_op_handle_t *rc_op_handle, pmix_info_t *info);
+int rc_op_handle_deserialize(pmix_info_t *rc_op_handle_info, ompi_instance_rc_op_handle_t **rc_op_handle);
+
+int rc_op_handle_from_info(ompi_info_t **info, size_t num_ops, ompi_instance_rc_op_handle_t **op_handle);
+int rc_op_handle_to_info(ompi_instance_rc_op_handle_t *op_handle, ompi_info_t ***info, size_t *ninfo);
+
 
 #endif /* !defined(OMPI_INSTANCE_OP_HANDLE_H) */
