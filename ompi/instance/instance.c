@@ -2082,6 +2082,10 @@ int ompi_instance_dyn_v2a_pset_op(ompi_instance_t *session, int op, char **input
         for(n = 0; n < noutput_names; n++){
             (*output_sets)[n] = strdup(out_name_vals[n].data.string);
         }
+    /* Indicate pending PSet operation or failue to aquire enough resources with noutput = 0 instead of an error code */
+    }else if(PMIX_ERR_EXISTS == rc || PMIX_ERR_OUT_OF_RESOURCE == rc){
+        *noutput = 0;
+        rc = OMPI_SUCCESS;
     }
 
 CLEANUP:
@@ -2519,12 +2523,14 @@ int ompi_instance_dyn_v2c_query_psetop_nb(ompi_instance_t * instance, char *coll
     return OMPI_ERR_NOT_IMPLEMENTED;
 }
 
-int ompi_instance_dyn_v2c_psetop(ompi_instance_t * instance, ompi_info_t **setop_info, size_t ninfo){
+int ompi_instance_dyn_v2c_psetop(ompi_instance_t * instance, ompi_info_t **setop_info, size_t ninfo, int *flag){
     ompi_instance_rc_op_handle_t * rc_op_handle;
     ompi_info_t **result_infos;
     pmix_info_t *info, *results;
     size_t nresults, n, k, n_result_infos;
     int rc;
+
+    *flag = 0;
 
     if(OMPI_SUCCESS != (rc = rc_op_handle_from_info(setop_info, ninfo, &rc_op_handle))){
         return rc;
@@ -2543,7 +2549,7 @@ int ompi_instance_dyn_v2c_psetop(ompi_instance_t * instance, ompi_info_t **setop
 
     if(OMPI_SUCCESS != (rc = PMIx_Allocation_request(MPI_ALLOC_SET_REQUEST, info, 1, &results, &nresults))){
         PMIX_INFO_FREE(info, 1);
-        return rc;
+        return OMPI_SUCCESS;
     }
 
     PMIX_INFO_FREE(info, 1);
@@ -2566,15 +2572,15 @@ int ompi_instance_dyn_v2c_psetop(ompi_instance_t * instance, ompi_info_t **setop
             }
 
             free(result_infos);
-
+            *flag = 1;
             return OMPI_SUCCESS;
         }
     }
 
-    return OMPI_ERR_NOT_IMPLEMENTED;
+    return OMPI_ERR_REQUEST;
 }
 
-int ompi_instance_dyn_v2c_psetop_nb(ompi_instance_t * instance, ompi_info_t **info, size_t ninfo, ompi_request_t **request){
+int ompi_instance_dyn_v2c_psetop_nb(ompi_instance_t * instance, ompi_info_t **info, size_t ninfo, int *flag, ompi_request_t **request){
 
     return OMPI_ERR_NOT_IMPLEMENTED;
 

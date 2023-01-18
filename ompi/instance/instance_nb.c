@@ -562,7 +562,7 @@ int v2b_psetop_complete(pmix_status_t status, pmix_info_t *results, size_t nresu
         }
     }else{
         if(PMIX_ERR_EXISTS == status || PMIX_ERR_OUT_OF_RESOURCE == status){
-            /* FIXME. Need a better way to indicate failure */
+            /* FIXME. Need a better way to indicate failure? */
             rc_op_handle->rc_type = MPI_PSETOP_NULL;
             return OMPI_SUCCESS;
         }

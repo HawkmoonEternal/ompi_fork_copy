@@ -24,7 +24,7 @@
 #include "ompi/proc/proc.h"
 #include "ompi/instance/instance_op_handle.h"
 
-#pragma region non-blocking_utils
+#pragma region non_blocking_utils
 typedef enum _nb_chain_stage{
     QUERY_RC_STAGE,
     PUBSUB_STAGE,

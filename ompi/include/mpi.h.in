@@ -2798,8 +2798,8 @@ OMPI_DECLSPEC  int MPI_Session_dyn_v2b_psetop_nb (MPI_Session session, MPI_RC_ha
 OMPI_DECLSPEC  int MPI_Session_dyn_v2b_query_psetop (MPI_Session session, char *coll_pset, char * input_pset, MPI_RC_handle *rc_op_handle);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2b_query_psetop_nb (MPI_Session session, char *coll_pset, char * input_pset, MPI_RC_handle *rc_op_handle, MPI_Request *req);
 
-OMPI_DECLSPEC  int MPI_Session_dyn_v2c_psetop (MPI_Session session, MPI_Info *setop_infos, int ninfo);
-OMPI_DECLSPEC  int MPI_Session_dyn_v2c_psetop_nb (MPI_Session session, MPI_Info *setop_infos, int ninfo, MPI_Request *req);
+OMPI_DECLSPEC  int MPI_Session_dyn_v2c_psetop (MPI_Session session, MPI_Info *setop_infos, int ninfo, int *flag);
+OMPI_DECLSPEC  int MPI_Session_dyn_v2c_psetop_nb (MPI_Session session, MPI_Info *setop_infos, int ninfo, int *flag, MPI_Request *req);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2c_query_psetop (MPI_Session session, char *coll_pset, char *input_pset, MPI_Info **setop_info);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2c_query_psetop_nb (MPI_Session session, char *coll_pset, char *input_pset, MPI_Info **setop_info, MPI_Request *req);
 

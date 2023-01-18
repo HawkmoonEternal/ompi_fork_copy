@@ -18,9 +18,9 @@
 static const char FUNC_NAME[] = "MPI_Session_dyn_request_res_change_nb";
 
 
-int MPI_Session_dyn_v2c_psetop_nb(MPI_Session session, MPI_Info *setop_infos, int ninfo, MPI_Request *req){
+int MPI_Session_dyn_v2c_psetop_nb(MPI_Session session, MPI_Info *setop_infos, int ninfo, int *flag, MPI_Request *req){
     int rc;
 
-    rc = ompi_instance_dyn_v2c_psetop_nb(session, setop_infos, ninfo, (ompi_request_t **) req);
+    rc = ompi_instance_dyn_v2c_psetop_nb(session, setop_infos, ninfo, *flag, (ompi_request_t **) req);
     return rc;
 }

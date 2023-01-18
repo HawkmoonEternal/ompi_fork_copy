@@ -213,8 +213,8 @@ OMPI_DECLSPEC int ompi_instance_dyn_v2b_psetop_nb(ompi_instance_t * instance, om
 OMPI_DECLSPEC int ompi_instance_dyn_v2c_query_psetop(ompi_instance_t * instance, char *coll_pset_name, char *pset_name, ompi_info_t **setop_info);
 OMPI_DECLSPEC int ompi_instance_dyn_v2c_query_psetop_nb(ompi_instance_t * instance, char *coll_pset_name, char *pset_name, ompi_info_t **setop_info, ompi_request_t **request);
 
-OMPI_DECLSPEC int ompi_instance_dyn_v2c_psetop(ompi_instance_t * instance, ompi_info_t **info, size_t ninfo);
-OMPI_DECLSPEC int ompi_instance_dyn_v2c_psetop_nb(ompi_instance_t * instance, ompi_info_t **info, size_t ninfo, ompi_request_t **request);
+OMPI_DECLSPEC int ompi_instance_dyn_v2c_psetop(ompi_instance_t * instance, ompi_info_t **info, size_t ninfo, int *flag);
+OMPI_DECLSPEC int ompi_instance_dyn_v2c_psetop_nb(ompi_instance_t * instance, ompi_info_t **info, size_t ninfo, int *flag, ompi_request_t **request);
 
 /* other */
 OMPI_DECLSPEC int ompi_instance_dyn_finalize_psetop(ompi_instance_t *instance, char *pset_name);

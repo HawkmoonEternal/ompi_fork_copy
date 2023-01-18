@@ -17,10 +17,10 @@
 static const char FUNC_NAME[] = "MPI_Session_dyn_request_res_change";
 
 
-int MPI_Session_dyn_v2c_psetop(MPI_Session session, MPI_Info *setop_infos, int ninfo){
+int MPI_Session_dyn_v2c_psetop(MPI_Session session, MPI_Info *setop_infos, int ninfo, int *flag){
     int rc;
 
-    rc = ompi_instance_dyn_v2c_psetop((ompi_instance_t *)session, setop_infos, ninfo);
+    rc = ompi_instance_dyn_v2c_psetop((ompi_instance_t *)session, setop_infos, ninfo, flag);
 
     //ERROR HANDLING
        
