@@ -255,6 +255,13 @@ int rc_op_handle_init_output(ompi_psetop_type_t type, char ***output_names, size
             (*output_names)[0] = NULL;
             *noutput = 1;
             break;
+        case OMPI_PSETOP_REPLACE:
+        case OMPI_PSETOP_MALLEABLE:
+            *output_names = malloc(2 * sizeof(char *));
+            (*output_names)[0] = NULL;
+            (*output_names)[1] = NULL;
+            *noutput = 0;
+            break;            
         default:
             *output_names = NULL;
             *noutput = 0;

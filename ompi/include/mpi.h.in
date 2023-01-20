@@ -769,6 +769,7 @@ enum {
 #define MPI_PSETOP_TYPE_ADD             "mpi.psetop.type.add"
 #define MPI_PSETOP_TYPE_SUB             "mpi.psetop.type.sub"
 #define MPI_PSETOP_TYPE_REPLACE         "mpi.psetop.type.replace"
+#define MPI_PSETOP_TYPE_MALLEABLE       "mpi.psetop.type.malleable"
 #define MPI_PSETOP_TYPE_UNION           "mpi.psetop.type.union" 
 #define MPI_PSETOP_TYPE_DIFFERENCE      "mpi.psetop.type.difference"
 #define MPI_PSETOP_TYPE_INTERSECTION    "mpi.psetop.type.intersect"
@@ -779,6 +780,7 @@ enum{
    MPI_PSETOP_ADD,
    MPI_PSETOP_SUB,
    MPI_PSETOP_REPLACE,
+   MPI_PSETOP_MALLEABLE,
    MPI_PSETOP_UNION, 
    MPI_PSETOP_DIFFERENCE,
    MPI_PSETOP_INTERSECTION

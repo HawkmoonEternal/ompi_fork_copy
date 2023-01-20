@@ -79,6 +79,8 @@ char * OMPI_PSETOP_TO_STRING(ompi_psetop_type_t ompi_pset_op){
             return MPI_PSETOP_TYPE_SUB;
         case OMPI_PSETOP_REPLACE:
             return MPI_PSETOP_TYPE_REPLACE;
+        case OMPI_PSETOP_MALLEABLE:
+            return MPI_PSETOP_TYPE_MALLEABLE;
         case OMPI_PSETOP_UNION:
             return MPI_PSETOP_TYPE_UNION;
         case OMPI_PSETOP_DIFFERENCE:
@@ -101,15 +103,17 @@ ompi_psetop_type_t OMPI_PSETOP_FROM_STRING(char * mpi_pset_op_type){
         return OMPI_PSETOP_SUB;
     }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_REPLACE)){
         return OMPI_PSETOP_REPLACE;
+    }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_MALLEABLE)){
+        return OMPI_PSETOP_MALLEABLE;
     }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_UNION)){
         return OMPI_PSETOP_UNION;
     }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_DIFFERENCE)){
         return OMPI_PSETOP_DIFFERENCE;
     }else if (0 == strcmp(mpi_pset_op_type, MPI_PSETOP_TYPE_INTERSECTION)){
         return OMPI_PSETOP_INTERSECTION;
-    }else{
-        return OMPI_PSETOP_NULL;
     }
+    return OMPI_PSETOP_NULL;
+
 }
 
 ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op){
@@ -123,6 +127,8 @@ ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op){
             return OMPI_PSETOP_SUB;
         case MPI_PSETOP_REPLACE:
             return OMPI_PSETOP_REPLACE;
+        case MPI_PSETOP_MALLEABLE:
+            return OMPI_PSETOP_MALLEABLE;
         case MPI_PSETOP_UNION:
             return OMPI_PSETOP_UNION;
         case MPI_PSETOP_DIFFERENCE:
@@ -145,6 +151,8 @@ int MPI_OMPI_CONVT_PSET_OP(ompi_psetop_type_t mpi_pset_op){
             return MPI_PSETOP_SUB;
         case OMPI_PSETOP_REPLACE:
             return MPI_PSETOP_REPLACE;
+        case OMPI_PSETOP_MALLEABLE:
+            return MPI_PSETOP_MALLEABLE;
         case OMPI_PSETOP_UNION:
             return MPI_PSETOP_UNION;
         case OMPI_PSETOP_DIFFERENCE:
