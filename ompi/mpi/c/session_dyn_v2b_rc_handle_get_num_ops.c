@@ -26,5 +26,5 @@ int MPI_Session_dyn_v2b_rc_handle_get_num_ops(MPI_Session session, MPI_RC_handle
     
     *num_ops = (int) n_ops;
 
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

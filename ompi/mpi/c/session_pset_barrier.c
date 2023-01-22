@@ -26,6 +26,7 @@ int MPI_Session_pset_barrier(MPI_Session session, char **pset_names, int num_pse
     }
     rc = ompi_instance_pset_fence_multiple(pset_names, num_psets, (ompi_info_t *) info);
     //ERROR HANDLING
-    OMPI_ERRHANDLER_RETURN (rc, session, rc, FUNC_NAME);
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session,
+                            rc, FUNC_NAME);
 
 }

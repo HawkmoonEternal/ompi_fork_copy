@@ -54,7 +54,9 @@ typedef uint8_t ompi_psetop_type_t;
 #define OMPI_PSETOP_ADD             PMIX_PSETOP_ADD
 #define OMPI_PSETOP_SUB             PMIX_PSETOP_SUB
 #define OMPI_PSETOP_REPLACE         PMIX_PSETOP_REPLACE
-#define OMPI_PSETOP_MALLEABLE       PMIX_PSETOP_MALLEABLE      
+#define OMPI_PSETOP_MALLEABLE       PMIX_PSETOP_MALLEABLE   
+#define OMPI_PSETOP_GROW            PMIX_PSETOP_GROW
+#define OMPI_PSETOP_SHRINK          PMIX_PSETOP_SHRINK   
 #define OMPI_PSETOP_UNION           PMIX_PSETOP_UNION
 #define OMPI_PSETOP_DIFFERENCE      PMIX_PSETOP_DIFFERENCE
 #define OMPI_PSETOP_INTERSECTION    PMIX_PSETOP_INTERSECTION
@@ -81,6 +83,8 @@ ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op);
 int MPI_OMPI_CONVT_PSET_OP(ompi_psetop_type_t mpi_pset_op);
 
 int ompi_instance_psets_init(void);
+
+bool ompi_instance_psets_initalized(void);
 
 int ompi_instance_get_launch_pset(char **pset_name, pmix_proc_t *proc);
 
@@ -139,7 +143,6 @@ void get_pset_membership_complete(pmix_status_t status, pmix_info_t *results, si
 int ompi_instance_free_pset_membership (char *pset_name);
 
 /* PSet Fence */
-static void fence_release(pmix_status_t status, void *cbdata);
 int ompi_instance_pset_fence(char *pset_name);
 int ompi_instance_pset_fence_multiple( char **pset_names, int num_psets, ompi_info_t *info);
 

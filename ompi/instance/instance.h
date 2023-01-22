@@ -186,8 +186,8 @@ OMPI_DECLSPEC int ompi_instance_dyn_v1_integrate_res_change_nb(ompi_instance_t *
 OMPI_DECLSPEC int ompi_instance_dyn_v2a_query_psetop(ompi_instance_t *instance, char *coll_pset_name, char *input_name, ompi_psetop_type_t *type, char ***output_names, size_t *noutputs, bool get_by_delta_name);
 OMPI_DECLSPEC int ompi_instance_dyn_v2a_query_psetop_nb(ompi_instance_t *instance, char *coll_pset_name, char *input_name, int *type, char ***output_names, int *noutputs, bool get_by_delta_name, ompi_request_t **request);
 
-OMPI_DECLSPEC int ompi_instance_dyn_v2a_pset_op(ompi_instance_t *session, int op, char **input_sets, int ninput, char *** output_sets, int *noutput, ompi_info_t *info);
-OMPI_DECLSPEC int ompi_instance_dyn_v2a_pset_op_nb(ompi_instance_t *session, int op, char **input_sets, int ninput, char *** output_sets, int *noutput, ompi_info_t *info, ompi_request_t **request);
+OMPI_DECLSPEC int ompi_instance_dyn_v2a_pset_op(ompi_instance_t *session, int *op, char **input_sets, int ninput, char *** output_sets, int *noutput, ompi_info_t *info);
+OMPI_DECLSPEC int ompi_instance_dyn_v2a_pset_op_nb(ompi_instance_t *session, int *op, char **input_sets, int ninput, char *** output_sets, int *noutput, ompi_info_t *info, ompi_request_t **request);
 
 /* v2b */
 
@@ -219,7 +219,7 @@ OMPI_DECLSPEC int ompi_instance_dyn_v2c_psetop_nb(ompi_instance_t * instance, om
 /* other */
 OMPI_DECLSPEC int ompi_instance_dyn_finalize_psetop(ompi_instance_t *instance, char *pset_name);
 
-OMPI_DECLSPEC int ompi_instance_set_pset_info(ompi_instance_t *instance, char *pset_name, opal_info_t *info);
+OMPI_DECLSPEC int ompi_instance_set_pset_info(ompi_instance_t *instance, char *pset_name, ompi_info_t *info);
 OMPI_DECLSPEC int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *pset_name, char **keys, int nkeys, int wait, opal_info_t **info_used);
 OMPI_DECLSPEC int ompi_instance_get_pset_data (ompi_instance_t *instance, char *coll_pset, char *pset_name, char **keys, int nkeys, int wait, opal_info_t **info_used);
 OMPI_DECLSPEC int ompi_instance_get_pset_data_nb (ompi_instance_t *instance, char *coll_pset, char *pset_name, char **keys, int nkeys, int wait, opal_info_t **info_used, ompi_request_t **req);
@@ -234,6 +234,16 @@ pmix_proc_t ompi_intance_get_pmixid(void);
 
 int ompi_mpi_instance_refresh (ompi_instance_t *instance, opal_info_t *info, char *pset_name, ompi_psetop_type_t rc_type, char *result_pset, bool root);
 void ompi_instance_clear_rc_cache(char *delta_pset);
+
+int opal_pmix_lookup(pmix_key_t key, pmix_value_t *value, pmix_info_t *lookup_info, size_t ninfo);
+int opal_pmix_lookup_string_wait(char * key, char *val, int val_length);
+int opal_pmix_lookup_string(char * key, char *val, int val_length);
+int opal_pmix_lookup_pset_info(char **keys, size_t nkeys, pmix_info_t *info, size_t ninfo, char *pset_name, pmix_info_t **results, size_t *nresults);
+int opal_pmix_publish(pmix_key_t key, pmix_value_t value);
+int opal_pmix_publish_string(char * key, char *val, int val_length);
+int opal_pmix_publish_pset_info(char **keys, pmix_value_t *values, int nkv, char *pset_name);
+
+void coll_lookup_cb( pmix_status_t status, pmix_info_t *info, size_t ninfo, void *cbdata, pmix_release_cbfunc_t release_fn, void *release_cbdata);
 /**
  * @brief current number of active instances
  */

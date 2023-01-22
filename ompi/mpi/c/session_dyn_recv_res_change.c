@@ -39,5 +39,5 @@ int MPI_Session_dyn_recv_res_change(MPI_Session session, char * assoc_pset, int 
     *type = MPI_OMPI_CONVT_PSET_OP(ompi_rc_op_type);
     *num_delta_psets = (int) num_delta;
     
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

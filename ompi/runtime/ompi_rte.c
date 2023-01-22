@@ -973,14 +973,12 @@ static bool check_file(const char *root, const char *path)
 int ompi_rte_refresh_job_size(){
     int ret;
     pmix_status_t rc;
-    char *error=NULL;
 
     uint32_t u32, *u32ptr;
-    uint16_t u16, *u16ptr;
     u32ptr = &u32;
-    u16ptr = &u16;
     
-    
+    char * error;
+
     opal_process_name_t pname;
     /*
     size_t sz;

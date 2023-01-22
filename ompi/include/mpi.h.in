@@ -770,6 +770,8 @@ enum {
 #define MPI_PSETOP_TYPE_SUB             "mpi.psetop.type.sub"
 #define MPI_PSETOP_TYPE_REPLACE         "mpi.psetop.type.replace"
 #define MPI_PSETOP_TYPE_MALLEABLE       "mpi.psetop.type.malleable"
+#define MPI_PSETOP_TYPE_GROW            "mpi.psetop.type.grow"
+#define MPI_PSETOP_TYPE_SHRINK          "mpi.psetop.type.shrink"
 #define MPI_PSETOP_TYPE_UNION           "mpi.psetop.type.union" 
 #define MPI_PSETOP_TYPE_DIFFERENCE      "mpi.psetop.type.difference"
 #define MPI_PSETOP_TYPE_INTERSECTION    "mpi.psetop.type.intersect"
@@ -781,6 +783,8 @@ enum{
    MPI_PSETOP_SUB,
    MPI_PSETOP_REPLACE,
    MPI_PSETOP_MALLEABLE,
+   MPI_PSETOP_GROW,
+   MPI_PSETOP_SHRINK,
    MPI_PSETOP_UNION, 
    MPI_PSETOP_DIFFERENCE,
    MPI_PSETOP_INTERSECTION
@@ -2780,8 +2784,8 @@ OMPI_DECLSPEC  int MPI_Session_dyn_v1_recv_res_change_nb (MPI_Session session, c
 OMPI_DECLSPEC  int MPI_Session_dyn_v1_request_res_change (MPI_Session session, int delta, char *assoc_pset, int rc_type, MPI_Info *info);
 OMPI_DECLSPEC  int MPI_Session_dyn_v1_request_res_change_nb (MPI_Session session, int delta, char *assoc_pset, int rc_type, MPI_Info *info, MPI_Request *req);
 
-OMPI_DECLSPEC  int MPI_Session_dyn_v2a_psetop (MPI_Session session, int op, char **input_sets, int ninput, char *** output_sets, int *noutput, MPI_Info info);
-OMPI_DECLSPEC  int MPI_Session_dyn_v2a_psetop_nb (MPI_Session session, int op, char **input_sets, int ninput, char *** output_sets, int *noutput, MPI_Info info, MPI_Request *request);
+OMPI_DECLSPEC  int MPI_Session_dyn_v2a_psetop (MPI_Session session, int *op, char **input_sets, int ninput, char *** output_sets, int *noutput, MPI_Info info);
+OMPI_DECLSPEC  int MPI_Session_dyn_v2a_psetop_nb (MPI_Session session, int *op, char **input_sets, int ninput, char *** output_sets, int *noutput, MPI_Info info, MPI_Request *request);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2a_query_psetop (MPI_Session session, char *coll_pset, char * input_pset, int *type, char ***output_psets, int *noutput);
 OMPI_DECLSPEC  int MPI_Session_dyn_v2a_query_psetop_nb (MPI_Session session, char *coll_pset, char * input_pset, int *type, char ***output_psets, int *noutput, MPI_Request *req);
 

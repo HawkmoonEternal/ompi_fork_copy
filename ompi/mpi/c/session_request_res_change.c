@@ -31,6 +31,7 @@ int MPI_Session_request_res_change(MPI_Session session, int delta, char *assoc_p
     rc = ompi_instance_request_res_change(session, delta, assoc_pset, rc_type, info);
 
     //ERROR HANDLING
-       
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session,
+                            rc, FUNC_NAME);
+
 }

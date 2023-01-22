@@ -15,7 +15,7 @@
 //#define MPI_Session_confirm_res_change PMPI_Session_confirm_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_rc_handle_get_num_ops";
+static const char FUNC_NAME[] = "MPI_Session_dyn_v2b_rc_handle_get_num_output";
 
 
 int MPI_Session_dyn_v2b_rc_handle_get_num_output(MPI_Session session, MPI_RC_handle rc_op_handle, int op_index, int *num_psets){
@@ -25,5 +25,5 @@ int MPI_Session_dyn_v2b_rc_handle_get_num_output(MPI_Session session, MPI_RC_han
     
     *num_psets = n_psets;
 
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

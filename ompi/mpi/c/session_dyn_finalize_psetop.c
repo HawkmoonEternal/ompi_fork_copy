@@ -15,7 +15,7 @@
 //#define MPI_Session_get_res_change PMPI_Session_get_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
+static const char FUNC_NAME[] = "MPI_Session_dyn_finalize_psetop";
 
 
 int MPI_Session_dyn_finalize_psetop(MPI_Session session, char * pset_name){
@@ -28,5 +28,5 @@ int MPI_Session_dyn_finalize_psetop(MPI_Session session, char * pset_name){
 
     rc = ompi_instance_dyn_finalize_psetop((ompi_instance_t *) session, pset_name);
     
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

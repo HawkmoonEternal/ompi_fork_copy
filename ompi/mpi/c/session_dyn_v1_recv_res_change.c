@@ -15,14 +15,13 @@
 //#define MPI_Session_get_res_change PMPI_Session_get_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
+static const char FUNC_NAME[] = "MPI_Session_dyn_v1_recv_res_change";
 
 
 int MPI_Session_dyn_v1_recv_res_change(MPI_Session session, char * assoc_pset, int *type, char *delta_pset, int *incl){
     int rc;
-    char **delta_psets = NULL;
     ompi_psetop_type_t ompi_rc_op_type;
-    size_t num_delta = 0, n;
+
     //PARAM CHECK
     if (NULL == session || MPI_SESSION_NULL == session) {
             return MPI_ERR_ARG;
@@ -33,9 +32,8 @@ int MPI_Session_dyn_v1_recv_res_change(MPI_Session session, char * assoc_pset, i
     if(rc == OPAL_ERR_NOT_FOUND || rc == OMPI_SUCCESS){
         rc = MPI_SUCCESS;
     }
-    //ERROR HANDLING
-    
     *type = MPI_OMPI_CONVT_PSET_OP(ompi_rc_op_type);
-
-    return rc;
+    
+    //ERROR HANDLING
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

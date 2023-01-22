@@ -14,7 +14,7 @@
 //#define MPI_Session_request_res_change PMPI_Session_request_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_dyn_request_res_change";
+static const char FUNC_NAME[] = "MPI_Session_dyn_v2c_psetop";
 
 
 int MPI_Session_dyn_v2c_psetop(MPI_Session session, MPI_Info *setop_infos, int ninfo, int *flag){
@@ -24,5 +24,5 @@ int MPI_Session_dyn_v2c_psetop(MPI_Session session, MPI_Info *setop_infos, int n
 
     //ERROR HANDLING
        
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

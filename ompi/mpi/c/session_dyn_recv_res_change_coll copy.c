@@ -39,5 +39,5 @@ int MPI_Session_dyn_v2_recv_res_change_coll(MPI_Session session, char *coll_pset
 
     printf("received: rc_type = %d, rc_status = %d, incl = %d\n", *type, rc_status, *incl);
     
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

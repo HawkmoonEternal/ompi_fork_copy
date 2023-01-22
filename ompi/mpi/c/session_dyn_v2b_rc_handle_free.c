@@ -15,7 +15,7 @@
 //#define MPI_Session_confirm_res_change PMPI_Session_confirm_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_rc_handle_create";
+static const char FUNC_NAME[] = "MPI_Session_rc_handle_free";
 
 
 int MPI_Session_dyn_v2b_rc_handle_free(MPI_Session session, MPI_RC_handle *rc_op_handle){
@@ -27,5 +27,5 @@ int MPI_Session_dyn_v2b_rc_handle_free(MPI_Session session, MPI_RC_handle *rc_op
     }
     rc = ompi_instance_dyn_v2b_rc_op_handle_free((ompi_instance_t *) session, (ompi_instance_rc_op_handle_t **) rc_op_handle);
     
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

@@ -48,5 +48,6 @@ int MPI_Session_get_pset_info (MPI_Session session, const char *pset_name, MPI_I
     }
 
     ret = ompi_instance_get_pset_info (session, pset_name, (opal_info_t **) info_used);
-    return OMPI_ERRHANDLER_INVOKE(session, ret, FUNC_NAME);
+    OMPI_ERRHANDLER_RETURN (ret, (NULL == session) ? MPI_SESSION_NULL : session,
+                            ret, FUNC_NAME);
 }

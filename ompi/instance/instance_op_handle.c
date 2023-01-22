@@ -55,7 +55,6 @@
 
 #include "ompi/instance/instance_op_handle.h"
 
-#pragma region op_info
 /* Set OP info */ 
 static void ompi_instance_set_op_info_constructor(ompi_instance_set_op_info_t *op_info){
 
@@ -72,15 +71,17 @@ static void ompi_instance_set_op_info_constructor(ompi_instance_set_op_info_t *o
 
 static void ompi_instance_set_op_info_destructor(ompi_instance_set_op_info_t *op_info){
 
+    size_t n;
+    
     if(NULL != op_info->input_names){
-        for(int n = 0; n < op_info->n_input_names; n++){
+        for(n = 0; n < op_info->n_input_names; n++){
             free(op_info->input_names[n]);
         }
         free(op_info->input_names);
     }
 
     if(NULL != op_info->output_names){
-        for(int n = 0; n < op_info->n_output_names; n++){
+        for(n = 0; n < op_info->n_output_names; n++){
             free(op_info->output_names[n]);
         }
         free(op_info->output_names);
@@ -91,7 +92,7 @@ static void ompi_instance_set_op_info_destructor(ompi_instance_set_op_info_t *op
     }
 
     if(NULL != op_info->pset_info_lists){
-        for(int n = 0; n < op_info->n_pset_info_lists; n++){
+        for(n = 0; n < op_info->n_pset_info_lists; n++){
             PMIX_INFO_LIST_RELEASE(op_info->pset_info_lists[n]);
         }
         free(op_info->pset_info_lists);
@@ -99,6 +100,8 @@ static void ompi_instance_set_op_info_destructor(ompi_instance_set_op_info_t *op
 }
 
 OBJ_CLASS_INSTANCE(ompi_instance_set_op_info_t, opal_list_item_t, ompi_instance_set_op_info_constructor, ompi_instance_set_op_info_destructor);
+
+ int set_op_info_serialize(ompi_instance_set_op_info_t *op_info, pmix_info_t *info);
 
 /* Serialize a set op info object into a single nested PMIx info object:
  *  - "mpi.op_info"         :   darray(4, PMIX_Info)
@@ -109,8 +112,8 @@ OBJ_CLASS_INSTANCE(ompi_instance_set_op_info_t, opal_list_item_t, ompi_instance_
  */
 int set_op_info_serialize(ompi_instance_set_op_info_t *op_info, pmix_info_t *info){
 
-    int n, rc;
-    size_t n_infos;
+    size_t n, n_infos;
+    int rc;
     pmix_data_array_t *darray_tmp = NULL, darray_tmp2, *darray_set_op_info;
     pmix_info_t *info_ptr, *info_ptr2;
     pmix_value_t *val_ptr;
@@ -184,9 +187,7 @@ int set_op_info_serialize(ompi_instance_set_op_info_t *op_info, pmix_info_t *inf
     return OMPI_SUCCESS;
 
 }
-#pragma endregion
 
-#pragma region set_op_handle
 /* Set OP handle */
 static void ompi_instance_set_op_handle_constructor(ompi_instance_set_op_handle_t *set_op){
     
@@ -206,8 +207,9 @@ OBJ_CLASS_INSTANCE(ompi_instance_set_op_handle_t, opal_list_item_t, ompi_instanc
  *          - PMIX_QUERY_PSETOP_TYPE   :   psetop_directive
  *          - "mpi.op_info"             :   darray(4, PMIX_INFO)    ** see above ** 
  */
+int set_op_handle_serialize(ompi_instance_set_op_handle_t *set_op_handle, pmix_info_t *info);
+
 int set_op_handle_serialize(ompi_instance_set_op_handle_t *set_op_handle, pmix_info_t *info){
-    int n, k;
     pmix_data_array_t *darray_set_op;
     pmix_info_t *info_ptr;
 
@@ -224,9 +226,7 @@ int set_op_handle_serialize(ompi_instance_set_op_handle_t *set_op_handle, pmix_i
 
     return OMPI_SUCCESS;
 }
-#pragma endregion
 
-#pragma region rc_op_handle
 /* RC OP handle */
 static void ompi_instance_rc_op_handle_constructor(ompi_instance_rc_op_handle_t *rc_op){
     rc_op->rc_type = OMPI_PSETOP_NULL;
@@ -278,8 +278,8 @@ int rc_op_handle_create(ompi_instance_rc_op_handle_t **rc_op_handle){
 
 int rc_op_handle_add_op(ompi_psetop_type_t rc_type, char **input_names, size_t n_input_names, char **output_names, size_t n_output_names, ompi_info_t *info, ompi_instance_rc_op_handle_t *rc_op_handle){
     
-    int rc, n, nkeys, flag;
-    char *alias;
+    int rc, nkeys, flag;
+    size_t n;
     opal_cstring_t *opal_key, *opal_value;
     ompi_instance_rc_op_handle_t * rc_op_handle_ptr;
     ompi_instance_set_op_info_t *set_op_info;
@@ -340,7 +340,7 @@ int rc_op_handle_add_op(ompi_psetop_type_t rc_type, char **input_names, size_t n
             set_op_info->n_op_info = nkeys;
             PMIX_INFO_CREATE(set_op_info->op_info, nkeys);
 
-            for(n = 0; n < nkeys; n++){
+            for(n = 0; n < (size_t) nkeys; n++){
                 rc = ompi_info_get_nthkey(info, n, &opal_key);
                 if(OMPI_SUCCESS != rc){
                     OBJ_RELEASE(rc_op_handle_ptr);
@@ -374,11 +374,9 @@ int rc_op_handle_add_op(ompi_psetop_type_t rc_type, char **input_names, size_t n
 }
 
 int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, char * pset_name, pmix_info_t * info, int ninfo){
-    int n, k, rc;
-    size_t old_size, new_size;
-    pmix_info_t *new_info, *info_ptr;
-    bool found = false;
-    ompi_instance_set_op_handle_t *set_op_handle;
+    int k, rc;
+    size_t n, old_size, new_size;
+    pmix_info_t *info_ptr;
     ompi_mpi_instance_pset_t *pset_ptr;
     pmix_data_array_t darray;
     void **old_lists, **new_lists;
@@ -591,10 +589,11 @@ int rc_op_handle_get_ouput_name(ompi_instance_rc_op_handle_t * rc_op_handle, siz
     return OMPI_SUCCESS;
 }
 
+int rc_op_handle_get_nth_op(ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, ompi_instance_set_op_handle_t **op);
+
 int rc_op_handle_get_nth_op(ompi_instance_rc_op_handle_t * rc_op_handle, size_t op_index, ompi_instance_set_op_handle_t **op){
     
     size_t index;
-    char *out_pset_name = NULL;
     ompi_instance_set_op_handle_t *setop;
 
     if(op_index >= rc_op_handle_get_num_ops(rc_op_handle)){
@@ -642,7 +641,6 @@ int rc_op_handle_free(ompi_instance_rc_op_handle_t ** rc_op_handle){
  */
 int rc_op_handle_serialize(ompi_instance_rc_op_handle_t *rc_op_handle, pmix_info_t *info){
 
-    ompi_instance_set_op_info_t rc_op_info;
     ompi_instance_set_op_handle_t *set_op_handle; 
     pmix_data_array_t *darray_rc_op, *darray_set_op;
     pmix_info_t *info_ptr, *info_ptr2;
@@ -675,10 +673,9 @@ int rc_op_handle_serialize(ompi_instance_rc_op_handle_t *rc_op_handle, pmix_info
 }
 
 int rc_op_handle_deserialize(pmix_info_t *rc_op_handle_info, ompi_instance_rc_op_handle_t **rc_op_handle){
-    size_t n, k, m, i, ninfo, nsetop_info = 0, ninfo2, index, ninput, noutput;
+    size_t n, k, i, ninfo, nsetop_info = 0, ninfo2, index, ninput, noutput;
     ompi_psetop_type_t setop_type = OMPI_PSETOP_NULL;
     
-    size_t n_op_output = 0;
     char ** input, ** output;
 
     pmix_value_t * val_ptr;
@@ -810,7 +807,6 @@ int rc_op_handle_deserialize(pmix_info_t *rc_op_handle_info, ompi_instance_rc_op
 
     }
 
-SUCCESS:
     return OMPI_SUCCESS;   
 ERROR:
     for(n = 0; n < ninput; n++){
@@ -837,6 +833,8 @@ ERROR:
 
 }
 
+void string_array_from_comma_list(char *s, char *** str_array, size_t *count);
+
 void string_array_from_comma_list(char *s, char *** str_array, size_t *count){
     int i;
     char *str;
@@ -855,6 +853,8 @@ void string_array_from_comma_list(char *s, char *** str_array, size_t *count){
         str = strtok(NULL, ",");
     }
 }
+
+char * comma_list_from_string_array(char **str_array, size_t n_str);
 
 char * comma_list_from_string_array(char **str_array, size_t n_str){
     size_t size, n;
@@ -934,7 +934,7 @@ ERROR:
 }
 
 int rc_op_handle_from_info(ompi_info_t **info, size_t num_ops, ompi_instance_rc_op_handle_t **op_handle){
-    int rc, flag, nkeys, n;
+    int rc, nkeys, n, flag;
     size_t index, ninput, noutput;
     char **input, **output;
     ompi_psetop_type_t type;
@@ -975,14 +975,14 @@ int rc_op_handle_from_info(ompi_info_t **info, size_t num_ops, ompi_instance_rc_
             }
 
             if(0 == strcmp(MPI_KEY_PSETOP_TYPE, key->string)){
-                type = OMPI_PSETOP_FROM_STRING(value->string);
+                type = OMPI_PSETOP_FROM_STRING((char *) value->string);
             }
             else if(0 == strcmp(MPI_KEY_PSETOP_INPUT, key->string)){
-                string_array_from_comma_list(value->string, &input, &ninput);
+                string_array_from_comma_list((char *) value->string, &input, &ninput);
 
             }
             else if(0 == strcmp(MPI_KEY_PSETOP_OUTPUT, key->string)){
-                string_array_from_comma_list(value->string, &output, &noutput);
+                string_array_from_comma_list((char *) value->string, &output, &noutput);
             }
             else{
                 rc = ompi_info_set(op_info, key->string, value->string);
@@ -1020,5 +1020,3 @@ int rc_op_handle_from_info(ompi_info_t **info, size_t num_ops, ompi_instance_rc_
 
     return OMPI_SUCCESS;
 }
-
-#pragma endregion

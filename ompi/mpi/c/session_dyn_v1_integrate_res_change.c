@@ -21,5 +21,6 @@ static const char FUNC_NAME[] = "MPI_Session_dyn_integrate_res_change";
 int MPI_Session_dyn_v1_integrate_res_change(MPI_Session session, MPI_Info info, char *delta_pset, char *pset_buf, int provider, int *terminate){
     int rc;
     rc = ompi_instance_dyn_v1_integrate_res_change(session, delta_pset, pset_buf, provider, terminate);
-    return rc;
+    
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

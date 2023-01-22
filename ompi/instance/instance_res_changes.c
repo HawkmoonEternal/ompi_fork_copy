@@ -93,7 +93,7 @@ static void ompi_resource_change_destructor(ompi_mpi_instance_resource_change_t 
     free(rc->bound_psets);
 }
 
-OBJ_CLASS_INSTANCE(ompi_mpi_instance_resource_change_t, opal_object_t, ompi_resource_change_constructor, ompi_resource_change_constructor);
+OBJ_CLASS_INSTANCE(ompi_mpi_instance_resource_change_t, opal_object_t, ompi_resource_change_constructor, ompi_resource_change_destructor);
 
 /* delete resource change from local cache */
 void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
@@ -102,15 +102,19 @@ void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
                        pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata){
 
     size_t n;
-    pmix_status_t rc=PMIX_SUCCESS;
     size_t sz;
     char *pset_name = NULL;
+    int rc;
     
     
     ompi_instance_lock_rc_and_psets();
     for(n = 0; n < ninfo; n++){
         if(0 == strcmp(info[n].key, PMIX_PSET_NAME)){
             PMIX_VALUE_UNLOAD(rc, &info[n].value, (void**)&pset_name, &sz);
+            if(PMIX_SUCCESS != rc){
+                ompi_instance_unlock_rc_and_psets();
+                return;
+            }
         }
     }
     if(NULL != pset_name){
@@ -310,6 +314,8 @@ static void get_res_change_as_query_result(ompi_mpi_instance_resource_change_t *
 
 }
 
+int ompi_instance_get_rc_type( char *delta_pset, ompi_psetop_type_t *rc_type);
+
 int ompi_instance_get_rc_type( char *delta_pset, ompi_psetop_type_t *rc_type){
     ompi_instance_lock_rc_and_psets();
     ompi_mpi_instance_resource_change_t *res_change;
@@ -319,25 +325,6 @@ int ompi_instance_get_rc_type( char *delta_pset, ompi_psetop_type_t *rc_type){
     return OPAL_SUCCESS;
 }
 
-int print_res_change(char *name){
-
-    ompi_instance_lock_rc_and_psets();
-    ompi_mpi_instance_resource_change_t *rc_out = get_res_change_for_name(name);
-
-    if(NULL == rc_out){
-        printf("print_res_change: Resource change %s: NULL\n", name);
-        return -1;
-    }
-    printf("print_res_change: Resource change %s: ", name);
-    printf("[type: %d", rc_out->type);
-    printf(", status: %d", rc_out->status);
-    if(rc_out->bound_psets == NULL){
-        printf(", bound pset: NULL]\n");
-    }
-    printf(", bound pset: %s]\n", rc_out->bound_psets[0]->name);
-    ompi_instance_unlock_rc_and_psets();
-	return 0;
-}
 
 void res_change_clear_cache(char *delta_pset){
 
@@ -366,11 +353,8 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
                                                     pmix_release_cbfunc_t release_fn,
                                                     void *release_cbdata)
 {
-    size_t n, i, k, ninfo, size;
-    pmix_status_t rc;
-    size_t sz;
+    size_t n, i, k, ninfo;
     opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
-    bool assoc_self = false;
     pmix_value_t *val_ptr;
 
     pmix_info_t * info;
@@ -456,9 +440,7 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
 
 
 int get_res_change_info(char *input_name, ompi_psetop_type_t *type, char ***output_names, size_t *noutput_names, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
-    int ret = OPAL_SUCCESS;
     size_t n;
-    char pset_search_name[OPAL_MAX_PSET_NAME_LEN];
     pmix_status_t rc;
     pmix_query_t query;
     opal_pmix_lock_t lock;
@@ -571,14 +553,12 @@ int get_res_change_info(char *input_name, ompi_psetop_type_t *type, char ***outp
 }
 
 int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs, char *input_name, ompi_psetop_type_t *type, char ***output_names, size_t *noutput_names, int *incl, ompi_rc_status_t *status, opal_info_t **info_used, bool get_by_delta_name){
-    int ret = OPAL_SUCCESS;
     size_t n, nresults;
-    char pset_search_name[OPAL_MAX_PSET_NAME_LEN];
     pmix_status_t rc;
     pmix_query_t query;
     pmix_info_t *results;
     opal_pmix_lock_t lock;
-    bool refresh = true, is_leader, sent = false;
+    bool refresh = true, is_leader;
 
     ompi_instance_collective_t *coll;
 
@@ -685,14 +665,11 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
 }
 
 int get_res_change_info_collective_nb(pmix_proc_t *coll_procs, size_t n_coll_procs, char *input_name, pmix_info_cbfunc_t cbfunc, void *cbdata){
-    int ret = OPAL_SUCCESS;
-    size_t n, nresults;
-    char pset_search_name[OPAL_MAX_PSET_NAME_LEN];
+    size_t nresults;
     pmix_status_t rc;
     pmix_query_t query;
     pmix_info_t *results;
-    opal_pmix_lock_t lock;
-    bool refresh = true, is_leader, sent = false;
+    bool refresh = true, is_leader;
 
     ompi_instance_collective_t *coll;
 

@@ -23,5 +23,5 @@ int MPI_Session_dyn_v2b_rc_handle_add_pset_info(MPI_Session session, MPI_RC_hand
     
     rc = ompi_instance_dyn_v2b_rc_op_handle_add_pset_info((ompi_instance_t *) session, (ompi_instance_rc_op_handle_t *) rc_op_handle, pset_name, (ompi_info_t *) info);
     
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

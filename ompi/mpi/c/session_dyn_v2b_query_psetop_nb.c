@@ -15,7 +15,7 @@
 //#define MPI_Session_get_res_change PMPI_Session_get_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
+static const char FUNC_NAME[] = "MPI_Session_dyn_v2b_query_psetop_nb";
 
 
 int MPI_Session_dyn_v2b_query_psetop_nb(MPI_Session session, char *coll_pset, char * input_pset, MPI_RC_handle *rc_op_handle, MPI_Request *req){
@@ -27,8 +27,7 @@ int MPI_Session_dyn_v2b_query_psetop_nb(MPI_Session session, char *coll_pset, ch
     }
 
     rc = ompi_instance_dyn_v2b_query_psetop_nb((ompi_instance_t *) session, coll_pset, input_pset, (ompi_instance_rc_op_handle_t **) rc_op_handle, (ompi_request_t **) req);
+    
     //ERROR HANDLING
-    
-    
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

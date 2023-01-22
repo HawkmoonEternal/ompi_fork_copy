@@ -37,7 +37,7 @@ static const char FUNC_NAME[] = "MPI_Session_get_pset_data_nb";
 
 int MPI_Session_get_pset_data_nb (MPI_Session session, char *coll_pset_name, char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used, MPI_Request *req)
 {
-    int ret;
+    int rc;
 
     if (MPI_PARAM_CHECK) {
         OMPI_ERR_INIT_FINALIZE(FUNC_NAME);
@@ -48,6 +48,7 @@ int MPI_Session_get_pset_data_nb (MPI_Session session, char *coll_pset_name, cha
             return OMPI_ERRHANDLER_INVOKE (session, MPI_ERR_INFO, FUNC_NAME);
         }
     }
-    ret = ompi_instance_get_pset_data_nb ((ompi_instance_t *) session, coll_pset_name, pset_name, keys, nkeys, wait, info_used, (ompi_request_t **) req);
-    return OMPI_ERRHANDLER_INVOKE(session, ret, FUNC_NAME);
+    rc = ompi_instance_get_pset_data_nb ((ompi_instance_t *) session, coll_pset_name, pset_name, keys, nkeys, wait, (opal_info_t **) info_used, (ompi_request_t **) req);
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session,
+                            rc, FUNC_NAME);
 }

@@ -15,7 +15,7 @@
 //#define MPI_Session_pset_create_op PMPI_Session_pset_create_op
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_pset_create_op";
+static const char FUNC_NAME[] = "ompi_instance_dyn_v1_psetop_nb";
 
 int MPI_Session_dyn_v1_psetop_nb(MPI_Session session, int op, char *pset1, char *pset2, char *pset_result, MPI_Info info, MPI_Request *request){
 
@@ -35,7 +35,6 @@ int MPI_Session_dyn_v1_psetop_nb(MPI_Session session, int op, char *pset1, char 
     //ERROR HANDLING
     
     //ERROR HANDLING
-    //OMPI_ERRHANDLER_RETURN (rc, session, rc, FUNC_NAME);
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 
 }

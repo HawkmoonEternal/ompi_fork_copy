@@ -15,16 +15,14 @@
 //#define MPI_Session_get_res_change PMPI_Session_get_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_dyn_recv_change";
+static const char FUNC_NAME[] = "MPI_Session_dyn_v2a_query_psetop";
 
 
 int MPI_Session_dyn_v2a_query_psetop(MPI_Session session, char *coll_pset, char * input_pset, int *type, char ***output_psets, int *noutput){
     int rc;
     size_t _noutput = 0;
-    char bound_pset[PMIX_MAX_KEYLEN];
-    int flag = 0;
     ompi_psetop_type_t ompi_rc_op_type = OMPI_PSETOP_NULL;
-    ompi_rc_status_t rc_status = RC_INVALID;
+
     //PARAM CHECK
     if (NULL == session || MPI_SESSION_NULL == session) {
             return MPI_ERR_ARG;
@@ -37,5 +35,5 @@ int MPI_Session_dyn_v2a_query_psetop(MPI_Session session, char *coll_pset, char 
     *type = MPI_OMPI_CONVT_PSET_OP(ompi_rc_op_type);
     *noutput = (int) _noutput; 
     
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

@@ -14,12 +14,11 @@
 //#define MPI_Session_request_res_change PMPI_Session_request_res_change
 //#endif
 
-static const char FUNC_NAME[] = "MPI_Session_request_res_change";
+static const char FUNC_NAME[] = "MPI_Session_dyn_v1_request_res_change_nb";
 
 
 int MPI_Session_dyn_v1_request_res_change_nb(MPI_Session session, int delta, char *assoc_pset, int rc_type, MPI_Info *info, MPI_Request *req){
     int rc;
-    int flag = 0;
     ompi_psetop_type_t ompi_rc_op_type;
     //PARAM CHECK
     if (NULL == session || MPI_SESSION_NULL == session || NULL == assoc_pset) {
@@ -31,6 +30,5 @@ int MPI_Session_dyn_v1_request_res_change_nb(MPI_Session session, int delta, cha
     rc = ompi_instance_dyn_v1_request_res_change_nb(session, delta, assoc_pset, ompi_rc_op_type, info, (ompi_request_t **) req);
 
     //ERROR HANDLING
-       
-    return rc;
+    OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

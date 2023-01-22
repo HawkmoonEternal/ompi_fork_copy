@@ -65,12 +65,59 @@ static opal_recursive_mutex_t collectives_lock = OPAL_RECURSIVE_MUTEX_STATIC_INI
 /* CLASS INSTANCE */
 static void collective_constructor(ompi_instance_collective_t *coll);
 static void collective_destructor(ompi_instance_collective_t *coll);
+
 void coll_results_release(ompi_collective_results_t *results);
 void coll_params_release(ompi_collective_parameters_t *params);
 void coll_procs_release(ompi_collective_procs_t *procs);
 void coll_cbfunc_release(ompi_collective_cbfunc_t *cbfunc);
 
+void coll_params_create(ompi_collective_parameters_t **coll_params, ompi_parameters_type_t type);
+void coll_params_create(ompi_collective_parameters_t **coll_params, ompi_parameters_type_t type);
+void coll_params_load_info(ompi_collective_parameters_t *coll_params, pmix_info_t *info, size_t ninfo);
+void coll_params_load_query(ompi_collective_parameters_t *coll_params, pmix_query_t *query, size_t nqueries);
+void coll_params_load_pdata(ompi_collective_parameters_t *coll_params, pmix_pdata_t *pdata, size_t npdata, pmix_info_t *info, size_t ninfo);
+
+void info_params_release(ompi_info_parameters_t *params);
+void query_params_release(ompi_query_parameters_t *params);
+void pdata_params_release(ompi_pdata_parameters_t *params);
+void info_results_release(ompi_info_results_t *results);
+void ompi_collective_release_func(void *cbdata);
+
+void coll_results_create(ompi_collective_results_t **coll_results, ompi_results_type_t type);
+void coll_results_load_info(ompi_collective_results_t *coll_results, pmix_info_t *info, size_t ninfo);
+
+void coll_cbfunc_create(ompi_collective_cbfunc_t **coll_cbfunc, ompi_cbfunc_type_t type);
+void coll_cbfunc_load_info(ompi_collective_cbfunc_t *coll_cbfunc, pmix_info_cbfunc_t func);
+
+void coll_procs_create(ompi_collective_procs_t **coll_procs, pmix_proc_t *procs, size_t nprocs);
+
+void ompi_procs_serialize(ompi_collective_procs_t *coll_procs, pmix_info_t *info);
+void ompi_results_serialize(ompi_collective_results_t *coll_results, pmix_info_t *info);
+void ompi_params_serialize(ompi_collective_parameters_t *coll_params, pmix_info_t *info);
+void ompi_collective_serialize(ompi_instance_collective_t *coll, pmix_info_t *info);
+
+int ompi_results_deserialize(ompi_collective_results_t **coll_results, pmix_info_t *coll_results_info);
+int ompi_params_deserialize(ompi_collective_parameters_t **coll_params, pmix_info_t *coll_params_info);
+int ompi_procs_deserialize(ompi_collective_procs_t **coll_procs, pmix_info_t *coll_procs_info);
+int ompi_collective_deserialize(ompi_instance_collective_t ** coll, pmix_info_t *_info);
+
+bool cmp_procs(pmix_proc_t *coll_procs1, size_t n_coll_procs1, pmix_proc_t *coll_procs2, size_t n_coll_procs2);
+bool cmp_infos(pmix_info_t *info1, pmix_info_t *info2, size_t ninfo);
+bool compare_keys(char **keys1, char **keys2);
+bool cmp_info_params(ompi_info_parameters_t *params1, ompi_info_parameters_t *params2);
+bool cmp_query_params(ompi_query_parameters_t *params1, ompi_query_parameters_t *params2);
+bool cmp_lookup_params(ompi_pdata_parameters_t *params1, ompi_pdata_parameters_t *params2);
+bool cmp_params(ompi_collective_parameters_t *params1, ompi_collective_parameters_t *params2);
+bool cmp_collective(ompi_function_type_t coll_func, pmix_proc_t *coll_procs, size_t n_coll_procs, ompi_collective_parameters_t *coll_params, ompi_instance_collective_t *collective);
+
+ompi_instance_collective_t * search_pending_collectives( ompi_function_type_t coll_func, ompi_collective_procs_t *coll_procs, ompi_collective_parameters_t *coll_params);
+
 void enter_collective_provider( size_t evhdlr_registration_id, pmix_status_t status, const pmix_proc_t *source, pmix_info_t info[], size_t ninfo, pmix_info_t results[], size_t nresults, pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata);    
+int enter_collective_receiver(ompi_instance_collective_t *coll_in, bool wait);
+
+int execute_collective_callback(ompi_instance_collective_t *coll);
+int ompi_collective_send(ompi_instance_collective_t *coll, pmix_info_t *send_info, size_t n_send_info);
+
 
 OBJ_CLASS_INSTANCE(ompi_instance_collective_t, opal_list_item_t, collective_constructor, collective_destructor);
 
@@ -90,7 +137,9 @@ int ompi_instance_collectives_finalize(){
     return OMPI_SUCCESS;
 }
 
-#pragma region create_release
+
+void ompi_instance_collective_assign(ompi_instance_collective_t *coll, pmix_status_t status, ompi_collective_procs_t *coll_procs, ompi_function_type_t func_type, ompi_collective_parameters_t *params, ompi_collective_results_t *results, ompi_collective_cbfunc_t *cbfunc, void* cbdata);
+
 void ompi_instance_collective_assign(ompi_instance_collective_t *coll, pmix_status_t status, ompi_collective_procs_t *coll_procs, ompi_function_type_t func_type, ompi_collective_parameters_t *params, ompi_collective_results_t *results, ompi_collective_cbfunc_t *cbfunc, void* cbdata){
     coll->coll_procs = coll_procs;
     coll->coll_cbdata = cbdata;
@@ -127,6 +176,7 @@ static void collective_destructor(ompi_instance_collective_t *coll){
     OPAL_PMIX_DESTRUCT_LOCK(&coll->lock);
 }
 
+
 void ompi_collective_release_func(void *cbdata){
     ompi_instance_collective_t *coll = (ompi_instance_collective_t *) cbdata;
     OBJ_RELEASE(coll);
@@ -135,21 +185,21 @@ void ompi_collective_release_func(void *cbdata){
 /* PARAMS */
 static void pmix_query_xfer(pmix_query_t *dest, pmix_query_t *src){
     size_t m;
-
     PMIX_ARGV_COPY(dest->keys, src->keys);
     dest->nqual = src->nqual;
     PMIX_INFO_CREATE(dest->qualifiers, dest->nqual);
     for(m = 0; m < dest->nqual; m++){
         PMIX_INFO_XFER(&dest->qualifiers[m], &src->qualifiers[m]);
     }
-
 }
 
 static void pmix_pdata_xfer(pmix_pdata_t *dest, pmix_pdata_t *src){
-    size_t m;
     int rc;
     PMIX_LOAD_KEY(dest, src->key);
     PMIX_VALUE_XFER_DIRECT(rc, &(dest->value), (pmix_value_t *) &(src->value));
+    if(PMIX_SUCCESS != rc){
+        OMPI_ERROR_LOG(rc);
+    }
     PMIX_PROC_LOAD(&dest->proc, src->proc.nspace, src->proc.rank);
 }
 
@@ -320,9 +370,6 @@ void coll_procs_release(ompi_collective_procs_t *coll_procs){
     free(coll_procs);
 }
 
-#pragma endregion
-
-#pragma region serialization
 void ompi_procs_serialize(ompi_collective_procs_t *coll_procs, pmix_info_t *info){
     char *key = "ompi.collective.procs";
     size_t n;
@@ -438,8 +485,8 @@ void ompi_params_serialize(ompi_collective_parameters_t *coll_params, pmix_info_
 }
 
 void ompi_collective_serialize(ompi_instance_collective_t *coll, pmix_info_t *info){
-    pmix_info_t *params_info, *results_info, *procs_info, *coll_info, *info_ptr;
-    pmix_data_array_t *coll_darray, *darray_ptr;
+    pmix_info_t *coll_info;
+    pmix_data_array_t *coll_darray;
     size_t n = 0, ninfo;
     ninfo = (NULL != coll->coll_params  ? 1 : 0) +
             (NULL != coll->coll_results ? 1 : 0) +
@@ -504,15 +551,13 @@ int ompi_results_deserialize(ompi_collective_results_t **coll_results, pmix_info
 }
 
 int ompi_params_deserialize(ompi_collective_parameters_t **coll_params, pmix_info_t *coll_params_info){
-    size_t size, size2, size_outer, n;
+    size_t size, size2;
     pmix_info_t *info_ptr, *info_ptr_outer;
     pmix_query_t *query_ptr;
     pmix_pdata_t *pdata_ptr;
     ompi_parameters_type_t params_type;
     
     info_ptr_outer = (pmix_info_t *) coll_params_info[0].value.data.darray->array;
-    size_outer = coll_params_info[0].value.data.darray->size;
-
 
     params_type = info_ptr_outer[0].value.data.integer;
 
@@ -567,11 +612,10 @@ int ompi_collective_deserialize(ompi_instance_collective_t ** coll, pmix_info_t 
     ompi_collective_parameters_t *coll_params = NULL;
     ompi_collective_procs_t *coll_procs = NULL;
     ompi_function_type_t function_type = OMPI_FUNC_NONE;
-    pmix_proc_t *proc_ptr;
     pmix_info_t *info = NULL;
     pmix_status_t status = PMIX_ERR_EMPTY;
 
-    size_t ninfo, n, i;
+    size_t ninfo, n;
     int ret = OMPI_SUCCESS;
 
     ninfo = _info->value.data.darray->size;
@@ -615,9 +659,6 @@ int ompi_collective_deserialize(ompi_instance_collective_t ** coll, pmix_info_t 
     return OMPI_SUCCESS;
 }
 
-#pragma endregion
-
-#pragma region search_and_compare
 /* TODO: This is an O(n^2) function as we assume arbitrary order */
 bool cmp_procs(pmix_proc_t *coll_procs1, size_t n_coll_procs1, pmix_proc_t *coll_procs2, size_t n_coll_procs2){
     size_t n, m;
@@ -677,9 +718,6 @@ bool cmp_infos(pmix_info_t *info1, pmix_info_t *info2, size_t ninfo){
 }
 
 bool cmp_info_params(ompi_info_parameters_t *params1, ompi_info_parameters_t *params2){
-    size_t n, m;
-    bool found;
-    pmix_info_t *info1, *info2;
 
     if(params1->ninfo != params2->ninfo){
         return false;
@@ -713,7 +751,7 @@ bool compare_keys(char **keys1, char **keys2){
 }
 
 bool cmp_query_params(ompi_query_parameters_t *params1, ompi_query_parameters_t *params2){
-    size_t n, m, i, k;
+    size_t n, m;
     bool found;
     pmix_query_t *query1, *query2;
 
@@ -749,7 +787,7 @@ bool cmp_query_params(ompi_query_parameters_t *params1, ompi_query_parameters_t 
 }
 
 bool cmp_lookup_params(ompi_pdata_parameters_t *params1, ompi_pdata_parameters_t *params2){
-    size_t n, m, i, k;
+    size_t n, m;
     bool found;
     pmix_pdata_t *pdata1, *pdata2;
     pmix_info_t *info1, *info2;
@@ -844,19 +882,7 @@ ompi_instance_collective_t * search_pending_collectives( ompi_function_type_t co
     return NULL;
 }
 
-#pragma endregion
 
-void print_type(ompi_instance_collective_t *coll){
-    printf("cbfunc Type :%d\n", coll->coll_cbfunc->type);
-}
-
-void print_status(ompi_instance_collective_t *coll){
-    printf("coll status :%d\n", coll->status);
-}
-
-void print_ninfo(ompi_instance_collective_t *coll){
-    printf("ninfo results :%d\n", coll->coll_results->results.info_results.ninfo);
-}
 
 /* Note! The coll->cbfunc is reponsible for freeing the cbdata if desired */
 int execute_collective_callback(ompi_instance_collective_t *coll){
@@ -986,21 +1012,12 @@ int enter_collective_receiver(ompi_instance_collective_t *coll_in, bool wait){
 /* This is the event-handler for the PMIx_Notification sent by the provider of the collective */
 void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t status, const pmix_proc_t *source, pmix_info_t info[], size_t ninfo, pmix_info_t results[], size_t nresults, pmix_event_notification_cbfunc_fn_t cbfunc, void *cbdata){
     
-    int n, m, ret = OMPI_ERR_BAD_PARAM;
-    size_t n_coll_procs = 0, n_coll_params, n_coll_results;
+    int ret = OMPI_ERR_BAD_PARAM;
+    size_t n;
     bool receiver_is_waiting;
 
-    //printf("Proc %d: Provider event notification callback entered with %d infos\n", opal_process_info.myprocid.rank, ninfo);
-
-
     ompi_instance_collective_t *coll, *coll_in;
-    ompi_collective_results_t *coll_results;
-    ompi_collective_parameters_t *coll_params;
-    ompi_collective_procs_t *coll_procs = NULL;
-    pmix_proc_t *proc_ptr;
-    pmix_info_t *coll_params_info = NULL, *coll_results_info = NULL, *info_ptr;
 
-    /* TODO: Move to seperate deserializer function*/
     for(n = 0; n < ninfo; n++){
         if(PMIX_CHECK_KEY(&info[n], "ompi.collective")){
             ret = ompi_collective_deserialize(&coll_in, &info[n]);
@@ -1010,8 +1027,6 @@ void enter_collective_provider(size_t evhdlr_registration_id, pmix_status_t stat
     if(ret != OMPI_SUCCESS){
         return;
     }
-
-    //coll_in->status = OMPI_SUCCESS;
 
     /* Lock the list of pending collectives */
     opal_mutex_lock(&collectives_lock);
@@ -1194,7 +1209,7 @@ int recv_collective_data_lookup_nb(pmix_proc_t *procs, size_t nprocs, pmix_pdata
 void ompi_instance_collective_infocb_send(pmix_status_t status, pmix_info_t *results, size_t nresults, void *cbdata, pmix_release_cbfunc_t release_fn, void *release_cbdata)
 {
     ompi_instance_collective_t *coll = (ompi_instance_collective_t *)cbdata;
-    ompi_collective_results_t *coll_results;
+
     coll->status = status;
     coll_results_create(&coll->coll_results, OMPI_RESULTS_INFO);
     coll_results_load_info(coll->coll_results, results, nresults);
