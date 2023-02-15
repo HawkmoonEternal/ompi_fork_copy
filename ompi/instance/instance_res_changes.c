@@ -100,11 +100,20 @@ static void ompi_resource_change_destructor(ompi_mpi_instance_resource_change_t 
 OBJ_CLASS_INSTANCE(ompi_mpi_instance_resource_change_t, opal_object_t, ompi_resource_change_constructor, ompi_resource_change_destructor);
 
 static void ompi_res_change_query_cbdata_constructor(res_change_query_cbdata_t *cbdata){
-    cbdata->alloc_req_id = -1;
     cbdata->res_change = NULL;
+    OPAL_PMIX_CONSTRUCT_LOCK(&cbdata->lock);
 }
 
-OBJ_CLASS_INSTANCE(res_change_query_cbdata_t, opal_object_t, ompi_res_change_query_cbdata_constructor, NULL);
+static void ompi_res_change_query_cbdata_destructor(res_change_query_cbdata_t *cbdata){
+    if(NULL != cbdata->res_change){
+        OBJ_RELEASE(cbdata->res_change);
+    }
+    OPAL_PMIX_DESTRUCT_LOCK(&cbdata->lock);
+}
+
+OBJ_CLASS_INSTANCE(res_change_query_cbdata_t, opal_object_t, ompi_res_change_query_cbdata_constructor, ompi_res_change_query_cbdata_destructor);
+
+
 
 /* delete resource change from local cache */
 void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
@@ -427,7 +436,7 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
                                                     void *release_cbdata)
 {
     size_t n, i, k, ninfo;
-    opal_pmix_lock_t *lock = (opal_pmix_lock_t *) cbdata;
+    res_change_query_cbdata_t  *query_cbdata = (res_change_query_cbdata_t *) cbdata;
     pmix_value_t *val_ptr;
 
     pmix_info_t * info;
@@ -495,12 +504,15 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
                     }else{
                         res_change->status = RC_ANNOUNCED;
                         queried_res_change = copy_res_change(res_change);
+                        if(NULL != query_cbdata){
+                            query_cbdata->res_change = queried_res_change;
+                        }
                         if(!res_change_already_defined(res_change)){
                             opal_list_append(&ompi_mpi_instance_resource_changes, &res_change->super);
                         }else{
                             OBJ_RELEASE(res_change);
                         }
-                        opal_list_append(&queried_res_changes, &queried_res_change->super);
+                        
                     }
                     ompi_instance_unlock_rc_and_psets();
                 }
@@ -511,8 +523,8 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
     if (NULL != release_fn) {
         release_fn(release_cbdata);
     }
-    if(NULL != lock){
-        OPAL_PMIX_WAKEUP_THREAD(lock);
+    if(NULL != query_cbdata){
+        OPAL_PMIX_WAKEUP_THREAD(&query_cbdata->lock);
     }
 }
 
@@ -523,19 +535,22 @@ int get_res_change_info(char *input_name, ompi_psetop_type_t *type, char ***outp
     pmix_query_t query;
     opal_pmix_lock_t lock;
     bool refresh = true;
+    res_change_query_cbdata_t *query_cbdata = NULL;
+
     ompi_instance_lock_rc_and_psets();
 
     if(NULL == input_name){ 
         ompi_instance_unlock_rc_and_psets();
         return OMPI_ERR_BAD_PARAM;
     }
-    
-    //res_change_query_cbdata_t *query_cbdata = OBJ_NEW(res_change_query_cbdata_t);
 
     ompi_mpi_instance_resource_change_t *res_change;
     /* if we don't find a valid & active res change locally, query the runtime. TODO: MPI Info directive QUERY RUNTIME */
 
     if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+        
+        
+
         PMIX_QUERY_CONSTRUCT(&query);
         PMIX_ARGV_APPEND(rc, query.keys, PMIX_QUERY_PSETOP_TYPE);
         PMIX_ARGV_APPEND(rc, query.keys, PMIX_QUERY_PSETOP_INPUT);
@@ -549,38 +564,40 @@ int get_res_change_info(char *input_name, ompi_psetop_type_t *type, char ***outp
         PMIX_INFO_LOAD(&query.qualifiers[2], PMIX_PSET_NAME, input_name, PMIX_STRING);
         
         ompi_instance_unlock_rc_and_psets();
-        OPAL_PMIX_CONSTRUCT_LOCK(&lock);
+        
         /*
          * TODO: need to handle this better
          */
+        query_cbdata = OBJ_NEW(res_change_query_cbdata_t);
 
         if (PMIX_SUCCESS != (rc = PMIx_Query_info_nb(&query, 1, 
                                                      ompi_instance_get_res_change_complete,
-                                                     (void*)&lock))) {
+                                                     (void*)query_cbdata))) {
            printf("PMIx_Query_info_nb failed with error %d\n", rc);                                              
            
         }
-        OPAL_PMIX_WAIT_THREAD(&lock);
-        OPAL_PMIX_DESTRUCT_LOCK(&lock);
+        OPAL_PMIX_WAIT_THREAD(&query_cbdata->lock);
+
+        res_change = query_cbdata->res_change;
+
         ompi_instance_lock_rc_and_psets();
     }
 
-    if(NULL != (res_change = opal_list_remove_first(&queried_res_changes))){
-        OBJ_RELEASE(res_change);
-    }
-
-    /* if we did not find an active res change with a delta pset then at least search for invalid ones.
-     * If there still aren't any resource changes found return an error.
+    /* 
+     * If there still aren't any resource changes found return OMPI_PSETOP_NULL.
      */
-    if(NULL == (res_change = get_res_change_active_for_name(input_name)) || NULL == res_change->delta_psets || NULL == res_change->bound_psets){
-        if(NULL == (res_change = get_res_change_for_name(input_name)) || NULL == res_change->delta_psets || NULL == res_change->bound_psets || RC_FINALIZED == res_change->status){
+    if(NULL == res_change){
+        ompi_instance_unlock_rc_and_psets();
+        *type = OMPI_PSETOP_NULL;
+        *incl = 0;
 
-            ompi_instance_unlock_rc_and_psets();
-            *type = OMPI_PSETOP_NULL;
-            *incl = 0;
-            return OPAL_ERR_NOT_FOUND;
+        if(NULL != query_cbdata){
+            OBJ_RELEASE(query_cbdata);
         }
+
+        return OPAL_ERR_NOT_FOUND;
     }
+    
 
 
     /* lookup requested properties of the resource change */
@@ -631,6 +648,10 @@ int get_res_change_info(char *input_name, ompi_psetop_type_t *type, char ***outp
     }
     /* TODO: provide additional information in info object if requested */
 
+    if(NULL != query_cbdata){
+        OBJ_RELEASE(query_cbdata);
+    }
+
     ompi_instance_unlock_rc_and_psets();
     return OMPI_SUCCESS;
 }
@@ -642,6 +663,7 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
     pmix_info_t *results;
     opal_pmix_lock_t lock;
     bool refresh = true, is_leader;
+    res_change_query_cbdata_t *query_cbdata = NULL;
 
     ompi_instance_collective_t *coll;
 
@@ -663,47 +685,54 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
     PMIX_INFO_LOAD(&query.qualifiers[1], PMIX_PROCID, &opal_process_info.myprocid, PMIX_PROC);
     PMIX_INFO_LOAD(&query.qualifiers[2], PMIX_PSET_NAME, input_name, PMIX_STRING);
 
-    create_collective_query(&coll, PMIX_ERR_EMPTY, coll_procs, n_coll_procs, &query, 1, NULL, 0, ompi_instance_get_res_change_complete, &lock);    
-
+    query_cbdata = OBJ_NEW(res_change_query_cbdata_t);
 
     ompi_mpi_instance_resource_change_t *res_change, *queried_res_change;
 
     ompi_instance_lock_rc_and_psets();
     if(is_leader){
-        /* if we don't find a valid & active res change locally, query the runtime. */
+        
         if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+            /* if we don't find a valid & active res change locally, query the runtime. */
             ompi_instance_unlock_rc_and_psets();
-            OPAL_PMIX_CONSTRUCT_LOCK(&lock);
+
+            create_collective_query(&coll, PMIX_ERR_EMPTY, coll_procs, n_coll_procs, &query, 1, NULL, 0, ompi_instance_get_res_change_complete, query_cbdata);  
+            
             if (PMIX_SUCCESS != (rc = PMIx_Query_info_nb(&query, 1, 
                                                          ompi_instance_collective_infocb_send,
                                                          (void*)coll))) {
                printf("PMIx_Query_info_nb failed with error %d\n", rc);                                              
             }
-            OPAL_PMIX_WAIT_THREAD(&lock);
-            OPAL_PMIX_DESTRUCT_LOCK(&lock);
+            OPAL_PMIX_WAIT_THREAD(&query_cbdata->lock);
+            res_change = query_cbdata->res_change;
+
             ompi_instance_lock_rc_and_psets();
-        }else{
-            queried_res_change = copy_res_change(res_change);
-            opal_list_append(&queried_res_changes, &queried_res_change->super);            
+        }else{      
             /* We have found a resource change locally, so send the result to the collective procs */
-            get_res_change_as_query_result(queried_res_change, &results, &nresults);
+            get_res_change_as_query_result(res_change, &results, &nresults);
             send_collective_data_query(coll_procs, PMIX_SUCCESS, n_coll_procs, &query, 1, results, nresults);
             PMIX_INFO_FREE(results, nresults);
         }
     }else{
         ompi_instance_unlock_rc_and_psets();
-        /* No need to provide a lock as cbdata. recv_collective_query is blocking anyways */
-        recv_collective_data_query(coll_procs, n_coll_procs, &query, 1, ompi_instance_get_res_change_complete, NULL);
+        /* No need to provide a to wait on lock in cbdata. recv_collective_query is blocking anyways */
+        recv_collective_data_query(coll_procs, n_coll_procs, &query, 1, ompi_instance_get_res_change_complete, query_cbdata);
+        res_change = query_cbdata->res_change;
         ompi_instance_lock_rc_and_psets();
     }
 
     /* If there still aren't any resource changes found return an error */
     //if(NULL == (res_change = get_res_change_active_for_name(input_name))){
     
-    if( NULL == (res_change = (ompi_mpi_instance_resource_change_t *) opal_list_remove_first(&queried_res_changes))){
+    if( NULL == res_change){
         ompi_instance_unlock_rc_and_psets();
         *type = OMPI_PSETOP_NULL;
         *incl = 0;
+
+        if(NULL != query_cbdata){
+            OBJ_RELEASE(query_cbdata);
+        }
+
         return OPAL_ERR_NOT_FOUND;
     }
 
@@ -752,7 +781,10 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
     }
     /* TODO: provide additional information in info object if requested */
 
-    OBJ_RELEASE(res_change);
+    if(NULL != query_cbdata){
+        OBJ_RELEASE(query_cbdata);
+    }
+
     ompi_instance_unlock_rc_and_psets();
     return OMPI_SUCCESS;
 }

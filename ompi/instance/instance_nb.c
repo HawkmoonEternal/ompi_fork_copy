@@ -56,6 +56,21 @@
 #include "ompi/instance/instance_nb.h"
 #include "ompi/instance/instance_psets.h"
 
+static void ompi_res_change_query_cbdata_constructor(res_change_query_nb_cbdata_t *cbdata){
+    cbdata->res_change = NULL;
+    OPAL_PMIX_CONSTRUCT_LOCK(&cbdata->lock);
+}
+
+static void ompi_res_change_query_cbdata_destructor(res_change_query_nb_cbdata_t *cbdata){
+    if(NULL != cbdata->res_change){
+        OBJ_RELEASE(cbdata->res_change);
+    }
+    OPAL_PMIX_DESTRUCT_LOCK(&cbdata->lock);
+}
+
+OBJ_CLASS_INSTANCE(res_change_query_nb_cbdata_t, opal_object_t, ompi_res_change_query_cbdata_constructor, ompi_res_change_query_cbdata_destructor);
+
+
 static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info, size_t ninfo, 
                 void *cbdata, 
                 pmix_release_cbfunc_t release_fn, void *release_cbdata);
@@ -64,8 +79,8 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
 int ompi_instance_nb_req_free(ompi_request_t **req);
 
 int v1_recv_rc_results_complete(char *input_name, char *output_name, int *type, int get_by_delta_name, void *cbdata);
-int v2a_query_psetop_complete(char *input_name, char ***output, int *noutput, int *type, int get_by_delta_name);
-int v2b_query_psetop_complete(char *input_name, ompi_instance_rc_op_handle_t **rc_op_handle);
+int v2a_query_psetop_complete(ompi_mpi_instance_resource_change_t * res_change, char ***output, int *noutput, int *type, int get_by_delta_name);
+int v2b_query_psetop_complete(ompi_mpi_instance_resource_change_t *res_change, ompi_instance_rc_op_handle_t **rc_op_handle);
 
 int v2a_psetop_complete(pmix_status_t status, pmix_info_t *results, size_t nresults, int *op, char ***output, int *noutput);
 int v2b_psetop_complete(pmix_status_t status, pmix_info_t *results, size_t nresults, ompi_instance_rc_op_handle_t *rc_op_handle);
@@ -124,12 +139,12 @@ int v1_recv_rc_results_complete(char *input_name, char *output_name, int *type, 
     return OMPI_SUCCESS;
 }
 
-int v2a_query_psetop_complete(char *input_name, char ***output, int *noutput, int *type, int get_by_delta_name){
+int v2a_query_psetop_complete(ompi_mpi_instance_resource_change_t *res_change, char ***output, int *noutput, int *type, int get_by_delta_name){
     size_t n;
-    ompi_mpi_instance_resource_change_t *res_change;
+
     
     /* If there still aren't any resource changes found return an error */
-    if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+    if(NULL == (res_change)){
         *type = MPI_PSETOP_NULL;
         *noutput = 0;
         return OMPI_SUCCESS;
@@ -167,16 +182,15 @@ int v2a_query_psetop_complete(char *input_name, char ***output, int *noutput, in
     return OMPI_SUCCESS;
 }
 
-int v2b_query_psetop_complete(char *input_name, ompi_instance_rc_op_handle_t **rc_op_handle){
+int v2b_query_psetop_complete(ompi_mpi_instance_resource_change_t *res_change, ompi_instance_rc_op_handle_t **rc_op_handle){
     size_t n;
     int rc;
     char **input, **output;
-    ompi_mpi_instance_resource_change_t *res_change;
 
     ompi_instance_lock_rc_and_psets();
 
     /* If there still aren't any resource changes found return an error */
-    if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+    if(NULL == res_change){
         ompi_instance_unlock_rc_and_psets();
         *rc_op_handle = MPI_RC_HANDLE_NULL;
         return OMPI_SUCCESS;
@@ -658,6 +672,8 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
 
     pset_data_results * pdata_results;
 
+    res_change_query_nb_cbdata_t *query_cbdata;
+
     chain_info = (nb_chain_info *)cbdata;
     
     func = chain_info->func;
@@ -760,9 +776,12 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
             if(PMIX_SUCCESS == status || PMIX_ERR_NOT_FOUND == status){
                 if(next_stage == LAST_STAGE){
 
-                    ompi_instance_get_res_change_complete(status, info, ninfo, NULL, NULL, NULL);
+                    query_cbdata = OBJ_NEW(res_change_query_nb_cbdata_t);
+                    ompi_instance_get_res_change_complete(status, info, ninfo, query_cbdata, NULL, NULL);
 
-                    rc = v2a_query_psetop_complete(v2a_query_psetop_res->input_name, v2a_query_psetop_res->output, v2a_query_psetop_res->noutput, v2a_query_psetop_res->type, v2a_query_psetop_res->get_by_delta_name);
+                    rc = v2a_query_psetop_complete(query_cbdata->res_change, v2a_query_psetop_res->output, v2a_query_psetop_res->noutput, v2a_query_psetop_res->type, v2a_query_psetop_res->get_by_delta_name);
+                    
+                    OBJ_RELEASE(query_cbdata);
 
                     opal_atomic_wmb();
                     
@@ -785,9 +804,12 @@ static void ompi_instance_nb_switchyard( pmix_status_t status, pmix_info_t *info
             if(PMIX_SUCCESS == status || PMIX_ERR_NOT_FOUND == status){
                 if(next_stage == LAST_STAGE){
 
-                    ompi_instance_get_res_change_complete(status, info, ninfo, NULL, NULL, NULL);
+                    query_cbdata = OBJ_NEW(res_change_query_nb_cbdata_t);
+                    ompi_instance_get_res_change_complete(status, info, ninfo, query_cbdata, NULL, NULL);
 
-                    rc = v2b_query_psetop_complete(v2b_query_psetop_res->input_name, v2b_query_psetop_res->rc_op_handle);
+                    rc = v2b_query_psetop_complete(query_cbdata->res_change, v2b_query_psetop_res->rc_op_handle);
+
+                    OBJ_RELEASE(query_cbdata);
 
                     opal_atomic_wmb();
                                    

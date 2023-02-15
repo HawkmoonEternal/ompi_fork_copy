@@ -147,6 +147,13 @@ typedef struct pset_data_results{
     size_t ninfo;
 }pset_data_results;
 
+typedef struct res_change_query_nb_cbdata_t{
+    opal_list_item_t super;
+    opal_pmix_lock_t lock;
+    ompi_mpi_instance_resource_change_t *res_change;
+}res_change_query_nb_cbdata_t;
+
+
 void ompi_instance_nb_req_create(ompi_request_t **req);
 
 /* Callbacks for non-blocking functions */
