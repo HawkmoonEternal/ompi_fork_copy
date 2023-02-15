@@ -3731,6 +3731,7 @@ CLEANUP:
 int ompi_instance_get_pset_info (ompi_instance_t *instance, const char *pset_name, opal_info_t **info_used)
 {
     ompi_info_t *info = ompi_info_allocate ();
+    ompi_mpi_instance_pset_t *pset_ptr;
     char tmp[16];
     size_t size = 0UL;
     int ret;
@@ -3741,18 +3742,34 @@ int ompi_instance_get_pset_info (ompi_instance_t *instance, const char *pset_nam
         return OMPI_ERR_OUT_OF_RESOURCE;
     }
 
-    if (0 == strncmp (pset_name, "mpi://", 6)) {
-        pset_name += 6;
-        if (0 == strcmp (pset_name, "world")) {
-            size = ompi_process_info.num_procs;
-        } else if (0 == strcmp (pset_name, "self")) {
-            size = 1;
-        } else if (0 == strcmp (pset_name, "shared")) {
-            size = ompi_process_info.num_local_peers + 1;
+    
+    if(NULL == (pset_ptr = get_pset_by_name((char *) pset_name))){
+        refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
+        if(NULL == (pset_ptr = get_pset_by_name((char *) pset_name))){
+            return OMPI_ERR_NOT_FOUND;
         }
-    } else {
-        ompi_instance_get_pmix_pset_size (instance, pset_name, &size);
     }
+
+
+    if(!OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_INIT)){
+        if(OMPI_SUCCESS != (ret = pset_init_flags(pset_ptr->name))){
+            ompi_info_free(&info);
+            return ret;
+        }
+    }
+
+    if (0 == strcmp (pset_name, "mpi://self")) {
+        size = 1;
+    } else if (0 == strcmp (pset_name, "mpi://shared")) {
+        size = ompi_process_info.num_local_peers + 1;
+    }else{
+         if(OMPI_SUCCESS != (ret = get_pset_size(pset_ptr->name, &size))){
+            /* "mpi_size" is madatory, so this is an error */
+            ompi_info_free(&info);
+            return ret;
+        }
+    }
+    
 
     snprintf (tmp, 16, "%" PRIsize_t, size);
     ret = opal_info_set (&info->super, MPI_INFO_KEY_SESSION_PSET_SIZE, tmp);
@@ -3760,6 +3777,28 @@ int ompi_instance_get_pset_info (ompi_instance_t *instance, const char *pset_nam
         ompi_info_free (&info);
         return ret;
     }
+
+    ret = ompi_info_set(info, "mpi_dyn", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_DYN) ? "True" : "False");
+    if(ret != OMPI_SUCCESS){
+        printf("error in ompi_info_set\n");
+        ompi_info_free(&info);
+        return ret;
+    }
+
+    ret = ompi_info_set(info, "mpi_included", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_INCLUDED) ? "True" : "False");
+    if(ret != OMPI_SUCCESS){
+        printf("error in ompi_info_set\n");
+        ompi_info_free(&info);
+        return ret;
+    }
+
+    ret = ompi_info_set(info, "mpi_primary", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_PRIMARY) ? "True" : "False");
+    if(ret != OMPI_SUCCESS){
+        printf("error in ompi_info_set\n");
+        ompi_info_free(&info);
+        return ret;
+    }
+
 
     *info_used = &info->super;
 
