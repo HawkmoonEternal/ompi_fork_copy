@@ -86,6 +86,7 @@ int rc_op_handle_add_op(ompi_psetop_type_t rc_type,
                             char **output_names, size_t n_output_names, 
                             ompi_info_t *info, ompi_instance_rc_op_handle_t *rc_op_handle
                         );
+int rc_op_handle_add_op_infos(ompi_instance_rc_op_handle_t * rc_op_handle, pmix_info_t * info, size_t ninfo);
 int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, char * pset_name, pmix_info_t * info, int ninfo);
 int rc_op_handle_free(ompi_instance_rc_op_handle_t ** rc_op_handle);
 

@@ -412,6 +412,7 @@ interface_profile_sources = \
         session_finalize.c \
         session_pset_barrier.c \
         session_pset_barrier_nb.c \
+        session_pset_from_group.c \
         session_pset_op.c \
         session_set_errhandler.c \
         session_set_info.c \

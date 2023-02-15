@@ -3034,8 +3034,6 @@ static int ompi_instance_group_self (ompi_instance_t *instance, ompi_group_t **g
     return OMPI_SUCCESS;
 }
 
-
-
 static int ompi_instance_get_pmix_pset_size (ompi_instance_t *instance, const char *pset_name, size_t *size_out)
 {
     pmix_status_t rc;
@@ -3095,6 +3093,51 @@ int ompi_group_from_pset (ompi_instance_t *instance, const char *pset_name, ompi
     }
 
     return ompi_instance_group_pmix_pset (instance, pset_name, group_out);
+}
+
+int ompi_instance_pset_from_group(char * pset_name, MPI_Group group){
+    ompi_group_t * ompi_group = (ompi_group_t *) group;
+    pmix_status_t rc;
+    pmix_info_t *results, *pmix_info, *info_ptr, *setop_info;
+    pmix_value_t *out_name_vals = NULL;
+    pmix_data_array_t darray;
+    size_t nresults, noutput_names = 0, n;
+    pmix_proc_t *proc_array;
+    int k;
+
+    PMIX_DATA_ARRAY_CONSTRUCT(&darray, (size_t) ompi_group->grp_proc_count, PMIX_PROC);
+    proc_array = (pmix_proc_t *) darray.array;
+    for(k = 0; k < ompi_group->grp_proc_count; k++){
+        OPAL_PMIX_CONVERT_NAME((pmix_proc_t*) &proc_array[k], &ompi_group->grp_proc_pointers[k]->super.proc_name);
+    }
+
+
+    PMIX_INFO_CREATE(setop_info, 1);
+    PMIX_INFO_LOAD(&setop_info[0], PMIX_PSET_MEMBERS, &darray, PMIX_DATA_ARRAY);
+
+
+    ompi_instance_rc_op_handle_t *rc_op_handle;
+    rc_op_handle_create(&rc_op_handle);
+
+
+    rc_op_handle_add_op(OMPI_PSETOP_DEFINE, NULL, 0, &pset_name, 1, MPI_INFO_NULL, rc_op_handle);
+    rc_op_handle_add_op_infos(rc_op_handle, setop_info, 1);
+    PMIX_INFO_FREE(setop_info, 1);
+
+    PMIX_INFO_CREATE(pmix_info, 1);
+    rc_op_handle_serialize(rc_op_handle, pmix_info);
+
+    rc = PMIx_Allocation_request(MPI_ALLOC_SET_REQUEST, pmix_info, 1, &results, &nresults);
+
+    rc_op_handle_free(&rc_op_handle);
+
+    PMIX_INFO_FREE(pmix_info, 1);
+    if(0 < nresults){
+        PMIX_INFO_FREE(results, nresults);
+    }
+
+    return rc;
+
 }
 
 int ompi_instance_get_pset_info_by_keys (ompi_instance_t *instance, const char *pset_name, char **keys, int nkeys, int wait, opal_info_t **info_used){

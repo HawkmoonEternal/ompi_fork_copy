@@ -2828,6 +2828,7 @@ OMPI_DECLSPEC  int PMPI_Session_pset_create_op(MPI_Session session, int op, char
                                               char *pset_result, MPI_Info *info);
 OMPI_DECLSPEC  int MPI_Session_pset_barrier(MPI_Session session, char **pset_names, int num_psets, MPI_Info info);
 OMPI_DECLSPEC  int MPI_Session_pset_barrier_nb(MPI_Session session, char **pset_names, int num_psets, MPI_Info info, MPI_Request *req);
+OMPI_DECLSPEC  int MPI_Session_pset_from_group(MPI_Session session, char *pset_name, MPI_Group group);
 OMPI_DECLSPEC  int PMPI_Session_request_res_change(MPI_Session session, int delta, char *delta_pset, int rc_type, MPI_Info *info);
 OMPI_DECLSPEC  int PMPI_Session_set_errhandler(MPI_Session session, MPI_Errhandler erhandler);
 OMPI_DECLSPEC  int PMPI_Session_set_info (MPI_Session session, MPI_Info info);

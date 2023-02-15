@@ -227,6 +227,7 @@ OMPI_DECLSPEC int ompi_instance_get_pset_data_nb (ompi_instance_t *instance, cha
 OMPI_DECLSPEC int ompi_instance_pset_barrier(char **pset_names, int num_psets, ompi_info_t *info);
 OMPI_DECLSPEC int ompi_instance_pset_barrier_nb(char ** pset_names, int num_psets, ompi_info_t *info, ompi_request_t **request);
 
+OMPI_DECLSPEC int ompi_instance_pset_from_group(char * pset_name, MPI_Group group);
 extern ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_rc_op);
 
 pmix_proc_t ompi_intance_get_pmixid(void);

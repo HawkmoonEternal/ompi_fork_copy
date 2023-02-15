@@ -373,6 +373,33 @@ int rc_op_handle_add_op(ompi_psetop_type_t rc_type, char **input_names, size_t n
     return OMPI_SUCCESS;
 }
 
+int rc_op_handle_add_op_infos(ompi_instance_rc_op_handle_t * rc_op_handle, pmix_info_t * info, size_t ninfo){
+    pmix_info_t *new_info, *old_info;
+    size_t old_ninfo, new_ninfo,  index = 0;
+
+    old_info = rc_op_handle->rc_op_info.op_info;
+    old_ninfo = rc_op_handle->rc_op_info.n_op_info;
+    new_ninfo = old_ninfo + ninfo;
+
+    PMIX_INFO_CREATE(new_info, new_ninfo);
+
+    for(index = 0; index < old_ninfo ; index ++){
+        PMIX_INFO_XFER(&new_info[index], &old_info[index]);
+    }
+    for(; index < new_ninfo; index ++){
+        PMIX_INFO_XFER(&new_info[index], &info[index - old_ninfo]);
+    }
+
+    rc_op_handle->rc_op_info.op_info = new_info;
+    rc_op_handle->rc_op_info.n_op_info = new_ninfo;
+
+    if(NULL != old_info){
+        PMIX_INFO_FREE(old_info, old_ninfo);
+    }
+
+    return PMIX_SUCCESS; 
+}
+
 int rc_op_handle_add_pset_infos(ompi_instance_rc_op_handle_t * rc_op_handle, char * pset_name, pmix_info_t * info, int ninfo){
     int k, rc;
     size_t n, old_size, new_size;
