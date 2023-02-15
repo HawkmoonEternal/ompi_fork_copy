@@ -40,7 +40,17 @@ struct ompi_resource_change_t{
     ompi_psetop_type_t type;
     ompi_rc_status_t status;
 };
+
 typedef struct ompi_resource_change_t ompi_mpi_instance_resource_change_t;
+
+typedef struct res_change_query_cbdata_t{
+    opal_list_item_t super;
+    opal_pmix_lock_t lock;
+    int alloc_req_id;
+    ompi_mpi_instance_resource_change_t *res_change;
+}res_change_query_cbdata_t;
+
+
 
 int ompi_instance_res_changes_init(void);
 

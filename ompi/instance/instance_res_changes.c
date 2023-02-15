@@ -66,14 +66,18 @@ static opal_list_t ompi_mpi_instance_resource_changes;
 
 ompi_mpi_instance_resource_change_t *res_change_bound_to_self = NULL;
 
+static opal_list_t queried_res_changes;
+
 int ompi_instance_res_changes_init(){
     OBJ_CONSTRUCT(&ompi_mpi_instance_resource_changes, opal_list_t);
+    OBJ_CONSTRUCT(&queried_res_changes, opal_list_t);
 
     return ompi_instance_psets_init();
 }
 
 int ompi_instance_res_changes_finalize(){
     OBJ_DESTRUCT(&ompi_mpi_instance_resource_changes);
+    OBJ_DESTRUCT(&queried_res_changes);
 
     return ompi_instance_psets_finalize();
 }
@@ -94,6 +98,13 @@ static void ompi_resource_change_destructor(ompi_mpi_instance_resource_change_t 
 }
 
 OBJ_CLASS_INSTANCE(ompi_mpi_instance_resource_change_t, opal_object_t, ompi_resource_change_constructor, ompi_resource_change_destructor);
+
+static void ompi_res_change_query_cbdata_constructor(res_change_query_cbdata_t *cbdata){
+    cbdata->alloc_req_id = -1;
+    cbdata->res_change = NULL;
+}
+
+OBJ_CLASS_INSTANCE(res_change_query_cbdata_t, opal_object_t, ompi_res_change_query_cbdata_constructor, NULL);
 
 /* delete resource change from local cache */
 void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
@@ -117,13 +128,14 @@ void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
             }
         }
     }
+
     if(NULL != pset_name){
         ompi_mpi_instance_resource_change_t *res_change;
         
-        if(NULL != (res_change = get_res_change_active_for_name(pset_name))){
-            //res_change = opal_list_remove_item(&ompi_mpi_instance_resource_changes, &res_change->super);
+        if(NULL != (res_change = get_res_change_active_for_output_name(pset_name))){
+            res_change = (ompi_mpi_instance_resource_change_t *) opal_list_remove_item(&ompi_mpi_instance_resource_changes, &res_change->super);
             res_change->status = RC_FINALIZED;
-            //OBJ_RELEASE(res_change);
+            OBJ_RELEASE(res_change);
         }
         free(pset_name);
     }
@@ -270,6 +282,67 @@ ompi_mpi_instance_resource_change_t * get_res_change_active_for_output_name(char
     return NULL; 
 }
 
+static ompi_mpi_instance_resource_change_t * copy_res_change(ompi_mpi_instance_resource_change_t *original){
+    
+    ompi_mpi_instance_resource_change_t* copy = OBJ_NEW(ompi_mpi_instance_resource_change_t);
+
+    copy->type = original->type;
+    copy->status = original->status;
+    copy->ndelta_psets = original->ndelta_psets;
+    copy->nbound_psets = original->nbound_psets;
+
+    copy->delta_psets = malloc(copy->ndelta_psets * sizeof (ompi_mpi_instance_pset_t *));
+    copy->bound_psets = malloc(copy->nbound_psets * sizeof (ompi_mpi_instance_pset_t *));
+
+    size_t n;
+    for(n = 0; n < copy->ndelta_psets; n++){
+        copy->delta_psets[n] = original->delta_psets[n];
+    }
+    for(n = 0; n < copy->nbound_psets; n++){
+        copy->bound_psets[n] = original->bound_psets[n];
+    }
+
+    return copy;
+
+}
+
+static bool cmp_res_change(ompi_mpi_instance_resource_change_t *rc1, ompi_mpi_instance_resource_change_t *rc2){
+
+    if(NULL != rc1->delta_psets && NULL == rc2->delta_psets)return false;
+    if(NULL == rc1->delta_psets && NULL != rc2->delta_psets)return false;
+    if(NULL != rc1->bound_psets && NULL == rc2->delta_psets)return false;
+    if(NULL == rc1->bound_psets && NULL != rc2->bound_psets)return false;
+    if(rc1->ndelta_psets != rc2->ndelta_psets)return false;
+    if(rc1->nbound_psets != rc2->nbound_psets)return false;
+    if(rc1->type != rc2->type)return false;
+
+
+    for(size_t n = 0; n < rc1->ndelta_psets; n++){
+        if(0 != strcmp(rc1->delta_psets[n]->name, rc2->delta_psets[n]->name)){
+            return false;
+        }
+    }
+
+    for(size_t n = 0; n < rc1->nbound_psets; n++){
+        if(0 != strcmp(rc1->bound_psets[n]->name, rc2->bound_psets[n]->name)){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool res_change_already_defined(ompi_mpi_instance_resource_change_t *res_change){
+    ompi_mpi_instance_resource_change_t *rc_ptr = NULL;
+    OPAL_LIST_FOREACH(rc_ptr, &ompi_mpi_instance_resource_changes, ompi_mpi_instance_resource_change_t){
+       if(cmp_res_change(res_change, rc_ptr)){
+            return true;
+       }
+    }
+
+    return false;
+}
+
 static void get_res_change_as_query_result(ompi_mpi_instance_resource_change_t *res_change, pmix_info_t **results, size_t *nresults){
     size_t n;
     pmix_data_array_t darray, darray_results;
@@ -358,7 +431,7 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
     pmix_value_t *val_ptr;
 
     pmix_info_t * info;
-    ompi_mpi_instance_resource_change_t* res_change = OBJ_NEW(ompi_mpi_instance_resource_change_t);
+    ompi_mpi_instance_resource_change_t* queried_res_change, *res_change = OBJ_NEW(ompi_mpi_instance_resource_change_t);
     if(status == PMIX_SUCCESS){
         for(k = 0; k < nresults; k++){
 
@@ -371,7 +444,6 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
                     ompi_instance_lock_rc_and_psets();
 
                     for (n = 0; n < ninfo; n++) {
-
                         if (0 == strcmp (info[n].key, PMIX_QUERY_PSETOP_TYPE)) {
                             res_change->type = info[n].value.data.uint8;
 
@@ -422,7 +494,13 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
                         OBJ_RELEASE(res_change);
                     }else{
                         res_change->status = RC_ANNOUNCED;
-                        opal_list_append(&ompi_mpi_instance_resource_changes, &res_change->super);
+                        queried_res_change = copy_res_change(res_change);
+                        if(!res_change_already_defined(res_change)){
+                            opal_list_append(&ompi_mpi_instance_resource_changes, &res_change->super);
+                        }else{
+                            OBJ_RELEASE(res_change);
+                        }
+                        opal_list_append(&queried_res_changes, &queried_res_change->super);
                     }
                     ompi_instance_unlock_rc_and_psets();
                 }
@@ -452,6 +530,7 @@ int get_res_change_info(char *input_name, ompi_psetop_type_t *type, char ***outp
         return OMPI_ERR_BAD_PARAM;
     }
     
+    //res_change_query_cbdata_t *query_cbdata = OBJ_NEW(res_change_query_cbdata_t);
 
     ompi_mpi_instance_resource_change_t *res_change;
     /* if we don't find a valid & active res change locally, query the runtime. TODO: MPI Info directive QUERY RUNTIME */
@@ -484,6 +563,10 @@ int get_res_change_info(char *input_name, ompi_psetop_type_t *type, char ***outp
         OPAL_PMIX_WAIT_THREAD(&lock);
         OPAL_PMIX_DESTRUCT_LOCK(&lock);
         ompi_instance_lock_rc_and_psets();
+    }
+
+    if(NULL != (res_change = opal_list_remove_first(&queried_res_changes))){
+        OBJ_RELEASE(res_change);
     }
 
     /* if we did not find an active res change with a delta pset then at least search for invalid ones.
@@ -566,6 +649,7 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
         return OMPI_ERR_BAD_PARAM;
     }
 
+
     is_leader = is_pset_leader(coll_procs, n_coll_procs, opal_process_info.myprocid);
 
     /* Construct the query */
@@ -582,11 +666,13 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
     create_collective_query(&coll, PMIX_ERR_EMPTY, coll_procs, n_coll_procs, &query, 1, NULL, 0, ompi_instance_get_res_change_complete, &lock);    
 
 
-    ompi_mpi_instance_resource_change_t *res_change;
+    ompi_mpi_instance_resource_change_t *res_change, *queried_res_change;
 
+    ompi_instance_lock_rc_and_psets();
     if(is_leader){
         /* if we don't find a valid & active res change locally, query the runtime. */
         if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+            ompi_instance_unlock_rc_and_psets();
             OPAL_PMIX_CONSTRUCT_LOCK(&lock);
             if (PMIX_SUCCESS != (rc = PMIx_Query_info_nb(&query, 1, 
                                                          ompi_instance_collective_infocb_send,
@@ -595,27 +681,33 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
             }
             OPAL_PMIX_WAIT_THREAD(&lock);
             OPAL_PMIX_DESTRUCT_LOCK(&lock);
-
+            ompi_instance_lock_rc_and_psets();
         }else{
+            queried_res_change = copy_res_change(res_change);
+            opal_list_append(&queried_res_changes, &queried_res_change->super);            
             /* We have found a resource change locally, so send the result to the collective procs */
-            get_res_change_as_query_result(res_change, &results, &nresults);
+            get_res_change_as_query_result(queried_res_change, &results, &nresults);
             send_collective_data_query(coll_procs, PMIX_SUCCESS, n_coll_procs, &query, 1, results, nresults);
             PMIX_INFO_FREE(results, nresults);
         }
     }else{
+        ompi_instance_unlock_rc_and_psets();
         /* No need to provide a lock as cbdata. recv_collective_query is blocking anyways */
         recv_collective_data_query(coll_procs, n_coll_procs, &query, 1, ompi_instance_get_res_change_complete, NULL);
+        ompi_instance_lock_rc_and_psets();
     }
 
     /* If there still aren't any resource changes found return an error */
-    if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+    //if(NULL == (res_change = get_res_change_active_for_name(input_name))){
+    
+    if( NULL == (res_change = (ompi_mpi_instance_resource_change_t *) opal_list_remove_first(&queried_res_changes))){
+        ompi_instance_unlock_rc_and_psets();
         *type = OMPI_PSETOP_NULL;
         *incl = 0;
         return OPAL_ERR_NOT_FOUND;
-        
     }
 
-    ompi_instance_lock_rc_and_psets();
+    
     /* lookup requested properties of the resource change */
     *type = res_change->type;
     *status = res_change->status;
@@ -660,6 +752,7 @@ int get_res_change_info_collective(pmix_proc_t *coll_procs, size_t n_coll_procs,
     }
     /* TODO: provide additional information in info object if requested */
 
+    OBJ_RELEASE(res_change);
     ompi_instance_unlock_rc_and_psets();
     return OMPI_SUCCESS;
 }

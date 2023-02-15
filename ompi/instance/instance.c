@@ -659,6 +659,7 @@ size_t fence_nprocs = 0;
         }
     }
 
+
     if(rc_op != OMPI_PSETOP_NULL && incl){
 
 
@@ -1364,6 +1365,7 @@ int ompi_instance_get_res_change(ompi_instance_t *instance, char *input_name, om
     }
 
     rc = get_res_change_info(pset_ptr->name, type, output_names, noutput_names, incl, status, info_used, get_by_delta_name);
+
 
     return rc;
 }
