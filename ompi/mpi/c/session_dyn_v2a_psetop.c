@@ -21,6 +21,6 @@ int MPI_Session_dyn_v2a_psetop(MPI_Session session, int *op, char **input_sets, 
     int rc;
     rc = ompi_instance_dyn_v2a_pset_op((ompi_instance_t *) session, op, input_sets, ninput, output_sets, noutput, (ompi_info_t *) info);
 
-    //ERROR HANDLING      
+    //ERROR HANDLING    
     OMPI_ERRHANDLER_RETURN (rc, (NULL == session) ? MPI_SESSION_NULL : session, rc, FUNC_NAME);
 }

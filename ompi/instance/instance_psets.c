@@ -146,6 +146,8 @@ ompi_psetop_type_t MPI_OMPI_CONV_PSET_OP(int mpi_pset_op){
             return OMPI_PSETOP_DIFFERENCE;
         case MPI_PSETOP_INTERSECTION:
             return OMPI_PSETOP_INTERSECTION;
+        case MPI_PSETOP_SPLIT:
+            return OMPI_PSETOP_SPLIT;
         default:
             return OMPI_PSETOP_NULL;
     }
@@ -174,6 +176,8 @@ int MPI_OMPI_CONVT_PSET_OP(ompi_psetop_type_t mpi_pset_op){
             return MPI_PSETOP_DIFFERENCE;
         case OMPI_PSETOP_INTERSECTION:
             return MPI_PSETOP_INTERSECTION;
+        case OMPI_PSETOP_SPLIT:
+            return MPI_PSETOP_SPLIT;
         default:
             return OMPI_PSETOP_NULL;
     }

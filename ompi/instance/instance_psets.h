@@ -61,6 +61,8 @@ typedef uint8_t ompi_psetop_type_t;
 #define OMPI_PSETOP_DIFFERENCE      PMIX_PSETOP_DIFFERENCE
 #define OMPI_PSETOP_INTERSECTION    PMIX_PSETOP_INTERSECTION
 #define OMPI_PSETOP_DEFINE          PMIX_PSETOP_DEFINE
+#define OMPI_PSETOP_SPLIT           PMIX_PSETOP_SPLIT
+
 
 struct ompi_pset_t{
     opal_list_item_t super;
