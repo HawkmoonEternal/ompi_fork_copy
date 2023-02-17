@@ -395,7 +395,6 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
     }
 
     OMPI_TIMING_NEXT("initialization");
-
     /* Setup RTE */
     if (OMPI_SUCCESS != (ret = ompi_rte_init (&argc, &argv))) {
         return ompi_instance_print_error ("ompi_mpi_init: ompi_rte_init failed", ret);
@@ -449,6 +448,7 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
     if (OMPI_SUCCESS != (ret = ompi_instance_builtin_psets_init(ompi_instance_builtin_count, (char **) ompi_instance_builtin_psets, NULL, NULL, ompi_instance_builtin_psets_aliases))){
         return ret;
     }
+
     if(OMPI_SUCCESS != (ret = pset_init_flags("mpi://WORLD"))){
         return ret;
     }
@@ -641,33 +641,18 @@ static int ompi_mpi_instance_init_common (int argc, char **argv)
  * Instead they need to fence across their launch PSet
 */
 #define MPI_MALLEABLE 1
-
 pmix_proc_t *fence_procs = NULL;
 size_t fence_nprocs = 0;
 
 #if MPI_MALLEABLE
-    ompi_psetop_type_t rc_op;
-    ompi_rc_status_t rc_status;
-    char **delta_psets = NULL;
-    char bound_pset[] = "mpi://WORLD"; // Check for resource changes associated with our launch PSet
-    int incl = 0;
-    size_t ndelta_psets = 0;
 
-    if(OMPI_SUCCESS != (rc = ompi_instance_get_res_change(ompi_mpi_instance_default, bound_pset, &rc_op, &delta_psets, &ndelta_psets, &incl, &rc_status,  NULL, false))){
-        if(OMPI_ERR_NOT_FOUND != rc){
-            return rc;
-        }
-    }
+    ompi_mpi_instance_pset_t *launch_pset = get_pset_by_name("mpi://WORLD");
+    if(OMPI_PSET_FLAG_TEST(launch_pset, OMPI_PSET_FLAG_DYN)){
 
-
-    if(rc_op != OMPI_PSETOP_NULL && incl){
-
-
-        ts.tv_nsec = 10000;
         opal_process_name_t *pset_procs;
 
         size_t pset_nprocs;
-        if(PMIX_SUCCESS!= (rc = get_pset_membership(delta_psets[0], &pset_procs, &pset_nprocs))){
+        if(PMIX_SUCCESS!= (rc = get_pset_membership("mpi://WORLD", &pset_procs, &pset_nprocs))){
             ret = opal_pmix_convert_status(rc);
             return ret;  /* TODO: need to fix this */
         }
@@ -719,14 +704,6 @@ size_t fence_nprocs = 0;
             /* cannot just wait on thread as we need to call opal_progress */
             OMPI_LAZY_WAIT_FOR_COMPLETION(active);
         }
-    }
-
-    if(rc_op != OMPI_PSETOP_NULL){
-        for(size_t n = 0; n < ndelta_psets; n++){
-            ompi_instance_free_pset_membership(delta_psets[n]);
-            free(delta_psets[n]);
-        }
-        free(delta_psets);
     }
 
     OMPI_TIMING_NEXT("modex");
@@ -1517,7 +1494,7 @@ int ompi_instance_dyn_v1_request_res_change(MPI_Session session, int delta, char
     snprintf(delta_string, length + 1, "%d", delta);
     
     
-    if(OMPI_SUCCESS != (rc = ompi_info_set(ompi_info, "mpi.op_info.info.num_procs", delta_string))){
+    if(OMPI_SUCCESS != (rc = ompi_info_set(ompi_info, "mpi_num_procs_add", delta_string))){
         ompi_info_free(&ompi_info);
         return rc;
     }
@@ -1558,7 +1535,7 @@ int ompi_instance_dyn_v1_request_res_change_nb(MPI_Session session, int delta, c
     snprintf(delta_string, length + 1, "%d", delta);
     
     
-    if(OMPI_SUCCESS != (rc = ompi_info_set(ompi_info, "mpi.op_info.info.num_procs", delta_string))){
+    if(OMPI_SUCCESS != (rc = ompi_info_set(ompi_info, "mpi_num_procs_add", delta_string))){
         ompi_info_free(&ompi_info);
         return rc;
     }
@@ -3034,6 +3011,7 @@ static int ompi_instance_group_self (ompi_instance_t *instance, ompi_group_t **g
     return OMPI_SUCCESS;
 }
 
+/*
 static int ompi_instance_get_pmix_pset_size (ompi_instance_t *instance, const char *pset_name, size_t *size_out)
 {
     pmix_status_t rc;
@@ -3067,6 +3045,7 @@ static int ompi_instance_get_pmix_pset_size (ompi_instance_t *instance, const ch
 
     return OMPI_SUCCESS;
 }
+*/
 
 /* TODO: Need to introduce aliasing */
 int ompi_group_from_pset (ompi_instance_t *instance, const char *pset_name, ompi_group_t **group_out)
@@ -3098,10 +3077,9 @@ int ompi_group_from_pset (ompi_instance_t *instance, const char *pset_name, ompi
 int ompi_instance_pset_from_group(char * pset_name, MPI_Group group){
     ompi_group_t * ompi_group = (ompi_group_t *) group;
     pmix_status_t rc;
-    pmix_info_t *results, *pmix_info, *info_ptr, *setop_info;
-    pmix_value_t *out_name_vals = NULL;
+    pmix_info_t *results, *pmix_info, *setop_info;
     pmix_data_array_t darray;
-    size_t nresults, noutput_names = 0, n;
+    size_t nresults;
     pmix_proc_t *proc_array;
     int k;
 
