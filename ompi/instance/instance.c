@@ -3351,13 +3351,12 @@ int ompi_instance_get_pset_data (ompi_instance_t *instance, char *coll_pset, cha
     pmix_proc_t *pset_members = NULL;
     pmix_pdata_t *pdata;
     lookup_results_t lookup_results;
-    size_t ninfo = 0, nresults = 0, _nkeys = 0, n, num_mpi_keys = 0, pset_size = 0;
-    char **_keys;
+    size_t ninfo = 0, nresults = 0, n, num_mpi_keys = 0, pset_size = 0;
     char *mpi_value;
     int mpi_val_length, rc = OMPI_SUCCESS;
 
     bool b_wait = (1 == wait);
-
+    
     refresh_pmix_psets(PMIX_QUERY_PSET_NAMES);
     if(NULL == (pset_ptr = get_pset_by_name(pset_name))){
         return OMPI_ERR_NOT_FOUND;
@@ -3372,86 +3371,12 @@ int ompi_instance_get_pset_data (ompi_instance_t *instance, char *coll_pset, cha
 
     info = ompi_info_allocate ();
 
-
-    if(0 == nkeys || NULL == keys){
-        _nkeys = 1;
-        _keys = malloc(sizeof(char *));
-        _keys[0] = strdup(PMIX_PSET_INFO);
-    }else{
-        _keys = malloc(nkeys * sizeof(char *));
-        for(n = 0; n < (size_t) nkeys; n++){
-            if(0 == strncmp(keys[n], "mpi_", 4)){
-                num_mpi_keys++;
-                continue;
-            }
-            _keys[_nkeys] = strdup(keys[n]);
-            _nkeys++;
-        }
-    }
-
-    /* Now handle the MPI specific attributes */
-    /* TODO: */
-    if(!OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_INIT)){
-        if(OMPI_SUCCESS != (rc = pset_init_flags(pset_ptr->name))){
-            ompi_info_free(&info);
-            goto CLEANUP;
-        }
-    }
-    if(0 < num_mpi_keys){
-
-        for(n = 0; n < (size_t) nkeys; n++){
-
-            /* "mpi_size"*/
-            if(0 == strcmp(keys[n], "mpi_size")){
-                if(OMPI_SUCCESS != (rc = get_pset_size(pset_ptr->name, &pset_size))){
-                    /* "mpi_size" is madatory, so this is an error */
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-
-                mpi_val_length = snprintf(NULL, 0, "%zu", pset_size);
-                mpi_value = malloc(mpi_val_length + 1);
-                sprintf(mpi_value, "%zu", pset_size);
-                if(OMPI_SUCCESS != (rc = opal_info_set(&info->super, "mpi_size", mpi_value))){
-                    free(mpi_value);
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-
-                free(mpi_value);
-
-            }else if(0 == strcmp(keys[n], "mpi_dyn")){
-                rc = ompi_info_set(info, "mpi_dyn", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_DYN) ? "True" : "False");
-                if(rc != OMPI_SUCCESS){
-                    printf("error in ompi_info_set\n");
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-            }
-            else if(0 == strcmp(keys[n], "mpi_included")){
-                rc = ompi_info_set(info, "mpi_included", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_INCLUDED) ? "True" : "False");
-                if(rc != OMPI_SUCCESS){
-                    printf("error in ompi_info_set\n");
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-            }
-            else if(0 == strcmp(keys[n], "mpi_primary")){
-                rc = ompi_info_set(info, "mpi_primary", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_PRIMARY) ? "True" : "False");
-                if(rc != OMPI_SUCCESS){
-                    printf("error in ompi_info_set\n");
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-            }
-        }
-    }
-
-    if(0 < _nkeys){
+    if(0 < nkeys){
 
         if(NULL == (coll_pset_ptr = get_pset_by_name(coll_pset))){
             ompi_info_free(&info);
             goto CLEANUP;
+            rc = PMIX_ERR_NOT_FOUND;
         }
 
         if(!OMPI_PSET_FLAG_TEST(coll_pset_ptr, OMPI_PSET_FLAG_INIT)){
@@ -3468,20 +3393,20 @@ int ompi_instance_get_pset_data (ompi_instance_t *instance, char *coll_pset, cha
         if(wait){
             PMIX_INFO_LOAD(&pmix_info[1], PMIX_WAIT, &b_wait, PMIX_BOOL);
         }
-        PMIX_PDATA_CREATE(pdata, _nkeys);
-        for(n = 0; n < _nkeys; n++){
-            PMIX_LOAD_KEY(&pdata[n], _keys[n]);
+        PMIX_PDATA_CREATE(pdata, nkeys);
+        for(int i = 0; i < nkeys; i++){
+            PMIX_LOAD_KEY(&pdata[i], keys[i]);
         }
 
-
+        
         if(OMPI_PSET_FLAG_TEST(coll_pset_ptr, OMPI_PSET_FLAG_PRIMARY)){
-            rc = opal_pmix_lookup_pset_info(_keys, _nkeys, &pmix_info[wait], wait, pset_ptr->name, &results, &nresults);
+            rc = opal_pmix_lookup_pset_info(keys, nkeys, &pmix_info[wait], wait, pset_ptr->name, &results, &nresults);
             if(0 != strcmp(coll_pset, "mpi://SELF")){
                 if(OMPI_SUCCESS != (rc = get_pset_members(coll_pset, &pset_members, &pset_size))) {
                     ompi_info_free(&info);
                     goto CLEANUP;            
                 }
-                send_collective_data_lookup(pset_members, rc, pset_size, pdata, _nkeys, pmix_info, ninfo, results, nresults);
+                send_collective_data_lookup(pset_members, rc, pset_size, pdata, nkeys, pmix_info, ninfo, results, nresults);
             }
             
             if(OMPI_SUCCESS != rc){
@@ -3494,7 +3419,8 @@ int ompi_instance_get_pset_data (ompi_instance_t *instance, char *coll_pset, cha
                 goto CLEANUP;            
             }
             
-            rc = recv_collective_data_lookup(pset_members, pset_size, pdata, _nkeys, pmix_info, ninfo, coll_lookup_cb, &lookup_results);
+            
+            rc = recv_collective_data_lookup(pset_members, pset_size, pdata, nkeys, pmix_info, ninfo, coll_lookup_cb, &lookup_results);
             if(OMPI_SUCCESS != rc || OMPI_SUCCESS != lookup_results.status){
                 ompi_info_free(&info);
                 goto CLEANUP;
@@ -3530,14 +3456,7 @@ CLEANUP:
     if(0 != pset_size && NULL != pset_members){
         PMIX_PROC_FREE(pset_members, pset_size);
     }
-    if(NULL != _keys){
-        for(n = 0; n < _nkeys; n++){
-            if(NULL != _keys[n]){
-                free(_keys[n]);
-            }
-            free(_keys);
-        }
-    }
+
     return rc;
 }
 
@@ -3551,11 +3470,11 @@ int ompi_instance_get_pset_data_nb (ompi_instance_t *instance, char *coll_pset, 
     pmix_proc_t *pset_members = NULL;
     pmix_pdata_t *pdata;
     pset_data_results *pdata_results;
-    size_t ninfo = 0, _nkeys = 0, n, num_mpi_keys = 0, pset_size = 0;
+    size_t ninfo = 0, _nkeys = 0, num_mpi_keys = 0, pset_size = 0;
     char **_keys;
     char ** argv = NULL;
     char *mpi_value;
-    int mpi_val_length, rc = OMPI_SUCCESS;
+    int n, mpi_val_length, rc = OMPI_SUCCESS;
 
     bool b_wait = (1 == wait);
 
@@ -3572,82 +3491,6 @@ int ompi_instance_get_pset_data_nb (ompi_instance_t *instance, char *coll_pset, 
 
     info = ompi_info_allocate ();
 
-
-    if(0 == nkeys || NULL == keys){
-        _nkeys = 1;
-        _keys = malloc(sizeof(char *));
-        _keys[0] = strdup(PMIX_PSET_INFO);
-    }else{
-        _keys = malloc(nkeys * sizeof(char *));
-        for(n = 0; n < (size_t) nkeys; n++){
-            if(0 == strncmp(keys[n], "mpi_", 4)){
-                num_mpi_keys++;
-                continue;
-            }
-            _keys[_nkeys] = strdup(keys[n]);
-            _nkeys++;
-        }
-    }
-
-    /* Now handle the MPI specific attributes */
-    /* TODO: */
-
-    if(!OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_INIT)){
-        if(OMPI_SUCCESS != (rc = pset_init_flags(pset_ptr->name))){
-            ompi_info_free(&info);
-            goto CLEANUP;
-        }
-    }
-
-    if(0 < num_mpi_keys){
-
-        for(n = 0; n < (size_t) nkeys; n++){
-
-            /* "mpi_size"*/
-            if(0 == strcmp(keys[n], "mpi_size")){
-                if(OMPI_SUCCESS != (rc = get_pset_size(pset_ptr->name, &pset_size))){
-                    /* "mpi_size" is madatory, so this is an error */
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-
-                mpi_val_length = snprintf(NULL, 0, "%zu", pset_size);
-                mpi_value = malloc(mpi_val_length + 1);
-                sprintf(mpi_value, "%zu", pset_size);
-                if(OMPI_SUCCESS != (rc = opal_info_set(&info->super, "mpi_size", mpi_value))){
-                    free(mpi_value);
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-
-                free(mpi_value);
-
-            }else if(0 == strcmp(keys[n], "mpi_dyn")){
-                rc = ompi_info_set(info, "mpi_dyn", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_DYN) ? "True" : "False");
-                if(rc != OMPI_SUCCESS){
-                    printf("error in ompi_info_set\n");
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-            }
-            else if(0 == strcmp(keys[n], "mpi_included")){
-                rc = ompi_info_set(info, "mpi_included", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_INCLUDED) ? "True" : "False");
-                if(rc != OMPI_SUCCESS){
-                    printf("error in ompi_info_set\n");
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-            }
-            else if(0 == strcmp(keys[n], "mpi_primary")){
-                rc = ompi_info_set(info, "mpi_primary", OMPI_PSET_FLAG_TEST(pset_ptr, OMPI_PSET_FLAG_PRIMARY) ? "True" : "False");
-                if(rc != OMPI_SUCCESS){
-                    printf("error in ompi_info_set\n");
-                    ompi_info_free(&info);
-                    goto CLEANUP;
-                }
-            }
-        }
-    }
 
     if(NULL == (coll_pset_ptr = get_pset_by_name(coll_pset))){
         ompi_info_free(&info);
@@ -3670,7 +3513,7 @@ int ompi_instance_get_pset_data_nb (ompi_instance_t *instance, char *coll_pset, 
     ompi_instance_nb_req_create(req);
     
 
-    if(0 < _nkeys){
+    if(0 < nkeys){
 
         pdata_results = (pset_data_results *) malloc(sizeof(pset_data_results));
         nb_chain_info *chain_info = &pdata_results->chain_info;
@@ -3684,7 +3527,7 @@ int ompi_instance_get_pset_data_nb (ompi_instance_t *instance, char *coll_pset, 
         pdata_results->coll_pset = coll_pset_ptr->name;
         pdata_results->coll_procs = pset_members;
         pdata_results->n_coll_procs = pset_size;
-        pdata_results->nkeys = _nkeys;
+        pdata_results->nkeys = (size_t) nkeys;
         pdata_results->info = info;
         pdata_results->info_used = (ompi_info_t **) info_used;
 
@@ -3694,10 +3537,10 @@ int ompi_instance_get_pset_data_nb (ompi_instance_t *instance, char *coll_pset, 
         if(wait){
             PMIX_INFO_LOAD(&pmix_info[1], PMIX_WAIT, &b_wait, PMIX_BOOL);
         }
-        PMIX_PDATA_CREATE(pdata, _nkeys);
-        for(n = 0; n < _nkeys; n++){
-            PMIX_LOAD_KEY(&pdata[n], _keys[n]);
-            PMIX_ARGV_APPEND(rc, argv, _keys[n]);
+        PMIX_PDATA_CREATE(pdata, nkeys);
+        for(n = 0; n < nkeys; n++){
+            PMIX_LOAD_KEY(&pdata[n], keys[n]);
+            PMIX_ARGV_APPEND(rc, argv, keys[n]);
         }
 
         pdata_results->pdata = pdata;
@@ -3713,7 +3556,7 @@ int ompi_instance_get_pset_data_nb (ompi_instance_t *instance, char *coll_pset, 
             }
         }else{
 
-            if(OMPI_SUCCESS != (rc = recv_collective_data_lookup_nb(pset_members, pset_size, pdata, _nkeys, pmix_info, ninfo, pmix_info_cb_nb, (void *) pdata_results))){
+            if(OMPI_SUCCESS != (rc = recv_collective_data_lookup_nb(pset_members, pset_size, pdata, (size_t) nkeys, pmix_info, ninfo, pmix_info_cb_nb, (void *) pdata_results))){
                 free(pdata_results);
                 ompi_info_free(&info);
                 goto CLEANUP;
@@ -3736,14 +3579,7 @@ CLEANUP:
     if(OMPI_SUCCESS != rc && 0 != pset_size && NULL != pset_members){
         PMIX_PROC_FREE(pset_members, pset_size);
     }
-    if(NULL != _keys){
-        for(n = 0; n < _nkeys; n++){
-            if(NULL != _keys[n]){
-                free(_keys[n]);
-            }
-            free(_keys);
-        }
-    }
+
     PMIX_ARGV_FREE(argv);
     return rc;
 }

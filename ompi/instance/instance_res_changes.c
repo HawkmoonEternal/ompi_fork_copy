@@ -126,6 +126,8 @@ void rc_finalize_handler(size_t evhdlr_registration_id, pmix_status_t status,
     char *pset_name = NULL;
     int rc;
     
+    cbfunc(PMIX_SUCCESS, NULL, 0, NULL, NULL, cbdata);
+    return;
     
     ompi_instance_lock_rc_and_psets();
     for(n = 0; n < ninfo; n++){
@@ -507,11 +509,12 @@ void ompi_instance_get_res_change_complete (pmix_status_t status,
                         if(NULL != query_cbdata){
                             query_cbdata->res_change = queried_res_change;
                         }
-                        if(!res_change_already_defined(res_change)){
-                            opal_list_append(&ompi_mpi_instance_resource_changes, &res_change->super);
-                        }else{
+                        //if(!res_change_already_defined(res_change)){
+                        //    opal_list_append(&ompi_mpi_instance_resource_changes, &res_change->super);
+                        //    int x = 0;
+                        //}else{
                             OBJ_RELEASE(res_change);
-                        }
+                        //}
                         
                     }
                     ompi_instance_unlock_rc_and_psets();

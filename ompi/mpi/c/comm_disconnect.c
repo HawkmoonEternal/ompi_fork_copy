@@ -69,7 +69,6 @@ int MPI_Comm_disconnect(MPI_Comm *comm)
     else {
         (*comm)->c_coll->coll_barrier(*comm, (*comm)->c_coll->coll_barrier_module);
     }
-
     ompi_comm_free(comm);
 
     return ret;

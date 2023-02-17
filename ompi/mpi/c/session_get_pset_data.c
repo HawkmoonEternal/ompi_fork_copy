@@ -38,7 +38,6 @@ static const char FUNC_NAME[] = "MPI_Session_get_pset_data";
 int MPI_Session_get_pset_data (MPI_Session session, char *coll_pset_name, char *pset_name, char **keys, int nkeys, int wait, MPI_Info *info_used)
 {
     int ret;
-
     if (MPI_PARAM_CHECK) {
         OMPI_ERR_INIT_FINALIZE(FUNC_NAME);
         if (NULL == session || MPI_SESSION_NULL == session) {
